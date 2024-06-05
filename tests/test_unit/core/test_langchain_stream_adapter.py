@@ -5,7 +5,7 @@ import pytest
 from langchain_core.runnables.schema import StreamEvent, EventData
 
 from langchain_openai_bridge.core.langchain_stream_adapter import LangchainStreamAdapter
-from tests.core.stream_utils import assemble_stream, generate_stream
+from tests.stream_utils import assemble_stream, generate_stream
 
 
 class ChunkStub:

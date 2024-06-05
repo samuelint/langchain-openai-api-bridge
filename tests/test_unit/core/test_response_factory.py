@@ -3,7 +3,7 @@ import pytest
 from langchain_openai_bridge.core.response_factory import (
     OpenAICompatibleResponseFactory,
 )
-from tests.core.stream_utils import assemble_stream, generate_stream
+from tests.stream_utils import assemble_stream, generate_stream
 
 
 class TestToStrStream:
