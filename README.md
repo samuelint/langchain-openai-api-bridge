@@ -12,6 +12,15 @@ pip install langchain_openai_bridge
 poetry add langchain_openai_bridge
 ```
 
+### Examples
+
+Most examples can be found in `tests/test_functional`.
+
+##### 1. FastAPI endpoint expose Langchain (Langgraph) Agent as an OpenAI chat completion api
+
+- [Server Code](tests/test_functional/fastapi_chat_completion/server.py)
+- [Client Code ](tests/test_functional/fastapi_chat_completion/test_server.py)
+
 ## Contribute
 
 ### Installation
