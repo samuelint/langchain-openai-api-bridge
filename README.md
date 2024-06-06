@@ -2,6 +2,16 @@
 
 🚀 Expose [Langchain](https://github.com/langchain-ai/langchain) Agent ([Langgraph](https://github.com/langchain-ai/langgraph)) result as an OpenAI-compatible API 🚀
 
+Support:
+
+- ✅ [Chat Completions API](https://platform.openai.com/docs/api-reference/chat)
+  - ✅ Invoke
+  - ✅ Stream
+- 🚧 [Assistant API](https://platform.openai.com/docs/api-reference/assistants) - Feature in progress
+  - 🚧 Thread
+  - 🚧 Stream
+  - 🚧 Invoke
+
 ## Quick Install
 
 ##### pip
@@ -153,3 +163,14 @@ poetry env use ./.venv/bin/python
 | Command   | Command             |
 | --------- | ------------------- |
 | Run Tests | `poetry run pytest` |
+
+## Limitations
+
+- **Chat Completions Tools**
+
+  - Functions do not work when configured on the client. Set up tools and functions using LangChain on the server. [Usage Example](tests/test_functional/fastapi_chat_completion_openai/server_openai.py)
+  - ⚠️ LangChain functions are not streamed in responses due to a limitation in LangGraph.
+    - Details: LangGraph's `astream_events` - `on_tool_start`, `on_tool_end`, and `on_llm_stream` events do not contain information typically available when calling tools.
+
+- **LLM Usage Info**
+  - **Usage object is non-functional**. This is due to a Langchain/Langgraph limitation where usage info isn't available when calling a Langgraph Agent.
