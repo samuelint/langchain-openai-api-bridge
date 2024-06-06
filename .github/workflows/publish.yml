@@ -1,0 +1,41 @@
+name: Upload Python Package to PyPI when a Release is Created
+
+env:
+  PYPI_PACKAGE_NAME: langchain_openai_api_bridge
+# on:
+#   release:
+#     types:
+#       - created
+
+on: [push, pull_request]
+
+jobs:
+  pypi-publish:
+    name: Publish release to PyPI
+    runs-on: ubuntu-latest
+    uses: ./.github/workflows/build.yml
+    environment:
+      name: pypi
+      url: https://pypi.org/p/$PYPI_PACKAGE_NAME
+    # permissions:
+    #   id-token: write
+    steps:
+      # - uses: actions/checkout@v4
+      # - name: Set up Python
+      #   uses: actions/setup-python@v5
+      #   with:
+      #     python-version: "3.x"
+
+      # - name: Install dependencies
+      #   run: |
+      #     python -m pip install --upgrade pip
+      #     pip install poetry
+      #     poetry install
+
+      - name: Publish
+        env:
+          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        run: echo "Will publish"
+        # run: |
+        #   poetry config pypi-token.pypi $PYPI_TOKEN
+        #   poetry publish --build
