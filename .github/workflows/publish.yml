@@ -12,8 +12,7 @@ jobs:
     name: Publish release to PyPI
     runs-on: ubuntu-latest
     environment:
-      name: pypi
-      url: https://pypi.org/p/$PYPI_PACKAGE_NAME
+      name: release
     permissions:
       id-token: write
     steps:
@@ -41,8 +40,4 @@ jobs:
           poetry run pytest
 
       - name: Publish
-        env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          poetry config pypi-token.pypi $PYPI_TOKEN
-          poetry publish --build
+        uses: pypa/gh-action-pypi-publish@release/v1
