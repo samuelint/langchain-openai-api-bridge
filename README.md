@@ -1,32 +1,138 @@
 # Langchain Openai API Bridge
 
-Use Langchain output as an OpenAI-compatible API.
+🚀 Expose [Langchain](https://github.com/langchain-ai/langchain) Agent ([Langgraph](https://github.com/langchain-ai/langgraph)) result as an OpenAI-compatible API 🚀
 
-## Usage
+## Quick Install
+
+##### pip
 
 ```bash
 pip install langchain_openai_bridge
 ```
 
+##### poetry
+
 ```bash
 poetry add langchain_openai_bridge
 ```
 
-### Examples
+## 🤔 What is Langchain Openai API Bridge
 
-Most examples can be found in `tests/test_functional`.
+A `FastAPI` + `Langchain` / `langgraph` extension to expose agent result as an OpenAI-compatible API.
 
-##### 1. FastAPI endpoint expose Langchain (Langgraph) Agent as an OpenAI chat completion api
+Use any OpenAI-compatible UI or UI framework (like the awesome 👌 [Vercel AI SDK](https://sdk.vercel.ai/docs/ai-sdk-core/overview)) with your custom `Langchain Agent`.
 
-- [Server Code](tests/test_functional/fastapi_chat_completion_openai/server.py)
-- [Client Code ](tests/test_functional/fastapi_chat_completion_openai/test_server.py)
+## Usage
 
-##### 2. FastAPI endpoint expose Langchain (Langgraph) Agent as an OpenAI chat completion api using anthropic model
+```python
+# Server
+api = FastAPI(
+    title="Langchain Agent OpenAI API Bridge",
+    version="1.0",
+    description="OpenAI API exposing langchain agent",
+)
 
-- [Server Code](tests/test_functional/fastapi_chat_completion_anthropic/server.py)
-- [Client Code ](tests/test_functional/fastapi_chat_completion_anthropic/test_server.py)
+@tool
+def magic_number_tool(input: int) -> int:
+    """Applies a magic function to an input."""
+    return input + 2
 
-## Contribute
+
+def assistant_openai_v1_chat(request: OpenAIChatCompletionRequest, api_key: str):
+    llm = ChatOpenAI(
+        model=request.model,
+        api_key=api_key,
+        streaming=True,
+    )
+    agent = create_react_agent(
+        llm,
+        [magic_number_tool],
+        messages_modifier="""You are a helpful assistant.""",
+    )
+
+    return V1ChatCompletionRoutesArg(model_name=request.model, agent=agent)
+
+
+add_v1_chat_completions_agent_routes(
+    api,
+    path="/my-custom-path",
+    handler=assistant_openai_v1_chat,
+    system_fingerprint=system_fingerprint,
+)
+
+```
+
+```python
+# Client
+openai_client = OpenAI(
+    base_url="http://my-server/my-custom-path/openai/v1",
+)
+
+chat_completion = openai_client.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {
+            "role": "user",
+            "content": 'Say "This is a test"',
+        }
+    ],
+)
+print(chat_completion.choices[0].message.content)
+#> "This is a test"
+```
+
+Full python example: [Server](tests/test_functional/fastapi_chat_completion_openai/server_openai.py), [Client](tests/test_functional/fastapi_chat_completion_openai/test_server_openai.py)
+
+If you find this project useful, please give it a star ⭐!
+
+###### Bonus Client using NextJS + Vercel AI SDK
+
+```typescript
+// app/api/my-chat/route.ts
+import { NextRequest } from "next/server";
+import { z } from "zod";
+import { type CoreMessage, streamText } from "ai";
+import { createOpenAI } from "@ai-sdk/openai";
+
+export const ChatMessageSchema = z.object({
+  id: z.string(),
+  role: z.string(),
+  createdAt: z.date().optional(),
+  content: z.string(),
+});
+
+const BodySchema = z.object({
+  messages: z.array(ChatMessageSchema),
+});
+
+export type AssistantStreamBody = z.infer<typeof BodySchema>;
+
+const langchain = createOpenAI({
+  //baseURL: "https://my-project/my-custom-path/openai/v1",
+  baseURL: "http://localhost:8000/my-custom-path/openai/v1",
+});
+
+export async function POST(request: NextRequest) {
+  const { messages }: { messages: CoreMessage[] } = await request.json();
+
+  const result = await streamText({
+    model: langchain("gpt-4o"),
+    messages,
+  });
+
+  return result.toAIStreamResponse();
+}
+```
+
+## More Examples
+
+Every examples can be found in [`tests/test_functional`](tests/test_functional) directory.
+
+- **OpenAI LLM -> Langgraph Agent -> OpenAI Completion** - [Server](tests/test_functional/fastapi_chat_completion_openai/server_openai.py), [Client](tests/test_functional/fastapi_chat_completion_openai/test_server_openai.py)
+- **Anthropic LLM -> Langgraph Agent -> OpenAI Completion** - [Server](tests/test_functional/fastapi_chat_completion_anthropic/server_anthropic.py), [Client](tests/test_functional/fastapi_chat_completion_anthropic/test_server_anthropic.py)
+- **Advanced** - OpenAI LLM -> Langgraph Agent -> OpenAI Completion - [Server](tests/test_functional/fastapi_chat_completion_agent_simple/server_openai_advanced.py), [Client](tests/test_functional/fastapi_chat_completion_agent_simple/test_server_openai_advanced.py)
+
+## 💁 Contributing
 
 If you want to contribute to this project, you can follow this guideline:
 
