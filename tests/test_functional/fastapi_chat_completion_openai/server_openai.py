@@ -5,15 +5,14 @@ from fastapi.responses import JSONResponse
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 from langchain_core.tools import tool
-
-from langchain_openai_bridge.core.langchain_invoke_adapter import LangchainInvokeAdapter
-from langchain_openai_bridge.core.langchain_stream_adapter import LangchainStreamAdapter
-from langchain_openai_bridge.core.response_factory import (
-    OpenAICompatibleResponseFactory,
+from langchain_openai_bridge.core.langchain_openai_compatible_api import (
+    LangchainOpenaiCompatibleAPI,
+)
+from langchain_openai_bridge.core.http_stream_response_adapter import (
+    HttpStreamResponseAdapter,
 )
 from langchain_openai_bridge.core.types.openai import OpenAIChatCompletionRequest
 from langchain_openai_bridge.fastapi.token_getter import get_bearer_token
-from tests.test_unit.core.open_ai_compatible_executor import OpenAICompatibleExecutor
 
 
 _ = load_dotenv(find_dotenv())
@@ -49,7 +48,7 @@ async def assistant_openai_v1_chat(
 ):
     api_key = get_bearer_token(authorization)
     llm = ChatOpenAI(
-        model="gpt-3.5-turbo",
+        model=request.model,
         api_key=api_key,
         streaming=True,
     )
@@ -57,17 +56,13 @@ async def assistant_openai_v1_chat(
         llm, [magic_number_tool], messages_modifier="""You are a helpful assistant."""
     )
 
-    stream_adapter = LangchainStreamAdapter(
-        llm_model=request.model, system_fingerprint=system_fingerprint
+    adapter = LangchainOpenaiCompatibleAPI.from_agent(
+        agent, request.model, system_fingerprint
     )
-    invoke_adapter = LangchainInvokeAdapter(
-        llm_model=request.model, system_fingerprint=system_fingerprint
-    )
-    executor = OpenAICompatibleExecutor(agent, stream_adapter, invoke_adapter)
 
-    response_factory = OpenAICompatibleResponseFactory()
+    response_factory = HttpStreamResponseAdapter()
     if request.stream is True:
-        stream = executor.astream(request.messages)
+        stream = adapter.astream(request.messages)
         return response_factory.to_streaming_response(stream)
     else:
-        return JSONResponse(content=executor.invoke(request.messages))
+        return JSONResponse(content=adapter.invoke(request.messages))
