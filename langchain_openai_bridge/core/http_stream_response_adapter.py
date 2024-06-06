@@ -3,7 +3,7 @@ from typing import AsyncIterator
 from starlette.responses import StreamingResponse
 
 
-class OpenAICompatibleResponseFactory:
+class HttpStreamResponseAdapter:
     async def to_str_stream(
         self, chunk_stream: AsyncIterator[dict]
     ) -> AsyncIterator[str]:

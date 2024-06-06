@@ -1,13 +1,13 @@
 import pytest
 
-from langchain_openai_bridge.core.response_factory import (
-    OpenAICompatibleResponseFactory,
+from langchain_openai_bridge.core.http_stream_response_adapter import (
+    HttpStreamResponseAdapter,
 )
 from tests.stream_utils import assemble_stream, generate_stream
 
 
 class TestToStrStream:
-    instance = OpenAICompatibleResponseFactory()
+    instance = HttpStreamResponseAdapter()
 
     @pytest.mark.asyncio
     async def test_stream_chunk_is_serialized_in_json(self):
@@ -29,7 +29,7 @@ class TestToStrStream:
 
 
 class TestToStreamingResponse:
-    instance = OpenAICompatibleResponseFactory()
+    instance = HttpStreamResponseAdapter()
     some_stream = generate_stream([{"some": "data"}])
 
     @pytest.mark.asyncio

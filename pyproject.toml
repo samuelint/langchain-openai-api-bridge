@@ -23,6 +23,10 @@ pytest = "^8.2.2"
 pytest-watch = "^4.2.0"
 flake8 = "^7.0.0"
 
+
+[tool.poetry.group.test.dependencies]
+langchain-anthropic = "^0.1.15"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

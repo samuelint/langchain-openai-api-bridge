@@ -2,29 +2,16 @@ from typing import Dict
 from unittest.mock import patch
 
 import pytest
-from langchain_core.runnables.schema import StreamEvent, EventData
+
 
 from langchain_openai_bridge.core.langchain_stream_adapter import LangchainStreamAdapter
 from tests.stream_utils import assemble_stream, generate_stream
-
-
-class ChunkStub:
-    def __init__(self, content: str):
-        self.content = content
+from tests.test_unit.core.agent_stream_utils import create_on_chat_model_stream_event
 
 
 class ChatCompletionChunkStub:
     def __init__(self, value: Dict):
         self.dict = lambda: value
-
-
-def create_stream_event(content: str = "", name: str = "", event: str = ""):
-    event_data = EventData(chunk=ChunkStub(content=content))
-    return StreamEvent(event=event, name=name, data=event_data)
-
-
-def create_on_chat_model_stream_event(content: str = "", name: str = ""):
-    return create_stream_event(content=content, name=name, event="on_chat_model_stream")
 
 
 class TestToChatCompletionChunkStream:
