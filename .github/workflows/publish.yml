@@ -1,13 +1,11 @@
-name: Upload Python Package to PyPI when a Release is Created
+name: Publish to PyPI
 
 env:
   PYPI_PACKAGE_NAME: langchain_openai_api_bridge
-# on:
-#   release:
-#     types:
-#       - created
-
-on: [push, pull_request]
+on:
+  release:
+    types:
+      - created
 
 jobs:
   pypi-publish:
@@ -16,8 +14,8 @@ jobs:
     environment:
       name: pypi
       url: https://pypi.org/p/$PYPI_PACKAGE_NAME
-    # permissions:
-    #   id-token: write
+    permissions:
+      id-token: write
     steps:
       - uses: actions/checkout@v2
 
@@ -45,7 +43,6 @@ jobs:
       - name: Publish
         env:
           PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: echo "Will publish"
-        # run: |
-        #   poetry config pypi-token.pypi $PYPI_TOKEN
-        #   poetry publish --build
+        run: |
+          poetry config pypi-token.pypi $PYPI_TOKEN
+          poetry publish --build
