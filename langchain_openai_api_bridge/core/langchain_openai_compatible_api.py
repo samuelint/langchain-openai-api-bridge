@@ -46,9 +46,9 @@ class LangchainOpenaiCompatibleAPI:
             input=self.__to_input(messages),
         )
 
-        return self.invoke_adapter.to_chat_completion_object(result).model_dump()
+        return self.invoke_adapter.to_chat_completion_object(result).dict()
 
     def __to_input(self, messages: List[OpenAIChatMessage]):
         return {
-            "messages": [message.model_dump() for message in messages],
+            "messages": [message.dict() for message in messages],
         }

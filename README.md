@@ -21,13 +21,13 @@ Support:
 ##### pip
 
 ```bash
-pip install langchain_openai_api_bridge
+pip install langchain-openai-api-bridge
 ```
 
 ##### poetry
 
 ```bash
-poetry add langchain_openai_api_bridge
+poetry add langchain-openai-api-bridge
 ```
 
 ## Usage
