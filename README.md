@@ -2,6 +2,10 @@
 
 🚀 Expose [Langchain](https://github.com/langchain-ai/langchain) Agent ([Langgraph](https://github.com/langchain-ai/langgraph)) result as an OpenAI-compatible API 🚀
 
+A `FastAPI` + `Langchain` / `langgraph` extension to expose agent result as an OpenAI-compatible API.
+
+Use any OpenAI-compatible UI or UI framework (like the awesome 👌 [Vercel AI SDK](https://sdk.vercel.ai/docs/ai-sdk-core/overview)) with your custom `Langchain Agent`.
+
 Support:
 
 - ✅ [Chat Completions API](https://platform.openai.com/docs/api-reference/chat)
@@ -25,12 +29,6 @@ pip install langchain_openai_api_bridge
 ```bash
 poetry add langchain_openai_api_bridge
 ```
-
-## 🤔 What is Langchain Openai API Bridge
-
-A `FastAPI` + `Langchain` / `langgraph` extension to expose agent result as an OpenAI-compatible API.
-
-Use any OpenAI-compatible UI or UI framework (like the awesome 👌 [Vercel AI SDK](https://sdk.vercel.ai/docs/ai-sdk-core/overview)) with your custom `Langchain Agent`.
 
 ## Usage
 
@@ -142,6 +140,11 @@ Every examples can be found in [`tests/test_functional`](tests/test_functional) 
 - **Anthropic LLM -> Langgraph Agent -> OpenAI Completion** - [Server](tests/test_functional/fastapi_chat_completion_anthropic/server_anthropic.py), [Client](tests/test_functional/fastapi_chat_completion_anthropic/test_server_anthropic.py)
 - **Advanced** - OpenAI LLM -> Langgraph Agent -> OpenAI Completion - [Server](tests/test_functional/fastapi_chat_completion_agent_simple/server_openai_advanced.py), [Client](tests/test_functional/fastapi_chat_completion_agent_simple/test_server_openai_advanced.py)
 
+##### ⚠️ Setup to run examples
+
+Define `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` on your system.
+Examples will take token from environment variable or `.env` at root of the project.
+
 ## 💁 Contributing
 
 If you want to contribute to this project, you can follow this guideline:
@@ -173,4 +176,4 @@ poetry env use ./.venv/bin/python
     - Details: LangGraph's `astream_events` - `on_tool_start`, `on_tool_end`, and `on_llm_stream` events do not contain information typically available when calling tools.
 
 - **LLM Usage Info**
-  - **Usage object is non-functional**. This is due to a Langchain/Langgraph limitation where usage info isn't available when calling a Langgraph Agent.
+  - **Returned usage info is innacurate**. This is due to a Langchain/Langgraph limitation where usage info isn't available when calling a Langgraph Agent.
