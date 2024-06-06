@@ -25,5 +25,7 @@ jobs:
           poetry run flake8 langchain_openai_bridge tests
 
       - name: Run tests
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           poetry run pytest
