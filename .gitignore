@@ -12,4 +12,6 @@ __pycache__/
 *.pyw
 *.pytest_cache
 
+dist
+
 credentials.json

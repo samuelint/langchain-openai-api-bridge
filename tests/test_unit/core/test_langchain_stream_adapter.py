@@ -4,7 +4,9 @@ from unittest.mock import patch
 import pytest
 
 
-from langchain_openai_bridge.core.langchain_stream_adapter import LangchainStreamAdapter
+from langchain_openai_api_bridge.core.langchain_stream_adapter import (
+    LangchainStreamAdapter,
+)
 from tests.stream_utils import assemble_stream, generate_stream
 from tests.test_unit.core.agent_stream_utils import create_on_chat_model_stream_event
 
@@ -19,7 +21,7 @@ class TestToChatCompletionChunkStream:
 
     @pytest.mark.asyncio
     @patch(
-        "langchain_openai_bridge.core.langchain_stream_adapter.to_openai_chat_completion_chunk_object",
+        "langchain_openai_api_bridge.core.langchain_stream_adapter.to_openai_chat_completion_chunk_object",
         side_effect=lambda event, id, model, system_fingerprint: (
             ChatCompletionChunkStub({"key": event["data"]["chunk"].content})
         ),

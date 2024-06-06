@@ -1,8 +1,8 @@
-from langchain_openai_bridge.core.chat_completion_object_factory import (
+from langchain_openai_api_bridge.core.chat_completion_object_factory import (
     ChatCompletionObjectFactory,
 )
-from langchain_openai_bridge.core.role_adapter import to_openai_role
-from langchain_openai_bridge.core.types.openai import (
+from langchain_openai_api_bridge.core.role_adapter import to_openai_role
+from langchain_openai_api_bridge.core.types.openai import (
     OpenAIChatCompletionChoice,
     OpenAIChatCompletionObject,
     OpenAIChatMessage,

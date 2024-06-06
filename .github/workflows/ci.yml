@@ -22,7 +22,7 @@ jobs:
 
       - name: Run Flake8
         run: |
-          poetry run flake8 langchain_openai_bridge tests
+          poetry run flake8 langchain_openai_api_bridge tests
 
       - name: Run tests
         env:

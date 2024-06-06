@@ -1,7 +1,7 @@
 import time
 from typing import List, Optional
 
-from langchain_openai_bridge.core.types.openai import (
+from langchain_openai_api_bridge.core.types.openai import (
     OpenAIChatCompletionChoice,
     OpenAIChatCompletionObject,
     OpenAIChatCompletionUsage,

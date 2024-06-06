@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 import pytest
-from langchain_openai_bridge.fastapi.token_getter import get_bearer_token
+from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
 
 
 class TestGetBearerToken:

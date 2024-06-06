@@ -5,14 +5,14 @@ from fastapi.responses import JSONResponse
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 from langchain_core.tools import tool
-from langchain_openai_bridge.core.langchain_openai_compatible_api import (
+from langchain_openai_api_bridge.core.langchain_openai_compatible_api import (
     LangchainOpenaiCompatibleAPI,
 )
-from langchain_openai_bridge.core.http_stream_response_adapter import (
+from langchain_openai_api_bridge.core.http_stream_response_adapter import (
     HttpStreamResponseAdapter,
 )
-from langchain_openai_bridge.core.types.openai import OpenAIChatCompletionRequest
-from langchain_openai_bridge.fastapi.token_getter import get_bearer_token
+from langchain_openai_api_bridge.core.types.openai import OpenAIChatCompletionRequest
+from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
 
 
 _ = load_dotenv(find_dotenv())

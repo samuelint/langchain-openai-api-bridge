@@ -5,8 +5,8 @@ from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 
-from langchain_openai_bridge.core.types.openai import OpenAIChatCompletionRequest
-from langchain_openai_bridge.fastapi.add_chat_completions_agent_routes import (
+from langchain_openai_api_bridge.core.types.openai import OpenAIChatCompletionRequest
+from langchain_openai_api_bridge.fastapi.add_chat_completions_agent_routes import (
     V1ChatCompletionRoutesArg,
     add_v1_chat_completions_agent_routes,
 )

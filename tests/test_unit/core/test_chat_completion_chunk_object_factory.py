@@ -1,4 +1,4 @@
-from langchain_openai_bridge.core.chat_completion_chunk_object_factory import (
+from langchain_openai_api_bridge.core.chat_completion_chunk_object_factory import (
     create_final_chat_completion_chunk_object,
 )
 

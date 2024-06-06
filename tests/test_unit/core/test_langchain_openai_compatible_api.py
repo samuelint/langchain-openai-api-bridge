@@ -1,10 +1,10 @@
 from unittest.mock import MagicMock
 import pytest
-from langchain_openai_bridge.core.langchain_openai_compatible_api import (
+from langchain_openai_api_bridge.core.langchain_openai_compatible_api import (
     LangchainOpenaiCompatibleAPI,
 )
 from langgraph.graph.graph import CompiledGraph
-from langchain_openai_bridge.core.types.openai import OpenAIChatMessage
+from langchain_openai_api_bridge.core.types.openai import OpenAIChatMessage
 from langchain_core.messages import AIMessage
 
 from tests.stream_utils import assemble_stream, generate_stream

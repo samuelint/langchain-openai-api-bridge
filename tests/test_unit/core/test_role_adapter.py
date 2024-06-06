@@ -1,4 +1,4 @@
-from langchain_openai_bridge.core.role_adapter import to_openai_role
+from langchain_openai_api_bridge.core.role_adapter import to_openai_role
 
 
 class TestOpenAiRole:

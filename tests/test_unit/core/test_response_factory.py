@@ -1,6 +1,6 @@
 import pytest
 
-from langchain_openai_bridge.core.http_stream_response_adapter import (
+from langchain_openai_api_bridge.core.http_stream_response_adapter import (
     HttpStreamResponseAdapter,
 )
 from tests.stream_utils import assemble_stream, generate_stream
