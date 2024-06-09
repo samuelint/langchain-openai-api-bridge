@@ -2,10 +2,7 @@ from typing import Dict, List, Optional, Union
 
 from pydantic import BaseModel
 
-
-class OpenAIChatMessage(BaseModel):
-    role: str
-    content: str
+from .message import OpenAIChatMessage
 
 
 class OpenAIChatCompletionRequest(BaseModel):
