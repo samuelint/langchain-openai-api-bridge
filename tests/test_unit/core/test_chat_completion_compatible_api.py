@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock
 import pytest
-from langchain_openai_api_bridge.core.langchain_openai_compatible_api import (
-    LangchainOpenaiCompatibleAPI,
+from langchain_openai_api_bridge.core.chat_completion_compatible_api import (
+    ChatCompletionCompatibleAPI,
 )
 from langgraph.graph.graph import CompiledGraph
 from langchain_openai_api_bridge.core.types.openai import OpenAIChatMessage
@@ -23,14 +23,12 @@ def agent():
 
 @pytest.fixture
 def instance(agent):
-    return LangchainOpenaiCompatibleAPI.from_agent(
-        agent=agent, llm_model=some_llm_model
-    )
+    return ChatCompletionCompatibleAPI.from_agent(agent=agent, llm_model=some_llm_model)
 
 
 class TestInvoke:
     def test_agent_response_is_in_openai_format(
-        self, instance: LangchainOpenaiCompatibleAPI, agent
+        self, instance: ChatCompletionCompatibleAPI, agent
     ):
         agent.invoke.return_value = {
             "messages": [AIMessage(id="a", content="Hello world!")]
@@ -41,7 +39,7 @@ class TestInvoke:
         assert result["choices"][0]["message"]["content"] == "Hello world!"
 
     def test_agent_response_contains_id(
-        self, instance: LangchainOpenaiCompatibleAPI, agent
+        self, instance: ChatCompletionCompatibleAPI, agent
     ):
         agent.invoke.return_value = {
             "messages": [AIMessage(id="a", content="Hello world!")]
@@ -55,7 +53,7 @@ class TestInvoke:
 class TestAStream:
     @pytest.mark.asyncio
     async def test_agent_response_is_in_openai_format(
-        self, instance: LangchainOpenaiCompatibleAPI, agent
+        self, instance: ChatCompletionCompatibleAPI, agent
     ):
         on_chat_model_stream_event1 = create_on_chat_model_stream_event(content="hello")
         on_chat_model_stream_event2 = create_on_chat_model_stream_event(content="moto")
