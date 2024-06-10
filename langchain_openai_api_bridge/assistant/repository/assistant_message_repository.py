@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import List, Literal
-from openai.types.beta.threads import Message, MessageDeleted, MessageContent
+from typing import Iterable, List, Literal, Union
+from openai.types.beta.threads import Message, MessageDeleted, MessageContentPartParam
 from openai.types.beta import thread_create_params
 from openai.pagination import SyncCursorPage
 
@@ -17,7 +17,7 @@ class AssistantMessageRepository(ABC):
         self,
         thread_id: str,
         role: Literal["user", "assistant"],
-        content: List[MessageContent],
+        content: Union[str, Iterable[MessageContentPartParam]],
         status: Literal["in_progress", "incomplete", "completed"] = "completed",
     ) -> Message:
         pass

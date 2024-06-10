@@ -53,7 +53,7 @@ class TestThread:
 
 
 class TestMessage:
-    def test_retreive_thread_with_messages(self, openai_client: OpenAI):
+    def test_create_thread_with_messages(self, openai_client: OpenAI):
         created_thread = openai_client.beta.threads.create(
             messages=[
                 {
@@ -79,3 +79,32 @@ class TestMessage:
             messages.data[1].content[0].text.value
             == "How does AI work? Explain it in simple terms."
         )
+
+    def test_retreive_message(self, openai_client: OpenAI):
+        created_thread = openai_client.beta.threads.create()
+        created_message = openai_client.beta.threads.messages.create(
+            thread_id=created_thread.id, role="user", content="Hello, what is AI?"
+        )
+
+        message = openai_client.beta.threads.messages.retrieve(
+            message_id=created_message.id, thread_id=created_thread.id
+        )
+
+        assert message.role == "user"
+        assert message.content[0].type == "text"
+        assert message.content[0].text.value == "Hello, what is AI?"
+
+    def test_delete_message(self, openai_client: OpenAI):
+        created_thread = openai_client.beta.threads.create()
+        created_message = openai_client.beta.threads.messages.create(
+            thread_id=created_thread.id, role="user", content="Hello, what is AI?"
+        )
+
+        created_message = openai_client.beta.threads.messages.delete(
+            thread_id=created_thread.id, message_id=created_message.id
+        )
+        message = openai_client.beta.threads.messages.retrieve(
+            message_id=created_message.id, thread_id=created_thread.id
+        )
+
+        assert message is None

@@ -11,6 +11,9 @@ from langchain_openai_api_bridge.assistant.assistant_thread_service import (
 )
 from langchain_openai_api_bridge.assistant.create_thread_api_dto import CreateThreadDto
 
+from langchain_openai_api_bridge.assistant.create_thread_message_api_dto import (
+    CreateThreadMessageDto,
+)
 from langchain_openai_api_bridge.assistant.repository.assistant_message_repository import (
     AssistantMessageRepository,
 )
@@ -102,6 +105,37 @@ async def assistant_list_thread_messages(
     )
 
     return messages
+
+
+@thread_router.get("/{thread_id}/messages/{message_id}")
+async def assistant_retreive_thread_messages(
+    thread_id: str,
+    message_id: str,
+):
+    service = container.resolve(AssistantMessageService)
+    message = service.retreive(thread_id=thread_id, message_id=message_id)
+
+    return message
+
+
+@thread_router.delete("/{thread_id}/messages/{message_id}")
+async def assistant_delete_thread_messages(
+    thread_id: str,
+    message_id: str,
+):
+    service = container.resolve(AssistantMessageService)
+    return service.delete(thread_id=thread_id, message_id=message_id)
+
+
+@thread_router.post("/{thread_id}/messages")
+async def assistant_create_thread_messages(
+    thread_id: str,
+    request: CreateThreadMessageDto,
+):
+    service = container.resolve(AssistantMessageService)
+    message = service.create(thread_id=thread_id, dto=request)
+
+    return message
 
 
 # Must be define after bindings

@@ -2,6 +2,9 @@ from typing import Literal
 from openai.types.beta.threads import Message, MessageDeleted
 
 
+from langchain_openai_api_bridge.assistant.create_thread_message_api_dto import (
+    CreateThreadMessageDto,
+)
 from langchain_openai_api_bridge.assistant.repository.assistant_message_repository import (
     AssistantMessageRepository,
 )
@@ -20,8 +23,16 @@ class AssistantMessageService:
     ) -> None:
         self.message_repository = message_repository
 
-    def create(self, thread_id: str, role: str, content: str) -> Message:
-        raise NotImplementedError
+    def create(self, thread_id: str, dto: CreateThreadMessageDto) -> Message:
+        # Reference:
+        # client.beta.threads.messages.create(
+        #   "thread_abc123",
+        #   role="user",
+        #   content="How does AI work? Explain it in simple terms.",
+        # )
+        return self.message_repository.create(
+            thread_id=thread_id, role=dto.role, content=dto.content
+        )
 
     def list(
         self,
@@ -38,7 +49,21 @@ class AssistantMessageService:
         )
 
     def retreive(self, message_id: str, thread_id: str) -> Message:
-        raise NotImplementedError
+        # Reference:
+        # client.beta.threads.messages.retrieve(
+        #   message_id="msg_abc123",
+        #   thread_id="thread_abc123",
+        # )
+        return self.message_repository.retreive(
+            message_id=message_id, thread_id=thread_id
+        )
 
     def delete(self, message_id: str, thread_id: str) -> MessageDeleted:
-        raise NotImplementedError
+        # Reference:
+        # client.beta.threads.messages.delete(
+        #   message_id="msg_abc123",
+        #   thread_id="thread_abc123",
+        # )
+        return self.message_repository.delete(
+            message_id=message_id, thread_id=thread_id
+        )
