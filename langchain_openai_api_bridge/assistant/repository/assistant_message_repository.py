@@ -1,6 +1,8 @@
+from abc import ABC, abstractmethod
 from typing import List, Literal
 from openai.types.beta.threads import Message, MessageDeleted, MessageContent
-from abc import ABC, abstractmethod
+from openai.types.beta import thread_create_params
+from openai.pagination import SyncCursorPage
 
 
 class AssistantMessageRepository(ABC):
@@ -21,7 +23,22 @@ class AssistantMessageRepository(ABC):
         pass
 
     @abstractmethod
-    def list(self, thread_id: str) -> list[Message]:
+    def create_many(
+        self,
+        thread_id: str,
+        messages: List[thread_create_params.Message],
+    ) -> Message:
+        pass
+
+    @abstractmethod
+    def list(
+        self,
+        thread_id: str,
+        after: str = None,
+        before: str = None,
+        limit: int = None,
+        order: Literal["asc", "desc"] = None,
+    ) -> SyncCursorPage[Message]:
         pass
 
     @abstractmethod

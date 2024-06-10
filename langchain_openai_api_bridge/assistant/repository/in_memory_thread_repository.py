@@ -5,7 +5,7 @@ from typing import Optional
 from openai.types.beta import Thread, ThreadDeleted
 
 
-class InMemoryThread(AssistantThreadRepository):
+class InMemoryThreadRepository(AssistantThreadRepository):
     def __init__(self):
         self.threads: dict[str, Thread] = {}
 

@@ -5,6 +5,7 @@ from langchain_openai_api_bridge.assistant.repository.in_memory_message_reposito
     InMemoryMessageRepository,
 )
 from openai.types.beta.threads import TextContentBlock, Text
+from openai.types.beta import thread_create_params
 
 
 some_text_content_1 = TextContentBlock(
@@ -56,6 +57,34 @@ class TestCreateInMemoryMessageRepository:
         )
 
         assert result.content[0].text.value == "AAA"
+
+    def test_create_many_with_content(self, instance):
+        result = instance.create_many(
+            thread_id="A",
+            messages=[
+                thread_create_params.Message(
+                    role="user", content=[some_text_content_1]
+                ),
+                thread_create_params.Message(
+                    role="assistant", content=[some_text_content_2]
+                ),
+            ],
+        )
+
+        assert result[0].content[0].text.value == "AAA"
+        assert result[1].content[0].text.value == "BBB"
+
+    def test_create_many_with_string(self, instance):
+        result = instance.create_many(
+            thread_id="A",
+            messages=[
+                thread_create_params.Message(role="user", content="Hello"),
+                thread_create_params.Message(role="assistant", content="World"),
+            ],
+        )
+
+        assert result[0].content[0].text.value == "Hello"
+        assert result[1].content[0].text.value == "World"
 
 
 class TestRetreiveInMemoryMessageRepository:
@@ -139,7 +168,7 @@ class TestListInMemoryMessageRepository:
             content=[some_text_content_2],
         )
 
-        result = instance.list(thread_id="A")
+        result = instance.list(thread_id="A").data
 
         assert len(result) == 2
         assert result[0].id == message_a.id
@@ -157,8 +186,8 @@ class TestListInMemoryMessageRepository:
             content=[some_text_content_2],
         )
 
-        result_thread_a = instance.list(thread_id="A")
-        result_thread_b = instance.list(thread_id="B")
+        result_thread_a = instance.list(thread_id="A").data
+        result_thread_b = instance.list(thread_id="B").data
 
         assert len(result_thread_a) == 1
         assert result_thread_a[0].id == message_a.id

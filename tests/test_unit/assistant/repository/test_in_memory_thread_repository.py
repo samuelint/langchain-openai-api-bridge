@@ -2,7 +2,7 @@ from pydantic import BaseModel
 import validators
 from unittest.mock import patch
 from langchain_openai_api_bridge.assistant.repository.in_memory_thread_repository import (
-    InMemoryThread,
+    InMemoryThreadRepository,
 )
 
 
@@ -11,7 +11,7 @@ class SomeMetadata(BaseModel):
 
 
 class TestInMemoryThreadRepository:
-    instance = InMemoryThread()
+    instance = InMemoryThreadRepository()
 
     def test_created_thread_contains_uuid_id(self):
         result = self.instance.create()

@@ -1,14 +1,18 @@
 import time
-from typing import List, Literal
+from typing import Iterable, List, Literal, Union
 import uuid
 from .assistant_message_repository import (
     AssistantMessageRepository,
 )
+from openai.types.beta import thread_create_params
 from openai.types.beta.threads import (
     Message,
     MessageDeleted,
-    MessageContent,
+    MessageContentPartParam,
+    TextContentBlock,
+    Text,
 )
+from openai.pagination import SyncCursorPage
 
 
 class InMemoryMessageRepository(AssistantMessageRepository):
@@ -19,7 +23,7 @@ class InMemoryMessageRepository(AssistantMessageRepository):
         self,
         thread_id: str,
         role: Literal["user", "assistant"],
-        content: List[MessageContent],
+        content: Union[str, Iterable[MessageContentPartParam]],
         status: Literal["in_progress", "incomplete", "completed"] = "completed",
     ) -> Message:
         id = str(uuid.uuid4())
@@ -30,14 +34,39 @@ class InMemoryMessageRepository(AssistantMessageRepository):
 
         return self.retreive(message_id=id, thread_id=thread_id)
 
-    def list(self, thread_id: str) -> list[Message]:
+    def create_many(
+        self,
+        thread_id: str,
+        messages: List[thread_create_params.Message],
+    ) -> List[Message]:
+        created_messages = []
+        for message in messages:
+            created_message = self.create(
+                thread_id=thread_id,
+                role=message["role"],
+                content=message["content"],
+                status=message.get("status", "completed"),
+            )
+            created_messages.append(created_message)
+        return created_messages
+
+    def list(
+        self,
+        thread_id: str,
+        after: str = None,
+        before: str = None,
+        limit: int = None,
+        order: Literal["asc", "desc"] = None,
+    ) -> SyncCursorPage[Message]:
         # Not optimal, but works well for test cases.
         # Production should use database implementation
-        return [
+        messages = [
             message.copy(deep=True)
             for message in self.messages.values()
             if message.thread_id == thread_id
         ]
+
+        return SyncCursorPage(data=messages)
 
     def retreive(self, message_id: str, thread_id: str) -> Message:
         result = self.messages.get(message_id)
@@ -58,9 +87,17 @@ class InMemoryMessageRepository(AssistantMessageRepository):
         id: str,
         thread_id: str,
         role: Literal["user", "assistant"],
-        content: List[MessageContent],
+        content: Union[str, Iterable[MessageContentPartParam]],
         status: Literal["in_progress", "incomplete", "completed"],
     ) -> Message:
+
+        if isinstance(content, str):
+            inner_content = [
+                TextContentBlock(text=Text(value=content, annotations=[]), type="text")
+            ]
+        else:
+            inner_content = content
+
         return Message(
             id=id,
             thread_id=thread_id,
@@ -68,7 +105,7 @@ class InMemoryMessageRepository(AssistantMessageRepository):
             status=status,
             object="thread.message",
             created_at=time.time(),
-            content=content,
+            content=inner_content,
         )
 
     @staticmethod
