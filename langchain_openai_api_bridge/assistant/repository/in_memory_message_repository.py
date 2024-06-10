@@ -1,6 +1,7 @@
-import time
 from typing import Iterable, List, Literal, Union
 import uuid
+
+from langchain_openai_api_bridge.assistant.openai_message_factory import create_message
 from .assistant_message_repository import (
     AssistantMessageRepository,
 )
@@ -9,8 +10,6 @@ from openai.types.beta.threads import (
     Message,
     MessageDeleted,
     MessageContentPartParam,
-    TextContentBlock,
-    Text,
 )
 from openai.pagination import SyncCursorPage
 
@@ -27,7 +26,7 @@ class InMemoryMessageRepository(AssistantMessageRepository):
         status: Literal["in_progress", "incomplete", "completed"] = "completed",
     ) -> Message:
         id = str(uuid.uuid4())
-        message = self.__create_message(
+        message = create_message(
             id=id, thread_id=thread_id, role=role, content=content, status=status
         )
         self.messages[id] = message
@@ -53,11 +52,7 @@ class InMemoryMessageRepository(AssistantMessageRepository):
     def list(
         self,
         thread_id: str,
-        after: str = None,
-        before: str = None,
-        limit: int = None,
-        order: Literal["asc", "desc"] = None,
-    ) -> SyncCursorPage[Message]:
+    ) -> List[Message]:
         # Not optimal, but works well for test cases.
         # Production should use database implementation
         messages = [
@@ -65,6 +60,18 @@ class InMemoryMessageRepository(AssistantMessageRepository):
             for message in self.messages.values()
             if message.thread_id == thread_id
         ]
+
+        return messages
+
+    def listByPage(
+        self,
+        thread_id: str,
+        after: str = None,
+        before: str = None,
+        limit: int = None,
+        order: Literal["asc", "desc"] = None,
+    ) -> SyncCursorPage[Message]:
+        messages = self.list(thread_id=thread_id)
 
         return SyncCursorPage(data=messages)
 
@@ -81,32 +88,6 @@ class InMemoryMessageRepository(AssistantMessageRepository):
             return None
         del self.messages[message_id]
         return self.__create_message_deleted(message_id=message_id)
-
-    @staticmethod
-    def __create_message(
-        id: str,
-        thread_id: str,
-        role: Literal["user", "assistant"],
-        content: Union[str, Iterable[MessageContentPartParam]],
-        status: Literal["in_progress", "incomplete", "completed"],
-    ) -> Message:
-
-        if isinstance(content, str):
-            inner_content = [
-                TextContentBlock(text=Text(value=content, annotations=[]), type="text")
-            ]
-        else:
-            inner_content = content
-
-        return Message(
-            id=id,
-            thread_id=thread_id,
-            role=role,
-            status=status,
-            object="thread.message",
-            created_at=time.time(),
-            content=inner_content,
-        )
 
     @staticmethod
     def __create_message_deleted(message_id: str) -> MessageDeleted:

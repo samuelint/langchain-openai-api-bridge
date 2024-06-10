@@ -1,10 +1,16 @@
 from typing import Literal
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, FastAPI, Header
 from dotenv import load_dotenv, find_dotenv
 from langchain_core.tools import tool
+from langchain_openai_api_bridge.assistant.adapter.langgraph_event_to_openai_assistant_event_stream import (
+    LanggraphEventToOpenAIAssistantEventStream,
+)
 from langchain_openai_api_bridge.assistant.assistant_message_service import (
     AssistantMessageService,
+)
+from langchain_openai_api_bridge.assistant.assistant_run_service import (
+    AssistantRunService,
 )
 from langchain_openai_api_bridge.assistant.assistant_thread_service import (
     AssistantThreadService,
@@ -13,6 +19,9 @@ from langchain_openai_api_bridge.assistant.create_thread_api_dto import CreateTh
 
 from langchain_openai_api_bridge.assistant.create_thread_message_api_dto import (
     CreateThreadMessageDto,
+)
+from langchain_openai_api_bridge.assistant.create_thread_runs_api_dto import (
+    ThreadRunsDto,
 )
 from langchain_openai_api_bridge.assistant.repository.assistant_message_repository import (
     AssistantMessageRepository,
@@ -27,8 +36,13 @@ from langchain_openai_api_bridge.assistant.repository.in_memory_thread_repositor
     InMemoryThreadRepository,
 )
 
+from langchain_openai_api_bridge.assistant.adapter.thread_to_langchain_input_messages_service import (
+    ThreadToLangchainInputMessagesService,
+)
 from langchain_openai_api_bridge.core.utils.di_container import DIContainer
-
+from langgraph.prebuilt import create_react_agent
+from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
+from langchain_openai import ChatOpenAI
 
 _ = load_dotenv(find_dotenv())
 
@@ -60,6 +74,7 @@ def magic_number_tool(input: int) -> int:
 assistant_router = APIRouter(prefix="/my-assistant/openai/v1")
 
 container = DIContainer()
+
 container.register(
     AssistantThreadRepository, to=InMemoryThreadRepository, singleton=True
 )
@@ -68,7 +83,9 @@ container.register(
 )
 container.register(AssistantThreadService)
 container.register(AssistantMessageService)
-
+container.register(AssistantRunService)
+container.register(ThreadToLangchainInputMessagesService)
+container.register(LanggraphEventToOpenAIAssistantEventStream)
 
 thread_router = APIRouter(prefix="/threads")
 
@@ -136,6 +153,29 @@ async def assistant_create_thread_messages(
     message = service.create(thread_id=thread_id, dto=request)
 
     return message
+
+
+@thread_router.post("/{thread_id}/runs")
+async def assistant_create_thread_runs(
+    request: ThreadRunsDto,
+    thread_id: str,
+    authorization: str = Header(None),
+):
+
+    api_key = get_bearer_token(authorization)
+    llm = ChatOpenAI(
+        model=request.model,
+        api_key=api_key,
+        streaming=True,
+    )
+    agent = create_react_agent(
+        llm, [magic_number_tool], messages_modifier="""You are a helpful assistant."""
+    )
+
+    service = container.resolve(AssistantRunService)
+    stream = service.stream(agent=agent, thread_id=thread_id, dto=request)
+
+    return stream
 
 
 # Must be define after bindings

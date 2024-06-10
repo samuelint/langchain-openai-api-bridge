@@ -1,6 +1,8 @@
 import logging
+from typing import List
 import pytest
 from openai import OpenAI
+from openai.types.beta import AssistantStreamEvent
 
 from fastapi.testclient import TestClient
 import validators
@@ -19,6 +21,30 @@ def openai_client():
         base_url="http://testserver/my-assistant/openai/v1",
         http_client=test_api,
     )
+
+
+class TestRun:
+    def test_run_stream(self, openai_client: OpenAI):
+        thread = openai_client.beta.threads.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": 'Say: "This is a test message."',
+                },
+            ]
+        )
+
+        stream = openai_client.beta.threads.runs.create(
+            thread_id=thread.id,
+            assistant_id="any",
+            stream=True,
+        )
+
+        events: List[AssistantStreamEvent] = []
+        for event in stream:
+            events.append(event)
+
+        assert events[0].event == "thread.created"
 
 
 class TestThread:

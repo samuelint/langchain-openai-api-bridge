@@ -34,6 +34,13 @@ class AssistantMessageRepository(ABC):
     def list(
         self,
         thread_id: str,
+    ) -> List[Message]:
+        pass
+
+    @abstractmethod
+    def listByPage(
+        self,
+        thread_id: str,
         after: str = None,
         before: str = None,
         limit: int = None,

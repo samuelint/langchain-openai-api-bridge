@@ -44,7 +44,7 @@ class AssistantMessageService:
     ) -> SyncCursorPage[Message]:
         # Reference:
         # client.beta.threads.messages.list("thread_abc123")
-        return self.message_repository.list(
+        return self.message_repository.listByPage(
             thread_id=thread_id, after=after, before=before, limit=limit, order=order
         )
 

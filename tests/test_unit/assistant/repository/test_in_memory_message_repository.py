@@ -156,7 +156,9 @@ class TestListInMemoryMessageRepository:
     def instance(self):
         return InMemoryMessageRepository()
 
-    def test_messages_of_a_thread_are_retreivable(self, instance):
+    def test_messages_of_a_thread_are_retreivable_by_page(
+        self, instance: InMemoryMessageRepository
+    ):
         message_a = instance.create(
             thread_id="A",
             role="user",
@@ -168,13 +170,35 @@ class TestListInMemoryMessageRepository:
             content=[some_text_content_2],
         )
 
-        result = instance.list(thread_id="A").data
+        result = instance.listByPage(thread_id="A").data
 
         assert len(result) == 2
         assert result[0].id == message_a.id
         assert result[1].id == message_b.id
 
-    def test_messages_of_a_another_thread_are_not_listed(self, instance):
+    def test_messages_of_a_thread_are_retreivable(
+        self, instance: InMemoryMessageRepository
+    ):
+        message_a = instance.create(
+            thread_id="A",
+            role="user",
+            content=[some_text_content_1],
+        )
+        message_b = instance.create(
+            thread_id="A",
+            role="assistant",
+            content=[some_text_content_2],
+        )
+
+        result = instance.list(thread_id="A")
+
+        assert len(result) == 2
+        assert result[0].id == message_a.id
+        assert result[1].id == message_b.id
+
+    def test_messages_of_a_another_thread_are_not_listed(
+        self, instance: InMemoryMessageRepository
+    ):
         message_a = instance.create(
             thread_id="A",
             role="user",
@@ -186,8 +210,8 @@ class TestListInMemoryMessageRepository:
             content=[some_text_content_2],
         )
 
-        result_thread_a = instance.list(thread_id="A").data
-        result_thread_b = instance.list(thread_id="B").data
+        result_thread_a = instance.list(thread_id="A")
+        result_thread_b = instance.list(thread_id="B")
 
         assert len(result_thread_a) == 1
         assert result_thread_a[0].id == message_a.id
