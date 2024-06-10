@@ -10,13 +10,13 @@ from langchain_openai_api_bridge.core.types.openai import OpenAIChatMessage
 from langchain_openai_api_bridge.core.utils.pydantic_async_iterator import ato_dict
 
 
-class LangchainOpenaiCompatibleAPI:
+class ChatCompletionCompatibleAPI:
 
     @staticmethod
     def from_agent(
         agent: CompiledGraph, llm_model: str, system_fingerprint: Optional[str] = ""
     ):
-        return LangchainOpenaiCompatibleAPI(
+        return ChatCompletionCompatibleAPI(
             LangchainStreamAdapter(llm_model, system_fingerprint),
             LangchainInvokeAdapter(llm_model, system_fingerprint),
             agent,

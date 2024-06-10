@@ -5,8 +5,8 @@ from fastapi.responses import JSONResponse
 from langchain_openai_api_bridge.core.http_stream_response_adapter import (
     HttpStreamResponseAdapter,
 )
-from langchain_openai_api_bridge.core.langchain_openai_compatible_api import (
-    LangchainOpenaiCompatibleAPI,
+from langchain_openai_api_bridge.core.chat_completion_compatible_api import (
+    ChatCompletionCompatibleAPI,
 )
 from langchain_openai_api_bridge.core.types.openai import OpenAIChatCompletionRequest
 from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
@@ -18,7 +18,7 @@ async def handle_v1_chat_completions(
     request: OpenAIChatCompletionRequest,
     system_fingerprint: Optional[str] = "",
 ):
-    adapter = LangchainOpenaiCompatibleAPI.from_agent(
+    adapter = ChatCompletionCompatibleAPI.from_agent(
         agent, request.model, system_fingerprint
     )
 

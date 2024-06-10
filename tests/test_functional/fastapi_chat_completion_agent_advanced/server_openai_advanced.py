@@ -5,8 +5,8 @@ from fastapi.responses import JSONResponse
 from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 from langchain_core.tools import tool
-from langchain_openai_api_bridge.core.langchain_openai_compatible_api import (
-    LangchainOpenaiCompatibleAPI,
+from langchain_openai_api_bridge.core.chat_completion_compatible_api import (
+    ChatCompletionCompatibleAPI,
 )
 from langchain_openai_api_bridge.core.http_stream_response_adapter import (
     HttpStreamResponseAdapter,
@@ -56,7 +56,7 @@ async def assistant_openai_v1_chat(
         llm, [magic_number_tool], messages_modifier="""You are a helpful assistant."""
     )
 
-    adapter = LangchainOpenaiCompatibleAPI.from_agent(
+    adapter = ChatCompletionCompatibleAPI.from_agent(
         agent, request.model, system_fingerprint
     )
 
