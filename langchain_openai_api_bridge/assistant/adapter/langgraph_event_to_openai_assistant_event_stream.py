@@ -11,14 +11,14 @@ from openai.types.beta.assistant_stream_event import (
 )
 from openai.types.beta.threads import (
     Run,
-    MessageDelta,
-    TextDeltaBlock,
     TextContentBlock,
-    TextDelta,
     Text,
 )
 from langchain_openai_api_bridge.assistant.create_thread_runs_api_dto import (
     ThreadRunsDto,
+)
+from langchain_openai_api_bridge.assistant.openai_message_factory import (
+    create_text_message_delta,
 )
 from langchain_openai_api_bridge.assistant.repository.assistant_message_repository import (
     AssistantMessageRepository,
@@ -114,16 +114,7 @@ class LanggraphEventToOpenAIAssistantEventStream:
             event="thread.message.delta",
             data=MessageDeltaEvent(
                 id=message_id,
-                delta=MessageDelta(
-                    content=[
-                        TextDeltaBlock(
-                            index=0,
-                            type="text",
-                            text=TextDelta(value=content),
-                        )
-                    ],
-                    role="assistant",
-                ),
+                delta=create_text_message_delta(content=content, role="assistant"),
                 object="thread.message.delta",
             ),
         )

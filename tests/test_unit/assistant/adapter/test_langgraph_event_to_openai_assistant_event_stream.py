@@ -134,15 +134,39 @@ class TestToOpenAIAssistantEventStream:
             instance=instance,
             stream_events=[
                 create_stream_chunk_event(run_id="a", event="on_chat_model_start"),
-                create_stream_chunk_event(
-                    run_id="a", event="on_chat_model_stream", content="hello"
-                ),
-                create_stream_output_event(run_id="a", event="on_chat_model_end"),
             ],
         )
 
         assert items[1].event == "thread.message.created"
         assert validators.uuid(items[1].data.id)
+
+    @pytest.mark.asyncio
+    async def test_message_is_created_on_chat_model_start_role_is_assistant(
+        self,
+        instance: LanggraphEventToOpenAIAssistantEventStream,
+    ):
+        items = await self.__execute_stream_with_mock(
+            instance=instance,
+            stream_events=[
+                create_stream_chunk_event(run_id="a", event="on_chat_model_start"),
+            ],
+        )
+
+        assert items[1].data.role == "assistant"
+
+    @pytest.mark.asyncio
+    async def test_message_is_created_on_chat_model_start_status_is_in_progress(
+        self,
+        instance: LanggraphEventToOpenAIAssistantEventStream,
+    ):
+        items = await self.__execute_stream_with_mock(
+            instance=instance,
+            stream_events=[
+                create_stream_chunk_event(run_id="a", event="on_chat_model_start"),
+            ],
+        )
+
+        assert items[1].data.status == "in_progress"
 
     @pytest.mark.asyncio
     async def test_run_stream_contains_message_delta(
@@ -171,7 +195,7 @@ class TestToOpenAIAssistantEventStream:
         assert items[3].data.delta.content[0].text.value == " content!"
 
     @pytest.mark.asyncio
-    async def test_message_completed_event_is_sent(
+    async def test_message_completed_event_is_streamed(
         self,
         instance: LanggraphEventToOpenAIAssistantEventStream,
     ):
@@ -179,19 +203,29 @@ class TestToOpenAIAssistantEventStream:
             instance=instance,
             stream_events=[
                 create_stream_chunk_event(run_id="a", event="on_chat_model_start"),
-                create_stream_chunk_event(
-                    run_id="a", event="on_chat_model_stream", content="hello"
-                ),
-                create_stream_chunk_event(
-                    run_id="a", event="on_chat_model_stream", content=" world!"
-                ),
                 create_stream_output_event(
                     run_id="a", event="on_chat_model_end", content="hello world!"
                 ),
             ],
         )
 
-        assert items[4].event == "thread.message.completed"
-        assert items[4].data.id == items[1].data.id
-        assert items[4].data.status == "completed"
-        assert items[4].data.content.text.value == "hello world!"
+        assert items[2].event == "thread.message.completed"
+        assert items[2].data.id == items[1].data.id
+        assert items[2].data.content.text.value == "hello world!"
+
+    @pytest.mark.asyncio
+    async def test_message_completed_event_status_is_completed(
+        self,
+        instance: LanggraphEventToOpenAIAssistantEventStream,
+    ):
+        items = await self.__execute_stream_with_mock(
+            instance=instance,
+            stream_events=[
+                create_stream_chunk_event(run_id="a", event="on_chat_model_start"),
+                create_stream_output_event(
+                    run_id="a", event="on_chat_model_end", content="hello world!"
+                ),
+            ],
+        )
+
+        assert items[2].data.status == "completed"

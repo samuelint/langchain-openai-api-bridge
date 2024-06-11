@@ -1,9 +1,13 @@
 import time
-from typing import Iterable, Literal, Optional, Union
+from typing import Iterable, List, Literal, Optional, Union
 from openai.types.beta.threads import (
     Message,
+    MessageDelta,
     MessageContentPartParam,
+    AnnotationDelta,
     TextContentBlock,
+    TextDeltaBlock,
+    TextDelta,
     Text,
 )
 
@@ -35,4 +39,21 @@ def create_message(
         content=inner_content,
         run_id=run_id,
         metadata=metadata,
+    )
+
+
+def create_text_message_delta(
+    content: str,
+    role: str,
+    annotations: Optional[List[AnnotationDelta]] = [],
+) -> MessageDelta:
+    return MessageDelta(
+        content=[
+            TextDeltaBlock(
+                index=0,
+                type="text",
+                text=TextDelta(value=content, annotations=annotations),
+            )
+        ],
+        role=role,
     )

@@ -42,4 +42,6 @@ class TestRetreiveInputDict:
     ):
         result = instance.retreive_input_dict(thread_id="1234")
 
-        assert result == [{"role": "user", "content": "Hello, how are you?"}]
+        assert result["messages"] == [
+            {"role": "user", "content": "Hello, how are you?"}
+        ]

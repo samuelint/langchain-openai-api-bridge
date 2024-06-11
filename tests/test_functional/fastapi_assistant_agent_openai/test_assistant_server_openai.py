@@ -2,7 +2,7 @@ import logging
 from typing import List
 import pytest
 from openai import OpenAI
-from openai.types.beta import AssistantStreamEvent
+from openai.types.beta import AssistantStreamEvent, Thread
 
 from fastapi.testclient import TestClient
 import validators
@@ -26,10 +26,8 @@ def openai_client():
 class TestRunStream:
 
     @pytest.fixture(scope="session")
-    def stream_response_events(
-        self, openai_client: OpenAI
-    ) -> List[AssistantStreamEvent]:
-        thread = openai_client.beta.threads.create(
+    def thread(self, openai_client: OpenAI) -> Thread:
+        return openai_client.beta.threads.create(
             messages=[
                 {
                     "role": "user",
@@ -37,6 +35,11 @@ class TestRunStream:
                 },
             ]
         )
+
+    @pytest.fixture(scope="session")
+    def stream_response_events(
+        self, openai_client: OpenAI, thread: Thread
+    ) -> List[AssistantStreamEvent]:
 
         stream = openai_client.beta.threads.runs.create(
             thread_id=thread.id,
@@ -74,6 +77,52 @@ class TestRunStream:
                 str_response += "".join(event.data.delta.content[0].text.value)
 
         assert "This is a test message." in str_response
+
+    def test_run_stream_message_delta_annotation_is_not_null(
+        self, stream_response_events: List[AssistantStreamEvent]
+    ):
+        message_delta_events = [
+            event
+            for event in stream_response_events
+            if event.event == "thread.message.delta"
+        ]
+
+        for event in message_delta_events:
+            assert event.data.delta.content[0].text.annotations is not None
+
+    def test_message_id_is_same_for_start_delta_ends(
+        self, stream_response_events: List[AssistantStreamEvent]
+    ):
+        first_thread_message_completed = next(
+            (
+                event
+                for event in stream_response_events
+                if event.event == "thread.message.completed"
+            ),
+            None,
+        )
+
+        assert stream_response_events[1].event == "thread.message.created"
+        assert stream_response_events[2].event == "thread.message.delta"
+        assert first_thread_message_completed.event == "thread.message.completed"
+        assert stream_response_events[1].data.id == stream_response_events[2].data.id
+        assert (
+            first_thread_message_completed.data.id == stream_response_events[2].data.id
+        )
+
+    def test_streamed_response_message_is_persisted(
+        self,
+        stream_response_events: List[AssistantStreamEvent],
+        openai_client: OpenAI,
+        thread: Thread,
+    ):
+
+        messages = openai_client.beta.threads.messages.list(thread_id=thread.id).data
+        last_message = messages[-1]
+
+        assert last_message.role == "assistant"
+        assert last_message.status == "completed"
+        assert len(last_message.content["text"]["value"]) > 0
 
 
 class TestThread:
