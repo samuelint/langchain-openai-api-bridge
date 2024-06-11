@@ -22,7 +22,7 @@ class TestCreateInMemoryMessageRepository:
     def instance(self):
         return InMemoryMessageRepository()
 
-    def test_created_contains_uuid_id(self, instance):
+    def test_created_contains_uuid_id(self, instance: InMemoryMessageRepository):
         result = instance.create(
             thread_id="A",
             role="user",
@@ -31,7 +31,7 @@ class TestCreateInMemoryMessageRepository:
 
         assert validators.uuid(result.id)
 
-    def test_created_contains_role(self, instance):
+    def test_created_contains_role(self, instance: InMemoryMessageRepository):
         result = instance.create(
             thread_id="A",
             role="user",
@@ -40,7 +40,7 @@ class TestCreateInMemoryMessageRepository:
 
         assert result.role == "user"
 
-    def test_created_contains_thread_id(self, instance):
+    def test_created_contains_thread_id(self, instance: InMemoryMessageRepository):
         result = instance.create(
             thread_id="A",
             role="user",
@@ -49,7 +49,7 @@ class TestCreateInMemoryMessageRepository:
 
         assert result.thread_id == "A"
 
-    def test_created_contains_content(self, instance):
+    def test_created_contains_content(self, instance: InMemoryMessageRepository):
         result = instance.create(
             thread_id="A",
             role="user",
@@ -58,7 +58,7 @@ class TestCreateInMemoryMessageRepository:
 
         assert result.content[0].text.value == "AAA"
 
-    def test_create_many_with_content(self, instance):
+    def test_create_many_with_content(self, instance: InMemoryMessageRepository):
         result = instance.create_many(
             thread_id="A",
             messages=[
@@ -74,7 +74,7 @@ class TestCreateInMemoryMessageRepository:
         assert result[0].content[0].text.value == "AAA"
         assert result[1].content[0].text.value == "BBB"
 
-    def test_create_many_with_string(self, instance):
+    def test_create_many_with_string(self, instance: InMemoryMessageRepository):
         result = instance.create_many(
             thread_id="A",
             messages=[
@@ -85,6 +85,30 @@ class TestCreateInMemoryMessageRepository:
 
         assert result[0].content[0].text.value == "Hello"
         assert result[1].content[0].text.value == "World"
+
+    def test_created_contains_run_id(self, instance: InMemoryMessageRepository):
+        created = instance.create(
+            thread_id="A",
+            role="user",
+            content="",
+            run_id="123",
+        )
+
+        retreived = instance.retreive(message_id=created.id, thread_id="A")
+
+        assert retreived.run_id == "123"
+
+    def test_created_contains_metadata(self, instance: InMemoryMessageRepository):
+        created = instance.create(
+            thread_id="A",
+            role="user",
+            content="",
+            metadata={"key": "value"},
+        )
+
+        retreived = instance.retreive(message_id=created.id, thread_id="A")
+
+        assert retreived.metadata["key"] == "value"
 
 
 class TestRetreiveInMemoryMessageRepository:
@@ -119,8 +143,63 @@ class TestRetreiveInMemoryMessageRepository:
         assert result is None
 
 
-class TestDeleteInMemoryMessageRepository:
+class TestRetreiveInMemoryMessageByRunId:
+    @pytest.fixture
+    def instance(self):
+        return InMemoryMessageRepository()
 
+    def test_message_is_retreivable_by_run_id(
+        self, instance: InMemoryMessageRepository
+    ):
+        expected = instance.create(
+            thread_id="A",
+            role="user",
+            content=[some_text_content_1],
+            run_id="123",
+        )
+        instance.create(
+            thread_id="A",
+            role="user",
+            content=[some_text_content_2],
+            run_id="1234",
+        )
+        instance.create(
+            thread_id="B",
+            role="user",
+            content=[some_text_content_1],
+            run_id="123",
+        )
+        result = instance.retreive_unique_by_run_id(run_id="123", thread_id="A")
+
+        assert result.id == expected.id
+        assert result.content == expected.content
+
+    def test_not_found_return_none(self, instance: InMemoryMessageRepository):
+
+        result = instance.retreive_unique_by_run_id(run_id="123", thread_id="Z")
+
+        assert result is None
+
+
+class TestUpdateInMemoryMessage:
+    @pytest.fixture
+    def instance(self):
+        return InMemoryMessageRepository()
+
+    def test_update_content(self, instance: InMemoryMessageRepository):
+        created = instance.create(
+            thread_id="A",
+            role="user",
+            content=[some_text_content_1],
+        )
+        created.content = [some_text_content_2]
+        instance.update(created)
+        result = instance.retreive(message_id=created.id, thread_id="A")
+
+        assert result.content == [some_text_content_2]
+
+
+class TestDeleteInMemoryMessageRepository:
     @pytest.fixture
     def instance(self):
         return InMemoryMessageRepository()
@@ -151,7 +230,6 @@ class TestDeleteInMemoryMessageRepository:
 
 
 class TestListInMemoryMessageRepository:
-
     @pytest.fixture
     def instance(self):
         return InMemoryMessageRepository()

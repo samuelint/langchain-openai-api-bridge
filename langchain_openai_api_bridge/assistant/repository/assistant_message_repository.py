@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Iterable, List, Literal, Union
+from typing import Iterable, List, Literal, Optional, Union
 from openai.types.beta.threads import Message, MessageDeleted, MessageContentPartParam
 from openai.types.beta import thread_create_params
 from openai.pagination import SyncCursorPage
@@ -19,6 +19,8 @@ class AssistantMessageRepository(ABC):
         role: Literal["user", "assistant"],
         content: Union[str, Iterable[MessageContentPartParam]],
         status: Literal["in_progress", "incomplete", "completed"] = "completed",
+        run_id: Optional[str] = None,
+        metadata: Optional[dict] = {},
     ) -> Message:
         pass
 
@@ -50,6 +52,20 @@ class AssistantMessageRepository(ABC):
 
     @abstractmethod
     def retreive(self, message_id: str, thread_id: str) -> Message:
+        pass
+
+    @abstractmethod
+    def retreive_unique_by_run_id(self, run_id: str, thread_id: str) -> Message:
+        pass
+
+    # The id is required for message delta, however, it's not necessary to hit the database
+    # every time. The correlation id - run_id can be cached in this function
+    @abstractmethod
+    def retreive_message_id_by_run_id(self, run_id: str, thread_id: str) -> str:
+        pass
+
+    @abstractmethod
+    def update(self, message: Message) -> Message:
         pass
 
     @abstractmethod

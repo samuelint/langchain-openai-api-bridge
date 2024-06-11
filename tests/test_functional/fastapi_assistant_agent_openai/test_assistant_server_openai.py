@@ -71,9 +71,7 @@ class TestRunStream:
         str_response = ""
         for event in stream_response_events:
             if event.event == "thread.message.delta":
-                str_response += "".join(
-                    event.data.data["delta"]["content"][0]["text"]["value"]
-                )
+                str_response += "".join(event.data.delta.content[0].text.value)
 
         assert "This is a test message." in str_response
 

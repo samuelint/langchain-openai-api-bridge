@@ -29,7 +29,7 @@ class AssistantStreamEventAdapter:
         )
 
     def __serialize_event(self, event: AssistantStreamEvent):
-        return self.__str_event(event.event, json.dumps(event.dict()))
+        return self.__str_event(event.event, json.dumps(event.data.dict()))
 
     def __str_event(self, event: str, data: str) -> str:
         return f"event: {event}\ndata: {data}\n\n"

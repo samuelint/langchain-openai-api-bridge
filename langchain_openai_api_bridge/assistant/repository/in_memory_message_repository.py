@@ -1,4 +1,4 @@
-from typing import Iterable, List, Literal, Union
+from typing import Iterable, List, Literal, Optional, Union
 import uuid
 
 from langchain_openai_api_bridge.assistant.openai_message_factory import create_message
@@ -24,10 +24,18 @@ class InMemoryMessageRepository(AssistantMessageRepository):
         role: Literal["user", "assistant"],
         content: Union[str, Iterable[MessageContentPartParam]],
         status: Literal["in_progress", "incomplete", "completed"] = "completed",
+        run_id: Optional[str] = None,
+        metadata: Optional[object] = {},
     ) -> Message:
         id = str(uuid.uuid4())
         message = create_message(
-            id=id, thread_id=thread_id, role=role, content=content, status=status
+            id=id,
+            thread_id=thread_id,
+            role=role,
+            content=content,
+            status=status,
+            run_id=run_id,
+            metadata=metadata,
         )
         self.messages[id] = message
 
@@ -75,12 +83,38 @@ class InMemoryMessageRepository(AssistantMessageRepository):
 
         return SyncCursorPage(data=messages)
 
+    # thread_id is not needed for in-memory implementation
     def retreive(self, message_id: str, thread_id: str) -> Message:
         result = self.messages.get(message_id)
         if result is None:
             return None
 
         return result.copy(deep=True)
+
+    def retreive_unique_by_run_id(self, run_id: str, thread_id: str) -> Message:
+        messages = [
+            message.copy(deep=True)
+            for message in self.messages.values()
+            if message.thread_id == thread_id and message.run_id == run_id
+        ]
+
+        if not messages:
+            return None
+
+        return messages[0]
+
+    def retreive_message_id_by_run_id(self, run_id: str, thread_id: str) -> str:
+        message = self.retreive_unique_by_run_id(run_id=run_id, thread_id=thread_id)
+
+        if message is None:
+            return None
+
+        return message.id
+
+    def update(self, message: Message) -> Message:
+        id = message.id
+        self.messages[id] = message
+        return self.retreive(message_id=id, thread_id=message.thread_id)
 
     def delete(self, message_id: str, thread_id: str) -> MessageDeleted:
         message = self.retreive(thread_id=thread_id, message_id=message_id)

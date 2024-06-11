@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import APIRouter, FastAPI, Header
 from dotenv import load_dotenv, find_dotenv
 from langchain_core.tools import tool
+import uvicorn
 from langchain_openai_api_bridge.assistant.adapter.langgraph_event_to_openai_assistant_event_stream import (
     LanggraphEventToOpenAIAssistantEventStream,
 )
@@ -172,6 +173,8 @@ async def assistant_create_thread_runs(
     authorization: str = Header(None),
 ):
     dto.thread_id = thread_id
+    if dto.model is None:
+        dto.model = "gpt-3.5-turbo"
 
     api_key = get_bearer_token(authorization)
     llm = ChatOpenAI(
@@ -194,3 +197,6 @@ async def assistant_create_thread_runs(
 # Must be define after bindings
 assistant_router.include_router(thread_router)
 api.include_router(assistant_router)
+
+if __name__ == "__main__":
+    uvicorn.run(api, host="localhost")
