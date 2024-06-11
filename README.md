@@ -12,9 +12,13 @@ Support:
   - ✅ Invoke
   - ✅ Stream
 - 🚧 [Assistant API](https://platform.openai.com/docs/api-reference/assistants) - Feature in progress
-  - 🚧 Thread
-  - 🚧 Stream
-  - 🚧 Invoke
+  - ✅ Run Stream
+  - ✅ Threads (In Memory)
+  - ✅ Messages (In Memory)
+  - 🚧 Threads (Database)
+  - 🚧 Messages (Database)
+  - 🚧 Tools feedback
+  - 🚧 Human Action
 
 ## Quick Install
 
