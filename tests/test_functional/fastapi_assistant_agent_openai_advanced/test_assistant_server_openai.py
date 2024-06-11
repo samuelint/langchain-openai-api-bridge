@@ -133,7 +133,7 @@ class TestFollowupMessage:
             messages=[
                 {
                     "role": "user",
-                    "content": "I like bananas",
+                    "content": "My favorite fruit banana",
                 },
             ]
         )
@@ -145,15 +145,17 @@ class TestFollowupMessage:
             thread_id=thread.id,
             model="gpt-3.5-turbo",
             assistant_id="any",
+            temperature=0,
             stream=True,
         )
 
         openai_client.beta.threads.messages.create(
-            thread_id=thread.id, role="user", content="What do I like?"
+            thread_id=thread.id, role="user", content="What is my favority fruit?"
         )
 
         stream_2 = openai_client.beta.threads.runs.create(
             thread_id=thread.id,
+            temperature=0,
             model="gpt-3.5-turbo",
             assistant_id="any",
             stream=True,
