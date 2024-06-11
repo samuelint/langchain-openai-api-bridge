@@ -131,9 +131,9 @@ class LanggraphEventToOpenAIAssistantEventStream:
             run_id=run_id, thread_id=thread_id
         )
 
-        message.content = TextContentBlock(
-            type="text", text=Text(value=content_str, annotations=[])
-        )
+        message.content = [
+            TextContentBlock(type="text", text=Text(value=content_str, annotations=[]))
+        ]
         message.status = "completed"
 
         completed_message = self.thread_message_repository.update(message)

@@ -211,7 +211,7 @@ class TestToOpenAIAssistantEventStream:
 
         assert items[2].event == "thread.message.completed"
         assert items[2].data.id == items[1].data.id
-        assert items[2].data.content.text.value == "hello world!"
+        assert items[2].data.content[0].text.value == "hello world!"
 
     @pytest.mark.asyncio
     async def test_message_completed_event_status_is_completed(

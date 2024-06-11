@@ -7,6 +7,9 @@ from openai.types.beta import AssistantStreamEvent, Thread
 from fastapi.testclient import TestClient
 import validators
 from assistant_server_openai import api
+from tests.test_functional.assistant_stream_utils import (
+    assistant_stream_events_to_str_response,
+)
 
 
 test_api = TestClient(api)
@@ -71,10 +74,7 @@ class TestRunStream:
     def test_run_stream_message_deltas(
         self, stream_response_events: List[AssistantStreamEvent]
     ):
-        str_response = ""
-        for event in stream_response_events:
-            if event.event == "thread.message.delta":
-                str_response += "".join(event.data.delta.content[0].text.value)
+        str_response = assistant_stream_events_to_str_response(stream_response_events)
 
         assert "This is a test message." in str_response
 
@@ -122,7 +122,50 @@ class TestRunStream:
 
         assert last_message.role == "assistant"
         assert last_message.status == "completed"
-        assert len(last_message.content["text"]["value"]) > 0
+        assert len(last_message.content[0].text.value) > 0
+
+
+class TestFollowupMessage:
+
+    @pytest.fixture(scope="session")
+    def thread(self, openai_client: OpenAI) -> Thread:
+        return openai_client.beta.threads.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": "I like bananas",
+                },
+            ]
+        )
+
+    def test_run_stream_starts_with_thread_run_created(
+        self, openai_client: OpenAI, thread: Thread
+    ):
+        openai_client.beta.threads.runs.create(
+            thread_id=thread.id,
+            model="gpt-3.5-turbo",
+            assistant_id="any",
+            stream=True,
+        )
+
+        openai_client.beta.threads.messages.create(
+            thread_id=thread.id, role="user", content="What do I like?"
+        )
+
+        stream_2 = openai_client.beta.threads.runs.create(
+            thread_id=thread.id,
+            model="gpt-3.5-turbo",
+            assistant_id="any",
+            stream=True,
+        )
+
+        events_2: List[AssistantStreamEvent] = []
+        for event in stream_2:
+            events_2.append(event)
+
+        followup_response = assistant_stream_events_to_str_response(events_2)
+
+        assert "banana" in followup_response
 
 
 class TestThread:
