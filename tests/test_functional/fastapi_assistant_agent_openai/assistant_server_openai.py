@@ -12,6 +12,9 @@ from langchain_openai_api_bridge.assistant.assistant_message_service import (
 from langchain_openai_api_bridge.assistant.assistant_run_service import (
     AssistantRunService,
 )
+from langchain_openai_api_bridge.assistant.assistant_stream_event_adapter import (
+    AssistantStreamEventAdapter,
+)
 from langchain_openai_api_bridge.assistant.assistant_thread_service import (
     AssistantThreadService,
 )
@@ -26,11 +29,17 @@ from langchain_openai_api_bridge.assistant.create_thread_runs_api_dto import (
 from langchain_openai_api_bridge.assistant.repository.assistant_message_repository import (
     AssistantMessageRepository,
 )
+from langchain_openai_api_bridge.assistant.repository.assistant_run_repository import (
+    AssistantRunRepository,
+)
 from langchain_openai_api_bridge.assistant.repository.assistant_thread_repository import (
     AssistantThreadRepository,
 )
 from langchain_openai_api_bridge.assistant.repository.in_memory_message_repository import (
     InMemoryMessageRepository,
+)
+from langchain_openai_api_bridge.assistant.repository.in_memory_run_repository import (
+    InMemoryRunRepository,
 )
 from langchain_openai_api_bridge.assistant.repository.in_memory_thread_repository import (
     InMemoryThreadRepository,
@@ -81,6 +90,7 @@ container.register(
 container.register(
     AssistantMessageRepository, to=InMemoryMessageRepository, singleton=True
 )
+container.register(AssistantRunRepository, to=InMemoryRunRepository, singleton=True)
 container.register(AssistantThreadService)
 container.register(AssistantMessageService)
 container.register(AssistantRunService)
@@ -157,14 +167,15 @@ async def assistant_create_thread_messages(
 
 @thread_router.post("/{thread_id}/runs")
 async def assistant_create_thread_runs(
-    request: ThreadRunsDto,
+    dto: ThreadRunsDto,
     thread_id: str,
     authorization: str = Header(None),
 ):
+    dto.thread_id = thread_id
 
     api_key = get_bearer_token(authorization)
     llm = ChatOpenAI(
-        model=request.model,
+        model=dto.model,
         api_key=api_key,
         streaming=True,
     )
@@ -173,9 +184,11 @@ async def assistant_create_thread_runs(
     )
 
     service = container.resolve(AssistantRunService)
-    stream = service.stream(agent=agent, thread_id=thread_id, dto=request)
+    stream = service.astream(agent=agent, dto=dto)
 
-    return stream
+    response_factory = AssistantStreamEventAdapter()
+
+    return response_factory.to_streaming_response(stream)
 
 
 # Must be define after bindings

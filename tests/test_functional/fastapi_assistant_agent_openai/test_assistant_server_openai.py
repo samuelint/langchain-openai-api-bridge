@@ -15,7 +15,7 @@ test_api = TestClient(api)
 logging.getLogger("openai").setLevel(logging.DEBUG)
 
 
-@pytest.fixture
+@pytest.fixture(scope="session")
 def openai_client():
     return OpenAI(
         base_url="http://testserver/my-assistant/openai/v1",
@@ -23,8 +23,12 @@ def openai_client():
     )
 
 
-class TestRun:
-    def test_run_stream(self, openai_client: OpenAI):
+class TestRunStream:
+
+    @pytest.fixture(scope="session")
+    def stream_response_events(
+        self, openai_client: OpenAI
+    ) -> List[AssistantStreamEvent]:
         thread = openai_client.beta.threads.create(
             messages=[
                 {
@@ -36,6 +40,7 @@ class TestRun:
 
         stream = openai_client.beta.threads.runs.create(
             thread_id=thread.id,
+            model="gpt-3.5-turbo",
             assistant_id="any",
             stream=True,
         )
@@ -44,7 +49,33 @@ class TestRun:
         for event in stream:
             events.append(event)
 
-        assert events[0].event == "thread.created"
+        return events
+
+    @pytest.fixture
+    def shared_stream_response_events(self, request) -> List[AssistantStreamEvent]:
+        return request.config.cache.get("stream_response_events", [])
+
+    def test_run_stream_starts_with_thread_run_created(
+        self, stream_response_events: List[AssistantStreamEvent]
+    ):
+        assert stream_response_events[0].event == "thread.run.created"
+
+    def test_run_stream_ends_with_thread_run_completed(
+        self, stream_response_events: List[AssistantStreamEvent]
+    ):
+        assert stream_response_events[-1].event == "thread.run.completed"
+
+    def test_run_stream_message_deltas(
+        self, stream_response_events: List[AssistantStreamEvent]
+    ):
+        str_response = ""
+        for event in stream_response_events:
+            if event.event == "thread.message.delta":
+                str_response += "".join(
+                    event.data.data["delta"]["content"][0]["text"]["value"]
+                )
+
+        assert "This is a test message." in str_response
 
 
 class TestThread:

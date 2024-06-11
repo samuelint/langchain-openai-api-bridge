@@ -33,8 +33,9 @@ class ChatCompletionCompatibleAPI:
         self.agent = agent
 
     def astream(self, messages: List[OpenAIChatMessage]) -> AsyncIterator[dict]:
+        input = self.__to_input(messages)
         astream_event = self.agent.astream_events(
-            input=self.__to_input(messages),
+            input=input,
             version="v2",
         )
         return ato_dict(

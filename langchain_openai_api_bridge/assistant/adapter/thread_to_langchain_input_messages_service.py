@@ -22,4 +22,7 @@ class ThreadToLangchainInputMessagesService:
         return messages
 
     def retreive_input_dict(self, thread_id: str) -> dict:
-        return [message.dict() for message in self.retreive_input(thread_id=thread_id)]
+        messages = self.retreive_input(thread_id=thread_id)
+        return {
+            "messages": [message.dict() for message in messages],
+        }

@@ -1,4 +1,4 @@
-from openai import Stream
+from typing import AsyncIterator
 from openai.types.beta import AssistantStreamEvent
 from langchain_openai_api_bridge.assistant.adapter.langgraph_event_to_openai_assistant_event_stream import (
     LanggraphEventToOpenAIAssistantEventStream,
@@ -23,16 +23,16 @@ class AssistantRunService:
         self.thread_message_service = thread_message_service
         self.stream_adapter = stream_adapter
 
-    def stream(
-        self, agent: CompiledGraph, thread_id: str, dto: ThreadRunsDto
-    ) -> Stream[AssistantStreamEvent]:
+    def astream(
+        self, agent: CompiledGraph, dto: ThreadRunsDto
+    ) -> AsyncIterator[AssistantStreamEvent]:
 
-        input = self.thread_message_service.retreive_input_dict(thread_id=thread_id)
-        astream_event = agent.astream_events(
+        input = self.thread_message_service.retreive_input_dict(thread_id=dto.thread_id)
+        astream_events = agent.astream_events(
             input=input,
             version="v2",
         )
 
         return self.stream_adapter.to_openai_assistant_event_stream(
-            langchain_astream=astream_event, dto=dto
+            astream_events=astream_events, dto=dto
         )
