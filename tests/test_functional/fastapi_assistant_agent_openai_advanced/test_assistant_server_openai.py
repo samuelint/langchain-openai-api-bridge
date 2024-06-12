@@ -49,6 +49,7 @@ class TestRunStream:
             model="gpt-3.5-turbo",
             assistant_id="any",
             stream=True,
+            temperature=0,
         )
 
         events: List[AssistantStreamEvent] = []
@@ -133,7 +134,7 @@ class TestFollowupMessage:
             messages=[
                 {
                     "role": "user",
-                    "content": "My favorite fruit banana",
+                    "content": "Remember that my favorite fruit is banana. I Like bananas.",
                 },
             ]
         )

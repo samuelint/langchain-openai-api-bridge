@@ -179,6 +179,7 @@ async def assistant_create_thread_runs(
         model=dto.model,
         api_key=api_key,
         streaming=True,
+        temperature=dto.temperature,
     )
     agent = create_react_agent(
         llm, [magic_number_tool], messages_modifier="""You are a helpful assistant."""
