@@ -23,6 +23,8 @@ pytest = "^8.2.2"
 pytest-watch = "^4.2.0"
 flake8 = "^7.0.0"
 validators = "^0.28.3"
+pytest-mock = "^3.14.0"
+decoy = "^2.1.1"
 
 
 [tool.poetry.group.test.dependencies]

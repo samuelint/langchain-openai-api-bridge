@@ -4,9 +4,10 @@ from fastapi import APIRouter, FastAPI, Header
 from dotenv import load_dotenv, find_dotenv
 from langchain_core.tools import tool
 import uvicorn
-from langchain_openai_api_bridge.assistant.adapter.langgraph_event_to_openai_assistant_event_stream import (
-    LanggraphEventToOpenAIAssistantEventStream,
+from langchain_openai_api_bridge.assistant.adapter.container import (
+    register_assistant_adapter,
 )
+
 from langchain_openai_api_bridge.assistant.assistant_message_service import (
     AssistantMessageService,
 )
@@ -46,9 +47,6 @@ from langchain_openai_api_bridge.assistant.repository.in_memory_thread_repositor
     InMemoryThreadRepository,
 )
 
-from langchain_openai_api_bridge.assistant.adapter.thread_to_langchain_input_messages_service import (
-    ThreadToLangchainInputMessagesService,
-)
 from langchain_openai_api_bridge.core.utils.di_container import DIContainer
 from langgraph.prebuilt import create_react_agent
 from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
@@ -85,6 +83,8 @@ assistant_router = APIRouter(prefix="/my-assistant/openai/v1")
 
 container = DIContainer()
 
+register_assistant_adapter(container)
+
 container.register(
     AssistantThreadRepository, to=InMemoryThreadRepository, singleton=True
 )
@@ -95,8 +95,6 @@ container.register(AssistantRunRepository, to=InMemoryRunRepository, singleton=T
 container.register(AssistantThreadService)
 container.register(AssistantMessageService)
 container.register(AssistantRunService)
-container.register(ThreadToLangchainInputMessagesService)
-container.register(LanggraphEventToOpenAIAssistantEventStream)
 
 thread_router = APIRouter(prefix="/threads")
 
@@ -181,6 +179,7 @@ async def assistant_create_thread_runs(
         model=dto.model,
         api_key=api_key,
         streaming=True,
+        temperature=dto.temperature,
     )
     agent = create_react_agent(
         llm, [magic_number_tool], messages_modifier="""You are a helpful assistant."""
