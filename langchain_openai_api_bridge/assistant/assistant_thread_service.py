@@ -1,10 +1,10 @@
 from openai.types.beta import Thread, ThreadDeleted
 from langchain_openai_api_bridge.assistant.create_thread_api_dto import CreateThreadDto
-from langchain_openai_api_bridge.assistant.repository.assistant_message_repository import (
-    AssistantMessageRepository,
+from langchain_openai_api_bridge.assistant.repository.message_repository import (
+    MessageRepository,
 )
-from langchain_openai_api_bridge.assistant.repository.assistant_thread_repository import (
-    AssistantThreadRepository,
+from langchain_openai_api_bridge.assistant.repository.thread_repository import (
+    ThreadRepository,
 )
 
 
@@ -12,8 +12,8 @@ class AssistantThreadService:
 
     def __init__(
         self,
-        thread_repository: AssistantThreadRepository,
-        message_repository: AssistantMessageRepository,
+        thread_repository: ThreadRepository,
+        message_repository: MessageRepository,
     ) -> None:
         self.thread_repository = thread_repository
         self.message_repository = message_repository

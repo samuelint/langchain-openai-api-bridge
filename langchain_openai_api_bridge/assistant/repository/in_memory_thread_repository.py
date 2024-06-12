@@ -1,11 +1,11 @@
 import time
 import uuid
-from .assistant_thread_repository import AssistantThreadRepository
+from .thread_repository import ThreadRepository
 from typing import Optional
 from openai.types.beta import Thread, ThreadDeleted
 
 
-class InMemoryThreadRepository(AssistantThreadRepository):
+class InMemoryThreadRepository(ThreadRepository):
     def __init__(self):
         self.threads: dict[str, Thread] = {}
 

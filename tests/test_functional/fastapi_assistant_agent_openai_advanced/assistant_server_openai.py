@@ -1,42 +1,11 @@
-from typing import Literal
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import APIRouter, FastAPI, Header
+from fastapi import APIRouter, FastAPI
 from dotenv import load_dotenv, find_dotenv
-from langchain_core.tools import tool
 import uvicorn
-from langchain_openai_api_bridge.assistant.adapter.container import (
-    register_assistant_adapter,
-)
 
-from langchain_openai_api_bridge.assistant.assistant_message_service import (
-    AssistantMessageService,
-)
-from langchain_openai_api_bridge.assistant.assistant_run_service import (
-    AssistantRunService,
-)
-from langchain_openai_api_bridge.assistant.assistant_stream_event_adapter import (
-    AssistantStreamEventAdapter,
-)
-from langchain_openai_api_bridge.assistant.assistant_thread_service import (
-    AssistantThreadService,
-)
-from langchain_openai_api_bridge.assistant.create_thread_api_dto import CreateThreadDto
 
-from langchain_openai_api_bridge.assistant.create_thread_message_api_dto import (
-    CreateThreadMessageDto,
-)
-from langchain_openai_api_bridge.assistant.create_thread_runs_api_dto import (
-    ThreadRunsDto,
-)
-from langchain_openai_api_bridge.assistant.repository.assistant_message_repository import (
-    AssistantMessageRepository,
-)
-from langchain_openai_api_bridge.assistant.repository.assistant_run_repository import (
-    AssistantRunRepository,
-)
-from langchain_openai_api_bridge.assistant.repository.assistant_thread_repository import (
-    AssistantThreadRepository,
-)
+from langchain_openai_api_bridge.assistant.assistant_app import AssistantApp
+
 from langchain_openai_api_bridge.assistant.repository.in_memory_message_repository import (
     InMemoryMessageRepository,
 )
@@ -46,14 +15,22 @@ from langchain_openai_api_bridge.assistant.repository.in_memory_run_repository i
 from langchain_openai_api_bridge.assistant.repository.in_memory_thread_repository import (
     InMemoryThreadRepository,
 )
-
-from langchain_openai_api_bridge.core.utils.di_container import DIContainer
-from langgraph.prebuilt import create_react_agent
-from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
-from langchain_openai import ChatOpenAI
+from langchain_openai_api_bridge.fastapi.add_assistant_routes import (
+    build_assistant_router,
+)
+from tests.test_functional.fastapi_assistant_agent_openai_advanced.my_agent_factory import (
+    MyAgentFactory,
+)
 
 _ = load_dotenv(find_dotenv())
 
+
+assistant_app = AssistantApp(
+    thread_repository_type=InMemoryThreadRepository,
+    message_repository_type=InMemoryMessageRepository,
+    run_repository=InMemoryRunRepository,
+    agent_factory=MyAgentFactory,
+)
 
 api = FastAPI(
     title="Langchain Agent OpenAI API Bridge",
@@ -70,132 +47,11 @@ api.add_middleware(
     expose_headers=["*"],
 )
 
-system_fingerprint = "My System Fingerprints"
+assistant_router = build_assistant_router(assistant_app=assistant_app)
+open_ai_router = APIRouter(prefix="/my-assistant/openai/v1")
 
-
-@tool
-def magic_number_tool(input: int) -> int:
-    """Applies a magic function to an input."""
-    return input + 2
-
-
-assistant_router = APIRouter(prefix="/my-assistant/openai/v1")
-
-container = DIContainer()
-
-register_assistant_adapter(container)
-
-container.register(
-    AssistantThreadRepository, to=InMemoryThreadRepository, singleton=True
-)
-container.register(
-    AssistantMessageRepository, to=InMemoryMessageRepository, singleton=True
-)
-container.register(AssistantRunRepository, to=InMemoryRunRepository, singleton=True)
-container.register(AssistantThreadService)
-container.register(AssistantMessageService)
-container.register(AssistantRunService)
-
-thread_router = APIRouter(prefix="/threads")
-
-
-@thread_router.post("/")
-async def assistant_create_thread(create_request: CreateThreadDto):
-    service = container.resolve(AssistantThreadService)
-    return service.create(create_request)
-
-
-@thread_router.get("/{thread_id}")
-async def assistant_retreive_thread(thread_id: str):
-    service = container.resolve(AssistantThreadService)
-    return service.retreive(thread_id=thread_id)
-
-
-@thread_router.delete("/{thread_id}")
-async def assistant_delete_thread(thread_id: str):
-    service = container.resolve(AssistantThreadService)
-    return service.delete(thread_id=thread_id)
-
-
-@thread_router.get("/{thread_id}/messages")
-async def assistant_list_thread_messages(
-    thread_id: str,
-    after: str = None,
-    before: str = None,
-    limit: int = 100,
-    order: Literal["asc", "desc"] = None,
-):
-    service = container.resolve(AssistantMessageService)
-    messages = service.list(
-        thread_id=thread_id, after=after, before=before, limit=limit, order=order
-    )
-
-    return messages
-
-
-@thread_router.get("/{thread_id}/messages/{message_id}")
-async def assistant_retreive_thread_messages(
-    thread_id: str,
-    message_id: str,
-):
-    service = container.resolve(AssistantMessageService)
-    message = service.retreive(thread_id=thread_id, message_id=message_id)
-
-    return message
-
-
-@thread_router.delete("/{thread_id}/messages/{message_id}")
-async def assistant_delete_thread_messages(
-    thread_id: str,
-    message_id: str,
-):
-    service = container.resolve(AssistantMessageService)
-    return service.delete(thread_id=thread_id, message_id=message_id)
-
-
-@thread_router.post("/{thread_id}/messages")
-async def assistant_create_thread_messages(
-    thread_id: str,
-    request: CreateThreadMessageDto,
-):
-    service = container.resolve(AssistantMessageService)
-    message = service.create(thread_id=thread_id, dto=request)
-
-    return message
-
-
-@thread_router.post("/{thread_id}/runs")
-async def assistant_create_thread_runs(
-    dto: ThreadRunsDto,
-    thread_id: str,
-    authorization: str = Header(None),
-):
-    dto.thread_id = thread_id
-    if dto.model is None:
-        dto.model = "gpt-3.5-turbo"
-
-    api_key = get_bearer_token(authorization)
-    llm = ChatOpenAI(
-        model=dto.model,
-        api_key=api_key,
-        streaming=True,
-        temperature=dto.temperature,
-    )
-    agent = create_react_agent(
-        llm, [magic_number_tool], messages_modifier="""You are a helpful assistant."""
-    )
-
-    service = container.resolve(AssistantRunService)
-    stream = service.astream(agent=agent, dto=dto)
-
-    response_factory = AssistantStreamEventAdapter()
-
-    return response_factory.to_streaming_response(stream)
-
-
-# Must be define after bindings
-assistant_router.include_router(thread_router)
-api.include_router(assistant_router)
+open_ai_router.include_router(assistant_router)
+api.include_router(open_ai_router)
 
 if __name__ == "__main__":
     uvicorn.run(api, host="localhost")

@@ -5,8 +5,8 @@ from openai.types.beta.threads import Message, MessageDeleted
 from langchain_openai_api_bridge.assistant.create_thread_message_api_dto import (
     CreateThreadMessageDto,
 )
-from langchain_openai_api_bridge.assistant.repository.assistant_message_repository import (
-    AssistantMessageRepository,
+from langchain_openai_api_bridge.assistant.repository.message_repository import (
+    MessageRepository,
 )
 from openai.pagination import SyncCursorPage
 
@@ -19,7 +19,7 @@ class AssistantMessageService:
 
     def __init__(
         self,
-        message_repository: AssistantMessageRepository,
+        message_repository: MessageRepository,
     ) -> None:
         self.message_repository = message_repository
 

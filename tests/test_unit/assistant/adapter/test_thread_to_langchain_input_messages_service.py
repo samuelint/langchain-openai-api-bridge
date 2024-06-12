@@ -5,8 +5,8 @@ from langchain_openai_api_bridge.assistant.adapter.thread_to_langchain_input_mes
     ThreadToLangchainInputMessagesService,
 )
 from langchain_openai_api_bridge.assistant.openai_message_factory import create_message
-from langchain_openai_api_bridge.assistant.repository.assistant_message_repository import (
-    AssistantMessageRepository,
+from langchain_openai_api_bridge.assistant.repository.message_repository import (
+    MessageRepository,
 )
 
 
@@ -20,7 +20,7 @@ class TestRetreiveInputDict:
 
     @pytest.fixture
     def message_repository_mock(self, message_1):
-        message_repository_mock = MagicMock(spec=AssistantMessageRepository)
+        message_repository_mock = MagicMock(spec=MessageRepository)
 
         def side_effect(*args, **kwargs):
             if kwargs["thread_id"] == "1234":

@@ -8,15 +8,15 @@ from langchain_openai_api_bridge.assistant.create_thread_runs_api_dto import (
     ThreadRunsDto,
 )
 from langchain_openai_api_bridge.assistant.openai_message_factory import create_message
-from langchain_openai_api_bridge.assistant.repository.assistant_message_repository import (
-    AssistantMessageRepository,
+from langchain_openai_api_bridge.assistant.repository.message_repository import (
+    MessageRepository,
 )
 from tests.test_unit.core.agent_stream_utils import create_stream_chunk_event
 
 
 @pytest.fixture
 def thread_message_repository(decoy: Decoy):
-    return decoy.mock(cls=AssistantMessageRepository)
+    return decoy.mock(cls=MessageRepository)
 
 
 @pytest.fixture
@@ -30,7 +30,7 @@ def some_thread_dto():
 
 @pytest.fixture
 def instance(
-    thread_message_repository: AssistantMessageRepository,
+    thread_message_repository: MessageRepository,
 ):
     return OnChatModelStreamHandler(
         thread_message_repository=thread_message_repository,
@@ -42,7 +42,7 @@ class TestOnChatModelStreamHandler:
     def test_when_message_exist_delta_is_returned(
         self,
         decoy: Decoy,
-        thread_message_repository: AssistantMessageRepository,
+        thread_message_repository: MessageRepository,
         instance: OnChatModelStreamHandler,
         some_thread_dto: ThreadRunsDto,
     ):
@@ -63,7 +63,7 @@ class TestOnChatModelStreamHandler:
     def test_not_persisted_message_is_created(
         self,
         decoy: Decoy,
-        thread_message_repository: AssistantMessageRepository,
+        thread_message_repository: MessageRepository,
         instance: OnChatModelStreamHandler,
         some_thread_dto: ThreadRunsDto,
     ):

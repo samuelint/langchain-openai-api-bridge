@@ -2,7 +2,7 @@ from openai.types.beta import Thread, ThreadDeleted
 from abc import ABC, abstractmethod
 
 
-class AssistantThreadRepository(ABC):
+class ThreadRepository(ABC):
 
     def __init__(
         self,

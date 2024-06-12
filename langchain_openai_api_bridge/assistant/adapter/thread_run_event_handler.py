@@ -6,8 +6,8 @@ from openai.types.beta.threads import (
     Run,
 )
 
-from langchain_openai_api_bridge.assistant.repository.assistant_run_repository import (
-    AssistantRunRepository,
+from langchain_openai_api_bridge.assistant.repository.run_repository import (
+    RunRepository,
 )
 
 
@@ -15,7 +15,7 @@ class ThreadRunEventHandler:
 
     def __init__(
         self,
-        run_repository: AssistantRunRepository,
+        run_repository: RunRepository,
     ) -> None:
         self.run_repository = run_repository
 

@@ -2,8 +2,8 @@ from typing import Iterable, List, Literal, Optional, Union
 import uuid
 
 from langchain_openai_api_bridge.assistant.openai_message_factory import create_message
-from .assistant_message_repository import (
-    AssistantMessageRepository,
+from .message_repository import (
+    MessageRepository,
 )
 from openai.types.beta import thread_create_params
 from openai.types.beta.threads import (
@@ -14,7 +14,7 @@ from openai.types.beta.threads import (
 from openai.pagination import SyncCursorPage
 
 
-class InMemoryMessageRepository(AssistantMessageRepository):
+class InMemoryMessageRepository(MessageRepository):
     def __init__(self) -> None:
         self.messages: dict[str, Message] = {}
 
