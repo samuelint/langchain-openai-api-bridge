@@ -7,6 +7,12 @@ from langchain_openai_api_bridge.assistant.adapter.on_chat_model_end_handler imp
 from langchain_openai_api_bridge.assistant.adapter.on_chat_model_stream_handler import (
     OnChatModelStreamHandler,
 )
+from langchain_openai_api_bridge.assistant.adapter.on_tool_end_handler import (
+    OnToolEndHandler,
+)
+from langchain_openai_api_bridge.assistant.adapter.on_tool_start_handler import (
+    OnToolStartHandler,
+)
 from langchain_openai_api_bridge.assistant.adapter.thread_run_event_handler import (
     ThreadRunEventHandler,
 )
@@ -20,6 +26,8 @@ def register_assistant_adapter(container: DIContainer) -> DIContainer:
     container.register(OnChatModelStreamHandler)
     container.register(OnChatModelEndHandler)
     container.register(ThreadRunEventHandler)
+    container.register(OnToolStartHandler)
+    container.register(OnToolEndHandler)
 
     container.register(ThreadToLangchainInputMessagesService)
     container.register(LanggraphEventToOpenAIAssistantEventStream)
