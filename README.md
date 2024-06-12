@@ -58,13 +58,9 @@ import uvicorn
 
 from langchain_openai_api_bridge.assistant.assistant_app import AssistantApp
 
-from langchain_openai_api_bridge.assistant.repository.in_memory_message_repository import (
+from langchain_openai_api_bridge.assistant.repository import (
     InMemoryMessageRepository,
-)
-from langchain_openai_api_bridge.assistant.repository.in_memory_run_repository import (
     InMemoryRunRepository,
-)
-from langchain_openai_api_bridge.assistant.repository.in_memory_thread_repository import (
     InMemoryThreadRepository,
 )
 from langchain_openai_api_bridge.fastapi.add_assistant_routes import (
