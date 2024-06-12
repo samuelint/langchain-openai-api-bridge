@@ -35,16 +35,17 @@ class OnChatModelStreamHandler:
             created_message = self.thread_message_repository.create(
                 thread_id=dto.thread_id,
                 role="assistant",
-                content=content,
+                content="",
                 status="in_progress",
                 run_id=run_id,
             )
+            message_id = created_message.id
             events.append(create_thread_message_created_event(message=created_message))
-        else:
-            events.append(
-                create_text_thread_message_delta(
-                    message_id=message_id, content=content, role="assistant"
-                )
+
+        events.append(
+            create_text_thread_message_delta(
+                message_id=message_id, content=content, role="assistant"
             )
+        )
 
         return events

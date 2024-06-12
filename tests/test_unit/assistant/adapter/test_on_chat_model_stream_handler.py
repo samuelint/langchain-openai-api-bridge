@@ -60,7 +60,7 @@ class TestOnChatModelStreamHandler:
         assert result[0].event == "thread.message.delta"
         assert result[0].data.delta.content[0].text.value == " World!"
 
-    def test_not_persisted_message_is_created(
+    def test_not_persisted_message_is_created_and_then_content_chunk_is_put_as_delta_event(
         self,
         decoy: Decoy,
         thread_message_repository: MessageRepository,
@@ -76,23 +76,25 @@ class TestOnChatModelStreamHandler:
                 run_id="a", thread_id="thread1"
             )
         ).then_return(None)
-        message = create_message(
-            id="1", thread_id="thread1", role="assistant", content="Hello"
+        created_message = create_message(
+            id="1", thread_id="thread1", role="assistant", content=""
         )
         decoy.when(
             thread_message_repository.create(
                 thread_id="thread1",
                 role="assistant",
-                content="Hello",
+                content="",
                 status="in_progress",
                 run_id="a",
             )
-        ).then_return(message)
+        ).then_return(created_message)
 
         result = instance.handle(event=event, dto=some_thread_dto)
 
         assert result[0].event == "thread.message.created"
-        assert result[0].data == message
+        assert result[0].data == created_message
+        assert result[1].event == "thread.message.delta"
+        assert result[1].data.delta.content[0].text.value == "Hello"
 
     def test_event_without_content_returns_no_events(
         self, instance: OnChatModelStreamHandler, some_thread_dto: ThreadRunsDto
