@@ -5,7 +5,7 @@ from openai.types.beta import thread_create_params
 from openai.pagination import SyncCursorPage
 
 
-class AssistantMessageRepository(ABC):
+class MessageRepository(ABC):
 
     def __init__(
         self,

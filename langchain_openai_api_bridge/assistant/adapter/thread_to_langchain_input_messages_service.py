@@ -1,12 +1,12 @@
 from typing import List
-from langchain_openai_api_bridge.assistant.repository.assistant_message_repository import (
-    AssistantMessageRepository,
+from langchain_openai_api_bridge.assistant.repository.message_repository import (
+    MessageRepository,
 )
 from langchain_openai_api_bridge.core.types.openai.message import OpenAIChatMessage
 
 
 class ThreadToLangchainInputMessagesService:
-    def __init__(self, message_repository: AssistantMessageRepository):
+    def __init__(self, message_repository: MessageRepository):
         self.message_repository = message_repository
 
     def retreive_input(self, thread_id: str) -> List[OpenAIChatMessage]:

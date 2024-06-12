@@ -9,8 +9,8 @@ from langchain_openai_api_bridge.assistant.create_thread_runs_api_dto import (
     ThreadRunsDto,
 )
 from langchain_openai_api_bridge.assistant.openai_message_factory import create_message
-from langchain_openai_api_bridge.assistant.repository.assistant_message_repository import (
-    AssistantMessageRepository,
+from langchain_openai_api_bridge.assistant.repository.message_repository import (
+    MessageRepository,
 )
 from tests.test_unit.core.agent_stream_utils import create_stream_output_event
 from openai.types.beta.threads import Message
@@ -18,7 +18,7 @@ from openai.types.beta.threads import Message
 
 @pytest.fixture
 def thread_message_repository(decoy: Decoy):
-    return decoy.mock(cls=AssistantMessageRepository)
+    return decoy.mock(cls=MessageRepository)
 
 
 @pytest.fixture
@@ -39,7 +39,7 @@ def some_message() -> Message:
 
 @pytest.fixture
 def instance(
-    thread_message_repository: AssistantMessageRepository,
+    thread_message_repository: MessageRepository,
 ):
     return OnChatModelEndHandler(
         thread_message_repository=thread_message_repository,
@@ -51,7 +51,7 @@ class TestOnChatModelStreamHandler:
     def test_message_not_existing_in_database_returns_no_events(
         self,
         decoy: Decoy,
-        thread_message_repository: AssistantMessageRepository,
+        thread_message_repository: MessageRepository,
         instance: OnChatModelEndHandler,
         some_thread_dto: ThreadRunsDto,
     ):
@@ -69,7 +69,7 @@ class TestOnChatModelStreamHandler:
     def test_message_existing_in_database_is_completed_with_final_content(
         self,
         decoy: Decoy,
-        thread_message_repository: AssistantMessageRepository,
+        thread_message_repository: MessageRepository,
         instance: OnChatModelEndHandler,
         some_thread_dto: ThreadRunsDto,
         some_message: Message,
@@ -94,7 +94,7 @@ class TestOnChatModelStreamHandler:
     def test_message_existing_in_database_is_completed_with_completed_status(
         self,
         decoy: Decoy,
-        thread_message_repository: AssistantMessageRepository,
+        thread_message_repository: MessageRepository,
         instance: OnChatModelEndHandler,
         some_thread_dto: ThreadRunsDto,
         some_message: Message,

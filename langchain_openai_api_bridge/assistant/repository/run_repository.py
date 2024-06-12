@@ -4,7 +4,7 @@ from typing import List, Optional
 from openai.types.beta.threads.run import RequiredAction, RunStatus, AssistantTool
 
 
-class AssistantRunRepository(ABC):
+class RunRepository(ABC):
 
     def __init__(
         self,

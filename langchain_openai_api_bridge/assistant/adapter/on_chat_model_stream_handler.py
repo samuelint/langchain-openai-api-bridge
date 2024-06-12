@@ -7,15 +7,15 @@ from langchain_openai_api_bridge.assistant.adapter.openai_event_factory import (
 from langchain_openai_api_bridge.assistant.create_thread_runs_api_dto import (
     ThreadRunsDto,
 )
-from langchain_openai_api_bridge.assistant.repository.assistant_message_repository import (
-    AssistantMessageRepository,
+from langchain_openai_api_bridge.assistant.repository.message_repository import (
+    MessageRepository,
 )
 
 
 class OnChatModelStreamHandler:
     def __init__(
         self,
-        thread_message_repository: AssistantMessageRepository,
+        thread_message_repository: MessageRepository,
     ):
         self.thread_message_repository = thread_message_repository
 

@@ -11,14 +11,25 @@ Support:
 - ✅ [Chat Completions API](https://platform.openai.com/docs/api-reference/chat)
   - ✅ Invoke
   - ✅ Stream
-- 🚧 [Assistant API](https://platform.openai.com/docs/api-reference/assistants) - Feature in progress
+- ✅ [Assistant API](https://platform.openai.com/docs/api-reference/assistants) - Feature in progress
   - ✅ Run Stream
-  - ✅ Threads (In Memory)
-  - ✅ Messages (In Memory)
-  - 🚧 Threads (Database)
-  - 🚧 Messages (Database)
-  - 🚧 Tools feedback
-  - 🚧 Human Action
+  - ✅ Threads
+  - ✅ Messages
+  - ✅ Run
+  - ✅ Tools step stream
+  - 🚧 Human In The Loop
+
+## Table of Content
+
+- [Quick Install](#quick-install)
+- [Usage](#usage)
+  - [OpenAI Assistant API Compatible](#openai-assistant-api-compatible)
+  - [OpenAI Chat Completion API Compatible](#openai-chat-completion-api-compatible)
+- [More Examples](#more-examples)
+- [💁 Contributing](#---contributing)
+  - [Installation](#installation)
+  - [Commands](#commands)
+- [Limitations](#limitations)
 
 ## Quick Install
 
@@ -35,6 +46,107 @@ poetry add langchain-openai-api-bridge
 ```
 
 ## Usage
+
+### OpenAI Assistant API Compatible
+
+```python
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import APIRouter, FastAPI
+from dotenv import load_dotenv, find_dotenv
+import uvicorn
+
+
+from langchain_openai_api_bridge.assistant.assistant_app import AssistantApp
+
+from langchain_openai_api_bridge.assistant.repository.in_memory_message_repository import (
+    InMemoryMessageRepository,
+)
+from langchain_openai_api_bridge.assistant.repository.in_memory_run_repository import (
+    InMemoryRunRepository,
+)
+from langchain_openai_api_bridge.assistant.repository.in_memory_thread_repository import (
+    InMemoryThreadRepository,
+)
+from langchain_openai_api_bridge.fastapi.add_assistant_routes import (
+    build_assistant_router,
+)
+from tests.test_functional.fastapi_assistant_agent_openai_advanced.my_agent_factory import (
+    MyAgentFactory,
+)
+
+_ = load_dotenv(find_dotenv())
+
+
+assistant_app = AssistantApp(
+    thread_repository_type=InMemoryThreadRepository,
+    message_repository_type=InMemoryMessageRepository,
+    run_repository=InMemoryRunRepository,
+    agent_factory=MyAgentFactory,
+)
+
+api = FastAPI(
+    title="Langchain Agent OpenAI API Bridge",
+    version="1.0",
+    description="OpenAI API exposing langchain agent",
+)
+
+api.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
+
+assistant_router = build_assistant_router(assistant_app=assistant_app)
+open_ai_router = APIRouter(prefix="/my-assistant/openai/v1")
+
+open_ai_router.include_router(assistant_router)
+api.include_router(open_ai_router)
+
+if __name__ == "__main__":
+    uvicorn.run(api, host="localhost")
+
+```
+
+```python
+from langchain_openai_api_bridge.core.agent_factory import AgentFactory
+from langgraph.graph.graph import CompiledGraph
+from langchain_core.language_models import BaseChatModel
+from langchain_core.tools import tool
+from langgraph.prebuilt import create_react_agent
+from langchain_openai import ChatOpenAI
+
+from langchain_openai_api_bridge.core.create_llm_dto import CreateLLMDto
+
+
+@tool
+def magic_number_tool(input: int) -> int:
+    """Applies a magic function to an input."""
+    return input + 2
+
+
+class MyAgentFactory(AgentFactory):
+
+    def create_agent(self, llm: BaseChatModel) -> CompiledGraph:
+        return create_react_agent(
+            llm,
+            [magic_number_tool],
+            messages_modifier="""You are a helpful assistant.""",
+        )
+
+    def create_llm(self, dto: CreateLLMDto) -> CompiledGraph:
+        return ChatOpenAI(
+            model=dto.model,
+            api_key=dto.api_key,
+            streaming=True,
+            temperature=dto.temperature,
+        )
+
+```
+
+### OpenAI Chat Completion API Compatible
 
 ```python
 # Server

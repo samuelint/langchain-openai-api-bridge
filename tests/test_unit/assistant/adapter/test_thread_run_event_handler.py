@@ -7,8 +7,8 @@ from langchain_openai_api_bridge.assistant.adapter.thread_run_event_handler impo
 )
 from langchain_openai_api_bridge.assistant.openai_run_factory import create_run
 
-from langchain_openai_api_bridge.assistant.repository.assistant_run_repository import (
-    AssistantRunRepository,
+from langchain_openai_api_bridge.assistant.repository.run_repository import (
+    RunRepository,
 )
 from openai.types.beta.threads import (
     Run,
@@ -28,12 +28,12 @@ def some_run() -> Run:
 
 @pytest.fixture
 def run_repository(decoy: Decoy):
-    return decoy.mock(cls=AssistantRunRepository)
+    return decoy.mock(cls=RunRepository)
 
 
 class TestCreateThreadRun:
     @pytest.fixture
-    def instance(self, run_repository: AssistantRunRepository):
+    def instance(self, run_repository: RunRepository):
         instance = ThreadRunEventHandler(run_repository=run_repository)
 
         return instance
@@ -41,7 +41,7 @@ class TestCreateThreadRun:
     def test_event_is_created_from_database(
         self,
         decoy: Decoy,
-        run_repository: AssistantRunRepository,
+        run_repository: RunRepository,
         instance: ThreadRunEventHandler,
         some_run: Run,
     ):
@@ -63,7 +63,7 @@ class TestCreateThreadRun:
     def test_event_type(
         self,
         decoy: Decoy,
-        run_repository: AssistantRunRepository,
+        run_repository: RunRepository,
         instance: ThreadRunEventHandler,
         some_run: Run,
     ):
@@ -86,7 +86,7 @@ class TestCreateThreadRun:
 class TestCompleteThreadRun:
 
     @pytest.fixture
-    def instance(self, decoy: Decoy, run_repository: AssistantRunRepository):
+    def instance(self, decoy: Decoy, run_repository: RunRepository):
         instance = ThreadRunEventHandler(run_repository=run_repository)
 
         decoy.when(run_repository.update(matchers.Anything())).then_do(lambda run: run)
@@ -116,7 +116,7 @@ class TestCompleteThreadRun:
     def test_run_is_persisted(
         self,
         decoy: Decoy,
-        run_repository: AssistantRunRepository,
+        run_repository: RunRepository,
         instance: ThreadRunEventHandler,
         some_run: Run,
     ):

@@ -2,13 +2,13 @@ from openai.types.beta.threads import Run
 import uuid
 from typing import List, Optional
 from langchain_openai_api_bridge.assistant.openai_run_factory import create_run
-from langchain_openai_api_bridge.assistant.repository.assistant_run_repository import (
-    AssistantRunRepository,
+from langchain_openai_api_bridge.assistant.repository.run_repository import (
+    RunRepository,
 )
 from openai.types.beta.threads.run import RequiredAction, RunStatus, AssistantTool
 
 
-class InMemoryRunRepository(AssistantRunRepository):
+class InMemoryRunRepository(RunRepository):
     def __init__(self) -> None:
         self.runs: dict[str, Run] = {}
 
