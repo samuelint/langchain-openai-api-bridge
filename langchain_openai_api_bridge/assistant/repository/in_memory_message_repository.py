@@ -84,7 +84,7 @@ class InMemoryMessageRepository(AssistantMessageRepository):
         return SyncCursorPage(data=messages)
 
     # thread_id is not needed for in-memory implementation
-    def retreive(self, message_id: str, thread_id: str) -> Message:
+    def retreive(self, message_id: str, thread_id: str) -> Union[Message, None]:
         result = self.messages.get(message_id)
         if result is None:
             return None
@@ -103,7 +103,9 @@ class InMemoryMessageRepository(AssistantMessageRepository):
 
         return messages[0]
 
-    def retreive_message_id_by_run_id(self, run_id: str, thread_id: str) -> str:
+    def retreive_message_id_by_run_id(
+        self, run_id: str, thread_id: str
+    ) -> Union[str, None]:
         message = self.retreive_unique_by_run_id(run_id=run_id, thread_id=thread_id)
 
         if message is None:

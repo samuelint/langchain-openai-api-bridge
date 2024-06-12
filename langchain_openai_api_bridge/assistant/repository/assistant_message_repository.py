@@ -55,13 +55,17 @@ class AssistantMessageRepository(ABC):
         pass
 
     @abstractmethod
-    def retreive_unique_by_run_id(self, run_id: str, thread_id: str) -> Message:
+    def retreive_unique_by_run_id(
+        self, run_id: str, thread_id: str
+    ) -> Union[Message, None]:
         pass
 
     # The id is required for message delta, however, it's not necessary to hit the database
     # every time. The correlation id - run_id can be cached in this function
     @abstractmethod
-    def retreive_message_id_by_run_id(self, run_id: str, thread_id: str) -> str:
+    def retreive_message_id_by_run_id(
+        self, run_id: str, thread_id: str
+    ) -> Union[str, None]:
         pass
 
     @abstractmethod
