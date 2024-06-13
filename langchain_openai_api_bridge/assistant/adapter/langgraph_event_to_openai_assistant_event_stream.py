@@ -62,19 +62,6 @@ class LanggraphEventToOpenAIAssistantEventStream:
                     adapted_events += self.on_chat_model_end_handler.handle(
                         event=event, dto=dto
                     )
-
-                # case "on_llm_start":
-                #     print(event)
-                # case "on_llm_stream":
-                #     print(event)
-                # case "on_llm_end":
-                #     print(event)
-                # case "on_chain_start":
-                #     print(event)
-                # case "on_chain_stream":
-                #     print(event)
-                # case "on_chain_end":
-                #     print(event)
                 case "on_tool_start":
                     adapted_events += self.on_tool_start_handler.handle(
                         event=event, dto=dto
@@ -83,12 +70,6 @@ class LanggraphEventToOpenAIAssistantEventStream:
                     adapted_events += self.on_tool_end_handler.handle(
                         event=event, dto=dto
                     )
-
-                # case "on_retriever_start":
-                #     print(event)
-                # case "on_retriever_end":
-                #     print(event)
-
             for event in adapted_events:
                 yield event
 

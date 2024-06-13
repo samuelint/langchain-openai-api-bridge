@@ -4,7 +4,7 @@
 
 A `FastAPI` + `Langchain` / `langgraph` extension to expose agent result as an OpenAI-compatible API.
 
-Use any OpenAI-compatible UI or UI framework (like the awesome 👌 [Vercel AI SDK](https://sdk.vercel.ai/docs/ai-sdk-core/overview)) with your custom `Langchain Agent`.
+Use any OpenAI-compatible UI or UI framework with your custom `Langchain Agent`.
 
 Support:
 
@@ -19,6 +19,8 @@ Support:
   - ✅ Tools step stream
   - 🚧 Human In The Loop
 
+If you find this project useful, please give it a star ⭐!
+
 ## Table of Content
 
 - [Quick Install](#quick-install)
@@ -26,7 +28,7 @@ Support:
   - [OpenAI Assistant API Compatible](#openai-assistant-api-compatible)
   - [OpenAI Chat Completion API Compatible](#openai-chat-completion-api-compatible)
 - [More Examples](#more-examples)
-- [💁 Contributing](#---contributing)
+- [Contributing](#contributing)
   - [Installation](#installation)
   - [Commands](#commands)
 - [Limitations](#limitations)
@@ -50,29 +52,7 @@ poetry add langchain-openai-api-bridge
 ### OpenAI Assistant API Compatible
 
 ```python
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi import APIRouter, FastAPI
-from dotenv import load_dotenv, find_dotenv
-import uvicorn
-
-
-from langchain_openai_api_bridge.assistant.assistant_app import AssistantApp
-
-from langchain_openai_api_bridge.assistant.repository import (
-    InMemoryMessageRepository,
-    InMemoryRunRepository,
-    InMemoryThreadRepository,
-)
-from langchain_openai_api_bridge.fastapi.add_assistant_routes import (
-    build_assistant_router,
-)
-from tests.test_functional.fastapi_assistant_agent_openai_advanced.my_agent_factory import (
-    MyAgentFactory,
-)
-
-_ = load_dotenv(find_dotenv())
-
-
+# Assistant Bridge as OpenAI Compatible API
 assistant_app = AssistantApp(
     thread_repository_type=InMemoryThreadRepository,
     message_repository_type=InMemoryMessageRepository,
@@ -86,37 +66,14 @@ api = FastAPI(
     description="OpenAI API exposing langchain agent",
 )
 
-api.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"],
-)
-
-assistant_router = build_assistant_router(assistant_app=assistant_app)
-open_ai_router = APIRouter(prefix="/my-assistant/openai/v1")
-
-open_ai_router.include_router(assistant_router)
-api.include_router(open_ai_router)
+include_assistant(app=api, assistant_app=assistant_app, prefix="/assistant")
 
 if __name__ == "__main__":
     uvicorn.run(api, host="localhost")
-
 ```
 
 ```python
-from langchain_openai_api_bridge.core.agent_factory import AgentFactory
-from langgraph.graph.graph import CompiledGraph
-from langchain_core.language_models import BaseChatModel
-from langchain_core.tools import tool
-from langgraph.prebuilt import create_react_agent
-from langchain_openai import ChatOpenAI
-
-from langchain_openai_api_bridge.core.create_llm_dto import CreateLLMDto
-
-
+# Agent Creation
 @tool
 def magic_number_tool(input: int) -> int:
     """Applies a magic function to an input."""
@@ -139,8 +96,13 @@ class MyAgentFactory(AgentFactory):
             streaming=True,
             temperature=dto.temperature,
         )
-
 ```
+
+Full example:
+
+- [Server](tests/test_functional/fastapi_assistant_agent_openai_advanced/assistant_server_openai.py)
+- [Agent Factory](tests/test_functional/fastapi_assistant_agent_openai_advanced/my_agent_factory.py)
+- [Client](tests/test_functional/fastapi_assistant_agent_openai_advanced/test_assistant_server_openai.py)
 
 ### OpenAI Chat Completion API Compatible
 
@@ -201,13 +163,14 @@ print(chat_completion.choices[0].message.content)
 #> "This is a test"
 ```
 
-Full python example: [Server](tests/test_functional/fastapi_chat_completion_openai/server_openai.py), [Client](tests/test_functional/fastapi_chat_completion_openai/test_server_openai.py)
+Full example:
 
-If you find this project useful, please give it a star ⭐!
-
-###### Bonus Client using NextJS + Vercel AI SDK
+- [Server](tests/test_functional/fastapi_chat_completion_openai/server_openai.py)
+- [Client](tests/test_functional/fastapi_chat_completion_openai/test_server_openai.py)
 
 ```typescript
+// Vercel AI sdk - example
+// ************************
 // app/api/my-chat/route.ts
 import { NextRequest } from "next/server";
 import { z } from "zod";
@@ -257,7 +220,7 @@ Every examples can be found in [`tests/test_functional`](tests/test_functional) 
 Define `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` on your system.
 Examples will take token from environment variable or `.env` at root of the project.
 
-## 💁 Contributing
+## Contributing
 
 If you want to contribute to this project, you can follow this guideline:
 
@@ -283,9 +246,7 @@ poetry env use ./.venv/bin/python
 
 - **Chat Completions Tools**
 
-  - Functions do not work when configured on the client. Set up tools and functions using LangChain on the server. [Usage Example](tests/test_functional/fastapi_chat_completion_openai/server_openai.py)
-  - ⚠️ LangChain functions are not streamed in responses due to a limitation in LangGraph.
-    - Details: LangGraph's `astream_events` - `on_tool_start`, `on_tool_end`, and `on_llm_stream` events do not contain information typically available when calling tools.
+  - Functions cannot be passed through open ai API. Every functions need to be defined as a tool in langchain. [Usage Example](tests/test_functional/fastapi_chat_completion_openai/server_openai.py)
 
 - **LLM Usage Info**
   - **Returned usage info is innacurate**. This is due to a Langchain/Langgraph limitation where usage info isn't available when calling a Langgraph Agent.
