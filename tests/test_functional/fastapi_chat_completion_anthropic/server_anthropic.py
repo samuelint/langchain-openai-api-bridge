@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv, find_dotenv
 import uvicorn
-from langchain_openai_api_bridge.assistant.assistant_app import AssistantApp
-from langchain_openai_api_bridge.assistant.repository import (
+from langchain_openai_api_bridge.assistant import (
+    AssistantApp,
     InMemoryMessageRepository,
     InMemoryRunRepository,
     InMemoryThreadRepository,

@@ -53,6 +53,15 @@ poetry add langchain-openai-api-bridge
 
 ```python
 # Assistant Bridge as OpenAI Compatible API
+
+from langchain_openai_api_bridge.assistant import (
+    AssistantApp,
+    InMemoryMessageRepository,
+    InMemoryRunRepository,
+    InMemoryThreadRepository,
+)
+from langchain_openai_api_bridge.fastapi import include_assistant
+
 assistant_app = AssistantApp(
     thread_repository_type=InMemoryThreadRepository,
     message_repository_type=InMemoryMessageRepository,
@@ -108,6 +117,15 @@ Full example:
 
 ```python
 # Server
+
+from langchain_openai_api_bridge.assistant import (
+    AssistantApp,
+    InMemoryMessageRepository,
+    InMemoryRunRepository,
+    InMemoryThreadRepository,
+)
+from langchain_openai_api_bridge.fastapi import include_chat_completion
+
 api = FastAPI(
     title="Langchain Agent OpenAI API Bridge",
     version="1.0",
