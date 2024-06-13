@@ -1,9 +1,9 @@
 from typing import AsyncIterator, List, Optional
 from langgraph.graph.graph import CompiledGraph
-from langchain_openai_api_bridge.core.langchain_invoke_adapter import (
+from langchain_openai_api_bridge.chat_completion.langchain_invoke_adapter import (
     LangchainInvokeAdapter,
 )
-from langchain_openai_api_bridge.core.langchain_stream_adapter import (
+from langchain_openai_api_bridge.chat_completion.langchain_stream_adapter import (
     LangchainStreamAdapter,
 )
 from langchain_openai_api_bridge.core.types.openai import OpenAIChatMessage

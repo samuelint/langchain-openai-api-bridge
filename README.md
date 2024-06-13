@@ -53,6 +53,15 @@ poetry add langchain-openai-api-bridge
 
 ```python
 # Assistant Bridge as OpenAI Compatible API
+
+from langchain_openai_api_bridge.assistant import (
+    AssistantApp,
+    InMemoryMessageRepository,
+    InMemoryRunRepository,
+    InMemoryThreadRepository,
+)
+from langchain_openai_api_bridge.fastapi import include_assistant
+
 assistant_app = AssistantApp(
     thread_repository_type=InMemoryThreadRepository,
     message_repository_type=InMemoryMessageRepository,
@@ -108,40 +117,41 @@ Full example:
 
 ```python
 # Server
+
+from langchain_openai_api_bridge.assistant import (
+    AssistantApp,
+    InMemoryMessageRepository,
+    InMemoryRunRepository,
+    InMemoryThreadRepository,
+)
+from langchain_openai_api_bridge.fastapi import include_chat_completion
+
 api = FastAPI(
     title="Langchain Agent OpenAI API Bridge",
     version="1.0",
     description="OpenAI API exposing langchain agent",
 )
 
-@tool
-def magic_number_tool(input: int) -> int:
-    """Applies a magic function to an input."""
-    return input + 2
-
-
-def assistant_openai_v1_chat(request: OpenAIChatCompletionRequest, api_key: str):
-    llm = ChatOpenAI(
-        model=request.model,
-        api_key=api_key,
-        streaming=True,
-    )
-    agent = create_react_agent(
-        llm,
-        [magic_number_tool],
-        messages_modifier="""You are a helpful assistant.""",
-    )
-
-    return V1ChatCompletionRoutesArg(model_name=request.model, agent=agent)
-
-
-add_v1_chat_completions_agent_routes(
-    api,
-    path="/my-custom-path",
-    handler=assistant_openai_v1_chat,
-    system_fingerprint=system_fingerprint,
+api.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
 )
 
+assistant_app = AssistantApp(
+    thread_repository_type=InMemoryThreadRepository,
+    message_repository_type=InMemoryMessageRepository,
+    run_repository=InMemoryRunRepository,
+    agent_factory=MyAnthropicAgentFactory,
+    system_fingerprint="My System Fingerprint",
+)
+
+include_chat_completion(
+    app=api, assistant_app=assistant_app, prefix="/my-custom-path/anthropic"
+)
 ```
 
 ```python
@@ -209,11 +219,8 @@ export async function POST(request: NextRequest) {
 
 ## More Examples
 
-Every examples can be found in [`tests/test_functional`](tests/test_functional) directory.
-
-- **OpenAI LLM -> Langgraph Agent -> OpenAI Completion** - [Server](tests/test_functional/fastapi_chat_completion_openai/server_openai.py), [Client](tests/test_functional/fastapi_chat_completion_openai/test_server_openai.py)
-- **Anthropic LLM -> Langgraph Agent -> OpenAI Completion** - [Server](tests/test_functional/fastapi_chat_completion_anthropic/server_anthropic.py), [Client](tests/test_functional/fastapi_chat_completion_anthropic/test_server_anthropic.py)
-- **Advanced** - OpenAI LLM -> Langgraph Agent -> OpenAI Completion - [Server](tests/test_functional/fastapi_chat_completion_agent_simple/server_openai_advanced.py), [Client](tests/test_functional/fastapi_chat_completion_agent_simple/test_server_openai_advanced.py)
+More examples can be found in [`tests/test_functional`](tests/test_functional) directory.
+This project is not limited to OpenAI’s models; some examples demonstrate the use of Anthropic’s language models. Anthropic is just one example, and any LangChain-supported vendor is also supported by this library.
 
 ##### ⚠️ Setup to run examples
 

@@ -1,58 +1,47 @@
-from typing import Callable, Optional
-from fastapi import FastAPI, Header
+from fastapi import APIRouter, Header
 from fastapi.responses import JSONResponse
 
-from langchain_openai_api_bridge.core.http_stream_response_adapter import (
+from langchain_openai_api_bridge.assistant.assistant_app import AssistantApp
+from langchain_openai_api_bridge.core.agent_factory import AgentFactory
+from langchain_openai_api_bridge.core.create_llm_dto import CreateLLMDto
+from langchain_openai_api_bridge.chat_completion.http_stream_response_adapter import (
     HttpStreamResponseAdapter,
 )
-from langchain_openai_api_bridge.core.chat_completion_compatible_api import (
+from langchain_openai_api_bridge.chat_completion.chat_completion_compatible_api import (
     ChatCompletionCompatibleAPI,
 )
 from langchain_openai_api_bridge.core.types.openai import OpenAIChatCompletionRequest
 from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
-from langgraph.graph.graph import CompiledGraph
 
 
-async def handle_v1_chat_completions(
-    agent: CompiledGraph,
-    request: OpenAIChatCompletionRequest,
-    system_fingerprint: Optional[str] = "",
+def create_open_ai_compatible_chat_completion_router(
+    assistant_app: AssistantApp,
 ):
-    adapter = ChatCompletionCompatibleAPI.from_agent(
-        agent, request.model, system_fingerprint
-    )
+    container = assistant_app.container
+    chat_completion_router = APIRouter(prefix="/chat/completions")
 
-    response_factory = HttpStreamResponseAdapter()
-    if request.stream is True:
-        stream = adapter.astream(request.messages)
-        return response_factory.to_streaming_response(stream)
-    else:
-        return JSONResponse(content=adapter.invoke(request.messages))
-
-
-class V1ChatCompletionRoutesArg:
-    def __init__(self, model_name: str, agent: CompiledGraph):
-        self.model_name = model_name
-        self.agent = agent
-
-
-def add_v1_chat_completions_agent_routes(
-    app: FastAPI,
-    handler: Callable[[OpenAIChatCompletionRequest, str], V1ChatCompletionRoutesArg],
-    path: str = "",
-    system_fingerprint: str = "",
-):
-
-    async def internal_handler(
-        request: OpenAIChatCompletionRequest, authorization: str = Header(None)
+    @chat_completion_router.post("/")
+    async def assistant_retreive_thread_messages(
+        dto: OpenAIChatCompletionRequest, authorization: str = Header(None)
     ):
         api_key = get_bearer_token(authorization)
-        args = handler(request, api_key)
+        agent_factory = container.resolve(AgentFactory)
+        llm = agent_factory.create_llm(
+            dto=CreateLLMDto(
+                model=dto.model, api_key=api_key, temperature=dto.temperature
+            )
+        )
+        agent = agent_factory.create_agent(llm=llm)
 
-        return await handle_v1_chat_completions(
-            agent=args.agent,
-            request=request,
-            system_fingerprint=system_fingerprint,
+        adapter = ChatCompletionCompatibleAPI.from_agent(
+            agent, dto.model, assistant_app.system_fingerprint
         )
 
-    app.post(f"{path}/openai/v1/chat/completions")(internal_handler)
+        response_factory = HttpStreamResponseAdapter()
+        if dto.stream is True:
+            stream = adapter.astream(dto.messages)
+            return response_factory.to_streaming_response(stream)
+        else:
+            return JSONResponse(content=adapter.invoke(dto.messages))
+
+    return chat_completion_router

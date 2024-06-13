@@ -1,6 +1,6 @@
 from unittest.mock import MagicMock
 import pytest
-from langchain_openai_api_bridge.core.chat_completion_compatible_api import (
+from langchain_openai_api_bridge.chat_completion.chat_completion_compatible_api import (
     ChatCompletionCompatibleAPI,
 )
 from langgraph.graph.graph import CompiledGraph

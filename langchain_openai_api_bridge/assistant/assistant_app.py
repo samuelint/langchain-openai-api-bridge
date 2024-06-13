@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Optional, Type
 from langchain_openai_api_bridge.assistant.adapter.container import (
     register_assistant_adapter,
 )
@@ -31,8 +31,10 @@ class AssistantApp:
         message_repository_type: Type[MessageRepository],
         run_repository: Type[RunRepository],
         agent_factory: Type[AgentFactory],
+        system_fingerprint: Optional[str] = "",
     ):
         self.container = DIContainer()
+        self.system_fingerprint = system_fingerprint
 
         register_assistant_adapter(self.container)
 

@@ -1,7 +1,7 @@
 from unittest.mock import patch
 from langchain_core.runnables.schema import StreamEvent
 
-from langchain_openai_api_bridge.core.chat_completion_chunk_choice_adapter import (
+from langchain_openai_api_bridge.chat_completion.chat_completion_chunk_choice_adapter import (
     to_openai_chat_completion_chunk_choice,
     to_openai_chat_completion_chunk_object,
     to_openai_chat_message,
