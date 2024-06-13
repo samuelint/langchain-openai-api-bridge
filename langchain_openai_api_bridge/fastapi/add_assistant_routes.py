@@ -26,7 +26,7 @@ from langchain_openai_api_bridge.core.create_llm_dto import CreateLLMDto
 from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
 
 
-def build_assistant_router(
+def create_open_ai_compatible_assistant_router(
     assistant_app: AssistantApp,
 ):
 

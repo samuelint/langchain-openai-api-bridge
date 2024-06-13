@@ -1,15 +1,19 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv, find_dotenv
-from langchain_core.tools import tool
-from langchain_openai import ChatOpenAI
-from langgraph.prebuilt import create_react_agent
+import uvicorn
 
-from langchain_openai_api_bridge.core.types.openai import OpenAIChatCompletionRequest
-from langchain_openai_api_bridge.fastapi.add_chat_completions_agent_routes import (
-    V1ChatCompletionRoutesArg,
-    add_v1_chat_completions_agent_routes,
+from langchain_openai_api_bridge.assistant.assistant_app import AssistantApp
+from langchain_openai_api_bridge.assistant.repository import (
+    InMemoryMessageRepository,
+    InMemoryRunRepository,
+    InMemoryThreadRepository,
 )
+from langchain_openai_api_bridge.fastapi import include_chat_completion
+from tests.test_functional.fastapi_chat_completion_openai.my_openai_agent_factory import (
+    MyOpenAIAgentFactory,
+)
+
 
 _ = load_dotenv(find_dotenv())
 
@@ -29,33 +33,15 @@ api.add_middleware(
     expose_headers=["*"],
 )
 
-system_fingerprint = "My System Fingerprints"
-
-
-@tool
-def magic_number_tool(input: int) -> int:
-    """Applies a magic function to an input."""
-    return input + 2
-
-
-def assistant_openai_v1_chat(request: OpenAIChatCompletionRequest, api_key: str):
-    llm = ChatOpenAI(
-        model=request.model,
-        api_key=api_key,
-        streaming=True,
-    )
-    agent = create_react_agent(
-        llm,
-        [magic_number_tool],
-        messages_modifier="""You are a helpful assistant.""",
-    )
-
-    return V1ChatCompletionRoutesArg(model_name=request.model, agent=agent)
-
-
-add_v1_chat_completions_agent_routes(
-    api,
-    path="/my-custom-path",
-    handler=assistant_openai_v1_chat,
-    system_fingerprint=system_fingerprint,
+assistant_app = AssistantApp(
+    thread_repository_type=InMemoryThreadRepository,
+    message_repository_type=InMemoryMessageRepository,
+    run_repository=InMemoryRunRepository,
+    agent_factory=MyOpenAIAgentFactory,
+    system_fingerprint="My System Fingerprint",
 )
+
+include_chat_completion(app=api, assistant_app=assistant_app, prefix="/my-custom-path")
+
+if __name__ == "__main__":
+    uvicorn.run(api, host="localhost")
