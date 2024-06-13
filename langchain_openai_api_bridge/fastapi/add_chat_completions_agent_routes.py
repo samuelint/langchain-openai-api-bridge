@@ -4,10 +4,10 @@ from fastapi.responses import JSONResponse
 from langchain_openai_api_bridge.assistant.assistant_app import AssistantApp
 from langchain_openai_api_bridge.core.agent_factory import AgentFactory
 from langchain_openai_api_bridge.core.create_llm_dto import CreateLLMDto
-from langchain_openai_api_bridge.core.http_stream_response_adapter import (
+from langchain_openai_api_bridge.chat_completion.http_stream_response_adapter import (
     HttpStreamResponseAdapter,
 )
-from langchain_openai_api_bridge.core.chat_completion_compatible_api import (
+from langchain_openai_api_bridge.chat_completion.chat_completion_compatible_api import (
     ChatCompletionCompatibleAPI,
 )
 from langchain_openai_api_bridge.core.types.openai import OpenAIChatCompletionRequest

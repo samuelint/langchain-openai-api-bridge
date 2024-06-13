@@ -1,7 +1,7 @@
 from typing import Optional
 from langchain_core.runnables.schema import StreamEvent
 
-from langchain_openai_api_bridge.core.chat_completion_chunk_object_factory import (
+from langchain_openai_api_bridge.chat_completion.chat_completion_chunk_object_factory import (
     create_chat_completion_chunk_object,
 )
 from langchain_openai_api_bridge.core.types.openai import (

@@ -2,10 +2,10 @@ from typing import AsyncIterator
 import uuid
 from langchain_core.runnables.schema import StreamEvent
 
-from langchain_openai_api_bridge.core.chat_completion_chunk_choice_adapter import (
+from langchain_openai_api_bridge.chat_completion.chat_completion_chunk_choice_adapter import (
     to_openai_chat_completion_chunk_object,
 )
-from langchain_openai_api_bridge.core.chat_completion_chunk_object_factory import (
+from langchain_openai_api_bridge.chat_completion.chat_completion_chunk_object_factory import (
     create_final_chat_completion_chunk_object,
 )
 from langchain_openai_api_bridge.core.types.openai import (
