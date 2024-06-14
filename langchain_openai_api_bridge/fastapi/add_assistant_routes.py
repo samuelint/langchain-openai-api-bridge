@@ -22,7 +22,7 @@ from langchain_openai_api_bridge.assistant.create_thread_runs_api_dto import (
     ThreadRunsDto,
 )
 from langchain_openai_api_bridge.core.agent_factory import AgentFactory
-from langchain_openai_api_bridge.core.create_llm_dto import CreateLLMDto
+from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
 
 
@@ -93,26 +93,26 @@ def create_open_ai_compatible_assistant_router(
 
     @thread_router.post("/{thread_id}/runs")
     async def assistant_create_thread_runs(
-        dto: ThreadRunsDto,
+        thread_run_dto: ThreadRunsDto,
         thread_id: str,
         authorization: str = Header(None),
     ):
-        dto.thread_id = thread_id
-        if dto.model is None:
-            dto.model = "gpt-3.5-turbo"
+        thread_run_dto.thread_id = thread_id
 
         api_key = get_bearer_token(authorization)
 
         agent_factory = container.resolve(AgentFactory)
-        llm = agent_factory.create_llm(
-            dto=CreateLLMDto(
-                model=dto.model, api_key=api_key, temperature=dto.temperature
-            )
+        create_agent_dto = CreateAgentDto(
+            model=thread_run_dto.model,
+            api_key=api_key,
+            temperature=thread_run_dto.temperature,
+            assistant_id=thread_run_dto.assistant_id,
         )
-        agent = agent_factory.create_agent(llm=llm)
+        llm = agent_factory.create_llm(dto=create_agent_dto)
+        agent = agent_factory.create_agent(llm=llm, dto=create_agent_dto)
 
         service = container.resolve(AssistantRunService)
-        stream = service.astream(agent=agent, dto=dto)
+        stream = service.astream(agent=agent, dto=thread_run_dto)
 
         response_factory = AssistantStreamEventAdapter()
 

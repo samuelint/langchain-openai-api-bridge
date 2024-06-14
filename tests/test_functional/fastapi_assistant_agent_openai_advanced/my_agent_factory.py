@@ -5,7 +5,7 @@ from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent
 from langchain_openai import ChatOpenAI
 
-from langchain_openai_api_bridge.core.create_llm_dto import CreateLLMDto
+from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 
 
 @tool
@@ -16,14 +16,14 @@ def magic_number_tool(input: int) -> int:
 
 class MyAgentFactory(AgentFactory):
 
-    def create_agent(self, llm: BaseChatModel) -> CompiledGraph:
+    def create_agent(self, llm: BaseChatModel, dto: CreateAgentDto) -> CompiledGraph:
         return create_react_agent(
             llm,
             [magic_number_tool],
             messages_modifier="""You are a helpful assistant.""",
         )
 
-    def create_llm(self, dto: CreateLLMDto) -> CompiledGraph:
+    def create_llm(self, dto: CreateAgentDto) -> CompiledGraph:
         return ChatOpenAI(
             model=dto.model,
             api_key=dto.api_key,

@@ -91,7 +91,7 @@ def magic_number_tool(input: int) -> int:
 
 class MyAgentFactory(AgentFactory):
 
-    def create_agent(self, llm: BaseChatModel) -> CompiledGraph:
+    def create_agent(self, llm: BaseChatModel, dto: CreateLLMDto) -> CompiledGraph:
         return create_react_agent(
             llm,
             [magic_number_tool],
