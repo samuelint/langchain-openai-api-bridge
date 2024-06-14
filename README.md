@@ -157,7 +157,7 @@ include_chat_completion(
 ```python
 # Client
 openai_client = OpenAI(
-    base_url="http://my-server/my-custom-path/openai/v1",
+    base_url="http://my-server/my-custom-path/anthropic/openai/v1",
 )
 
 chat_completion = openai_client.chat.completions.create(
