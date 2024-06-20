@@ -12,6 +12,7 @@ def create_run(
     status: RunStatus,
     instructions: str = "",
     required_action: Optional[RequiredAction] = None,
+    parallel_tool_calls: bool = True,
     tools: List[AssistantTool] = [],
 ) -> Run:
     return Run(
@@ -22,6 +23,7 @@ def create_run(
         created_at=time.time(),
         instructions=instructions,
         object="thread.run",
+        parallel_tool_calls=parallel_tool_calls,
         required_action=required_action,
         status=status,
         tools=tools,

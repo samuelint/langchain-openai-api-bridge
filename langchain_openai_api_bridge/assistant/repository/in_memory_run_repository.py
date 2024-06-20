@@ -21,6 +21,7 @@ class InMemoryRunRepository(RunRepository):
         instructions: str = "",
         required_action: Optional[RequiredAction] = None,
         tools: List[AssistantTool] = [],
+        parallel_tool_calls: bool = True,
     ) -> Run:
         id = str(uuid.uuid4())
         run = create_run(
@@ -32,6 +33,7 @@ class InMemoryRunRepository(RunRepository):
             instructions=instructions,
             required_action=required_action,
             tools=tools,
+            parallel_tool_calls=parallel_tool_calls,
         )
         self.runs[id] = run
 
