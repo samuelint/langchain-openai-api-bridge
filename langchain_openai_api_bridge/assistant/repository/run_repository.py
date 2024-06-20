@@ -21,6 +21,7 @@ class RunRepository(ABC):
         instructions: str = "",
         required_action: Optional[RequiredAction] = None,
         tools: List[AssistantTool] = [],
+        parallel_tool_calls: bool = True,
     ) -> Run:
         pass
 
