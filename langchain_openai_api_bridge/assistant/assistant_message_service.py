@@ -10,10 +10,6 @@ from langchain_openai_api_bridge.assistant.repository.message_repository import 
 )
 from openai.pagination import SyncCursorPage
 
-from openai import OpenAI
-
-client = OpenAI()
-
 
 class AssistantMessageService:
 
