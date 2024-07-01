@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, Union
 from fastapi import FastAPI
 
 from langchain_openai_api_bridge.assistant.adapter.container import (
@@ -36,16 +36,18 @@ from langchain_openai_api_bridge.fastapi.chat_completion_router import (
 
 class LangchainOpenaiApiBridgeFastAPI(LangchainOpenaiApiBridge):
     def __init__(
-        self, app: FastAPI, agent_factory_provider: Callable[[], AgentFactory]
+        self,
+        app: FastAPI,
+        agent_factory_provider: Union[Callable[[], AgentFactory], AgentFactory],
     ) -> None:
         super().__init__(agent_factory_provider=agent_factory_provider)
         self.app = app
 
     def bind_openai_assistant_api(
         self,
-        thread_repository_provider: Callable[[], ThreadRepository],
-        message_repository_provider: Callable[[], MessageRepository],
-        run_repository_provider: Callable[[], RunRepository],
+        thread_repository_provider: Union[Callable[[], ThreadRepository]],
+        message_repository_provider: Union[Callable[[], MessageRepository]],
+        run_repository_provider: Union[Callable[[], RunRepository]],
         prefix: str = "",
     ) -> None:
 

@@ -1,7 +1,6 @@
 from typing import Type, TypeVar, Dict, Any, Union, Callable
 import inspect
 
-
 T = TypeVar("T")
 
 
@@ -24,6 +23,8 @@ class TinyDIContainer:
             self.singletons[cls] = service if service else implementation
         else:
             self.services[cls] = service if service else implementation
+
+        self.implementations[cls] = implementation
 
     def resolve(self, cls: Type[T]) -> T:
         if cls in self.singletons:
