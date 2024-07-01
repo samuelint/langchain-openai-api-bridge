@@ -6,13 +6,13 @@ from openai.types.beta import AssistantStreamEvent, Thread
 
 from fastapi.testclient import TestClient
 import validators
-from assistant_server_openai import api
+from assistant_server_openai import app
 from tests.test_functional.assistant_stream_utils import (
     assistant_stream_events_to_str_response,
 )
 
 
-test_api = TestClient(api)
+test_api = TestClient(app)
 
 
 logging.getLogger("openai").setLevel(logging.DEBUG)

@@ -9,8 +9,8 @@ from openai.types.beta.threads.run import RequiredAction, RunStatus, AssistantTo
 
 
 class InMemoryRunRepository(RunRepository):
-    def __init__(self) -> None:
-        self.runs: dict[str, Run] = {}
+    def __init__(self, data: dict[str, Run] = {}) -> None:
+        self.runs = data
 
     def create(
         self,

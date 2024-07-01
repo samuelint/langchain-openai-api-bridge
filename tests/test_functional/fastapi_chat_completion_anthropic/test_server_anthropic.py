@@ -1,10 +1,10 @@
 import pytest
 from openai import OpenAI
 from fastapi.testclient import TestClient
-from server_anthropic import api
+from server_anthropic import app
 
 
-test_api = TestClient(api)
+test_api = TestClient(app)
 
 
 @pytest.fixture

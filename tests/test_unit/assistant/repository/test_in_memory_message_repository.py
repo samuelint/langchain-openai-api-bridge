@@ -146,7 +146,7 @@ class TestRetreiveInMemoryMessageRepository:
 class TestRetreiveInMemoryMessageByRunId:
     @pytest.fixture
     def instance(self):
-        return InMemoryMessageRepository()
+        return InMemoryMessageRepository(data={})
 
     def test_message_is_retreivable_by_run_id(
         self, instance: InMemoryMessageRepository
@@ -232,7 +232,7 @@ class TestDeleteInMemoryMessageRepository:
 class TestListInMemoryMessageRepository:
     @pytest.fixture
     def instance(self):
-        return InMemoryMessageRepository()
+        return InMemoryMessageRepository(data={})
 
     def test_messages_of_a_thread_are_retreivable_by_page(
         self, instance: InMemoryMessageRepository

@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Header
 from fastapi.responses import JSONResponse
 
-from langchain_openai_api_bridge.assistant.assistant_api_binding import AssistantAPIBinding
 from langchain_openai_api_bridge.core.agent_factory import AgentFactory
 from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 from langchain_openai_api_bridge.chat_completion.http_stream_response_adapter import (
@@ -11,13 +10,13 @@ from langchain_openai_api_bridge.chat_completion.chat_completion_compatible_api 
     ChatCompletionCompatibleAPI,
 )
 from langchain_openai_api_bridge.core.types.openai import OpenAIChatCompletionRequest
+from langchain_openai_api_bridge.core.utils.tiny_di_container import TinyDIContainer
 from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
 
 
-def create_open_ai_compatible_chat_completion_router(
-    assistant_app: AssistantAPIBinding,
+def create_chat_completion_router(
+    tiny_di_container: TinyDIContainer,
 ):
-    container = assistant_app.injector
     chat_completion_router = APIRouter(prefix="/chat/completions")
 
     @chat_completion_router.post("/")
@@ -25,7 +24,7 @@ def create_open_ai_compatible_chat_completion_router(
         request: OpenAIChatCompletionRequest, authorization: str = Header(None)
     ):
         api_key = get_bearer_token(authorization)
-        agent_factory = container.get(AgentFactory)
+        agent_factory = tiny_di_container.resolve(AgentFactory)
         create_agent_dto = CreateAgentDto(
             model=request.model,
             api_key=api_key,
@@ -34,9 +33,7 @@ def create_open_ai_compatible_chat_completion_router(
         llm = agent_factory.create_llm(dto=create_agent_dto)
         agent = agent_factory.create_agent(llm=llm, dto=create_agent_dto)
 
-        adapter = ChatCompletionCompatibleAPI.from_agent(
-            agent, create_agent_dto.model, assistant_app.system_fingerprint
-        )
+        adapter = ChatCompletionCompatibleAPI.from_agent(agent, create_agent_dto.model)
 
         response_factory = HttpStreamResponseAdapter()
         if request.stream is True:
@@ -46,3 +43,13 @@ def create_open_ai_compatible_chat_completion_router(
             return JSONResponse(content=adapter.invoke(request.messages))
 
     return chat_completion_router
+
+
+def create_openai_chat_completion_router(
+    tiny_di_container: TinyDIContainer, prefix: str = ""
+):
+    router = create_chat_completion_router(tiny_di_container=tiny_di_container)
+    open_ai_router = APIRouter(prefix=f"{prefix}/openai/v1")
+    open_ai_router.include_router(router)
+
+    return open_ai_router

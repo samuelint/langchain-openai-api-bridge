@@ -4,16 +4,12 @@ from dotenv import load_dotenv, find_dotenv
 import uvicorn
 
 from langchain_openai_api_bridge.assistant import (
-    AssistantAPIBinding,
     InMemoryMessageRepository,
     InMemoryRunRepository,
     InMemoryThreadRepository,
 )
-from langchain_openai_api_bridge.fastapi import (
-    include_assistant,
-)
-from tests.test_functional.tiny_di_container import (
-    AssistantLibInjector,
+from langchain_openai_api_bridge.fastapi.langchain_openai_api_bridge_fastapi import (
+    LangchainOpenaiApiBridgeFastAPI,
 )
 from tests.test_functional.fastapi_assistant_agent_openai_advanced.my_agent_factory import (
     MyAgentFactory,
@@ -22,21 +18,13 @@ from tests.test_functional.fastapi_assistant_agent_openai_advanced.my_agent_fact
 _ = load_dotenv(find_dotenv())
 
 
-assistant_app = AssistantAPIBinding(
-    injector=AssistantLibInjector(),
-    thread_repository_type=InMemoryThreadRepository,
-    message_repository_type=InMemoryMessageRepository,
-    run_repository=InMemoryRunRepository,
-    agent_factory=MyAgentFactory,
-)
-
-api = FastAPI(
+app = FastAPI(
     title="Langchain Agent OpenAI API Bridge",
     version="1.0",
     description="OpenAI API exposing langchain agent",
 )
 
-api.add_middleware(
+app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=True,
@@ -45,7 +33,20 @@ api.add_middleware(
     expose_headers=["*"],
 )
 
-include_assistant(app=api, assistant_app=assistant_app, prefix="/my-assistant")
+in_memory_thread_repository = InMemoryThreadRepository()
+in_memory_message_repository = InMemoryMessageRepository()
+in_memory_run_repository = InMemoryRunRepository()
+
+bridge = LangchainOpenaiApiBridgeFastAPI(
+    app=app, agent_factory_provider=lambda: MyAgentFactory()
+)
+bridge.bind_openai_assistant_api(
+    thread_repository_provider=in_memory_thread_repository,
+    message_repository_provider=in_memory_message_repository,
+    run_repository_provider=in_memory_run_repository,
+    prefix="/my-assistant",
+)
+
 
 if __name__ == "__main__":
-    uvicorn.run(api, host="localhost")
+    uvicorn.run(app, host="localhost")
