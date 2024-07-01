@@ -11,7 +11,7 @@ from langchain_openai_api_bridge.assistant import (
 from langchain_openai_api_bridge.fastapi.langchain_openai_api_bridge_fastapi import (
     LangchainOpenaiApiBridgeFastAPI,
 )
-from tests.test_functional.fastapi_assistant_agent_openai_advanced.my_agent_factory import (
+from tests.test_functional.fastapi_assistant_agent_openai.my_agent_factory import (
     MyAgentFactory,
 )
 

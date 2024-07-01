@@ -54,31 +54,50 @@ poetry add langchain-openai-api-bridge
 ```python
 # Assistant Bridge as OpenAI Compatible API
 
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
+from dotenv import load_dotenv, find_dotenv
+import uvicorn
+
 from langchain_openai_api_bridge.assistant import (
-    AssistantApp,
     InMemoryMessageRepository,
     InMemoryRunRepository,
     InMemoryThreadRepository,
 )
-from langchain_openai_api_bridge.fastapi import include_assistant
-
-assistant_app = AssistantApp(
-    thread_repository_type=InMemoryThreadRepository,
-    message_repository_type=InMemoryMessageRepository,
-    run_repository=InMemoryRunRepository,
-    agent_factory=MyAgentFactory,
+from langchain_openai_api_bridge.fastapi.langchain_openai_api_bridge_fastapi import (
+    LangchainOpenaiApiBridgeFastAPI,
+)
+from tests.test_functional.fastapi_assistant_agent_openai.my_agent_factory import (
+    MyAgentFactory,
 )
 
-api = FastAPI(
+_ = load_dotenv(find_dotenv())
+
+
+app = FastAPI(
     title="Langchain Agent OpenAI API Bridge",
     version="1.0",
     description="OpenAI API exposing langchain agent",
 )
 
-include_assistant(app=api, assistant_app=assistant_app, prefix="/assistant")
+in_memory_thread_repository = InMemoryThreadRepository()
+in_memory_message_repository = InMemoryMessageRepository()
+in_memory_run_repository = InMemoryRunRepository()
+
+bridge = LangchainOpenaiApiBridgeFastAPI(
+    app=app, agent_factory_provider=lambda: MyAgentFactory()
+)
+bridge.bind_openai_assistant_api(
+    thread_repository_provider=in_memory_thread_repository,
+    message_repository_provider=in_memory_message_repository,
+    run_repository_provider=in_memory_run_repository,
+    prefix="/my-assistant",
+)
+
 
 if __name__ == "__main__":
-    uvicorn.run(api, host="localhost")
+    uvicorn.run(app, host="localhost")
+
 ```
 
 ```python
@@ -109,9 +128,9 @@ class MyAgentFactory(AgentFactory):
 
 Full example:
 
-- [Server](tests/test_functional/fastapi_assistant_agent_openai_advanced/assistant_server_openai.py)
-- [Agent Factory](tests/test_functional/fastapi_assistant_agent_openai_advanced/my_agent_factory.py)
-- [Client](tests/test_functional/fastapi_assistant_agent_openai_advanced/test_assistant_server_openai.py)
+- [Server](tests/test_functional/fastapi_assistant_agent_openai/assistant_server_openai.py)
+- [Agent Factory](tests/test_functional/fastapi_assistant_agent_openai/my_agent_factory.py)
+- [Client](tests/test_functional/fastapi_assistant_agent_openai/test_assistant_server_openai.py)
 
 ### OpenAI Chat Completion API Compatible
 
@@ -126,32 +145,20 @@ from langchain_openai_api_bridge.assistant import (
 )
 from langchain_openai_api_bridge.fastapi import include_chat_completion
 
-api = FastAPI(
+app = FastAPI(
     title="Langchain Agent OpenAI API Bridge",
     version="1.0",
     description="OpenAI API exposing langchain agent",
 )
 
-api.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"],
+bridge = LangchainOpenaiApiBridgeFastAPI(
+    app=app, agent_factory_provider=lambda: MyAnthropicAgentFactory()
 )
+bridge.bind_openai_chat_completion(prefix="/my-custom-path/anthropic")
 
-assistant_app = AssistantApp(
-    thread_repository_type=InMemoryThreadRepository,
-    message_repository_type=InMemoryMessageRepository,
-    run_repository=InMemoryRunRepository,
-    agent_factory=MyAnthropicAgentFactory,
-    system_fingerprint="My System Fingerprint",
-)
+if __name__ == "__main__":
+    uvicorn.run(app, host="localhost")
 
-include_chat_completion(
-    app=api, assistant_app=assistant_app, prefix="/my-custom-path/anthropic"
-)
 ```
 
 ```python

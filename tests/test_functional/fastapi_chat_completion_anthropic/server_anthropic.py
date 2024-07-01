@@ -27,7 +27,6 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
-
 bridge = LangchainOpenaiApiBridgeFastAPI(
     app=app, agent_factory_provider=lambda: MyAnthropicAgentFactory()
 )
