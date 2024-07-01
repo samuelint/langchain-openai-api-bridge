@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Header
 from fastapi.responses import JSONResponse
 
-from langchain_openai_api_bridge.assistant.assistant_app import AssistantApp
+from langchain_openai_api_bridge.assistant.assistant_api_binding import AssistantAPIBinding
 from langchain_openai_api_bridge.core.agent_factory import AgentFactory
 from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 from langchain_openai_api_bridge.chat_completion.http_stream_response_adapter import (
@@ -15,7 +15,7 @@ from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
 
 
 def create_open_ai_compatible_chat_completion_router(
-    assistant_app: AssistantApp,
+    assistant_app: AssistantAPIBinding,
 ):
     container = assistant_app.injector
     chat_completion_router = APIRouter(prefix="/chat/completions")

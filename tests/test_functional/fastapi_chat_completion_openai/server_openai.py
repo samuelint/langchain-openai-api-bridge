@@ -4,7 +4,7 @@ from dotenv import load_dotenv, find_dotenv
 import uvicorn
 
 from langchain_openai_api_bridge.assistant import (
-    AssistantApp,
+    AssistantAPIBinding,
     InMemoryMessageRepository,
     InMemoryRunRepository,
     InMemoryThreadRepository,
@@ -34,7 +34,7 @@ api.add_middleware(
     expose_headers=["*"],
 )
 
-assistant_app = AssistantApp(
+assistant_app = AssistantAPIBinding(
     injector=AssistantLibInjector(),
     thread_repository_type=InMemoryThreadRepository,
     message_repository_type=InMemoryMessageRepository,

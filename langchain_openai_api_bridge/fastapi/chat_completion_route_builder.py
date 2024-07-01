@@ -1,6 +1,6 @@
 from fastapi import APIRouter, FastAPI
 
-from langchain_openai_api_bridge.assistant.assistant_app import AssistantApp
+from langchain_openai_api_bridge.assistant.assistant_api_binding import AssistantAPIBinding
 
 from langchain_openai_api_bridge.fastapi.add_chat_completions_agent_routes import (
     create_open_ai_compatible_chat_completion_router,
@@ -8,7 +8,7 @@ from langchain_openai_api_bridge.fastapi.add_chat_completions_agent_routes impor
 
 
 def include_chat_completion(
-    app: FastAPI, assistant_app: AssistantApp, prefix: str = ""
+    app: FastAPI, assistant_app: AssistantAPIBinding, prefix: str = ""
 ):
     chat_completion_routes = create_open_ai_compatible_chat_completion_router(
         assistant_app=assistant_app

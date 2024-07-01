@@ -1,12 +1,14 @@
 from fastapi import APIRouter, FastAPI
 
-from langchain_openai_api_bridge.assistant.assistant_app import AssistantApp
+from langchain_openai_api_bridge.assistant.assistant_api_binding import AssistantAPIBinding
 from langchain_openai_api_bridge.fastapi.add_assistant_routes import (
     create_open_ai_compatible_assistant_router,
 )
 
 
-def include_assistant(app: FastAPI, assistant_app: AssistantApp, prefix: str = ""):
+def include_assistant(
+    app: FastAPI, assistant_app: AssistantAPIBinding, prefix: str = ""
+):
     assistant_router = create_open_ai_compatible_assistant_router(
         assistant_app=assistant_app
     )

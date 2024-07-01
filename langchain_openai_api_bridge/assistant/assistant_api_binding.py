@@ -26,7 +26,7 @@ from langchain_openai_api_bridge.assistant.repository.thread_repository import (
 from langchain_openai_api_bridge.core.agent_factory import AgentFactory
 
 
-class AssistantApp:
+class AssistantAPIBinding:
     def __init__(
         self,
         injector: BaseAssistantLibInjector,

@@ -4,7 +4,7 @@ from dotenv import load_dotenv, find_dotenv
 import uvicorn
 
 from langchain_openai_api_bridge.assistant import (
-    AssistantApp,
+    AssistantAPIBinding,
     InMemoryMessageRepository,
     InMemoryRunRepository,
     InMemoryThreadRepository,
@@ -22,7 +22,7 @@ from tests.test_functional.fastapi_assistant_agent_openai_advanced.my_agent_fact
 _ = load_dotenv(find_dotenv())
 
 
-assistant_app = AssistantApp(
+assistant_app = AssistantAPIBinding(
     injector=AssistantLibInjector(),
     thread_repository_type=InMemoryThreadRepository,
     message_repository_type=InMemoryMessageRepository,

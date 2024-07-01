@@ -1,7 +1,7 @@
 from typing import Literal
 from fastapi import APIRouter, Header
 
-from langchain_openai_api_bridge.assistant.assistant_app import AssistantApp
+from langchain_openai_api_bridge.assistant.assistant_api_binding import AssistantAPIBinding
 from langchain_openai_api_bridge.assistant.assistant_message_service import (
     AssistantMessageService,
 )
@@ -27,7 +27,7 @@ from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
 
 
 def create_open_ai_compatible_assistant_router(
-    assistant_app: AssistantApp,
+    assistant_app: AssistantAPIBinding,
 ):
 
     container = assistant_app.injector
