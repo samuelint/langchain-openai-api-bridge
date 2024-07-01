@@ -1,10 +1,19 @@
-from typing import Type, TypeVar, Dict, Any, Union
+from typing import Literal, Optional, Type, TypeVar, Dict, Any, Union
 import inspect
+
+from langchain_openai_api_bridge.assistant.assistant_lib_injector import (
+    BaseAssistantLibInjector,
+)
 
 T = TypeVar("T")
 
 
-class DIContainer:
+# !! This DI Implementation is an example and should not be used in production !!
+# Prefer using a well implemented DI Container, like
+# https://github.com/python-injector/injector
+# or
+# https://python-dependency-injector.ets-labs.org
+class TinyDIContainer:
     def __init__(self):
         self.services: Dict[Type[Any], Any] = {}
         self.singletons: Dict[Type[Any], Any] = {}
@@ -51,3 +60,19 @@ class DIContainer:
             if name != "self" and param.annotation != param.empty
         }
         return cls(**dependencies)
+
+
+class AssistantLibInjector(BaseAssistantLibInjector):
+    def __init__(self):
+        self.di_container = TinyDIContainer()
+
+    def get(self, cls: Type[T]) -> T:
+        return self.di_container.resolve(cls=cls)
+
+    def register(
+        self,
+        cls: Type[T],
+        to: Optional[T] = None,
+        scope: Literal["singleton", None] = None,
+    ) -> None:
+        self.di_container.register(cls=cls, service=to, singleton=scope == "singleton")

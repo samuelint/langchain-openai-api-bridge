@@ -17,7 +17,7 @@ from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
 def create_open_ai_compatible_chat_completion_router(
     assistant_app: AssistantApp,
 ):
-    container = assistant_app.container
+    container = assistant_app.injector
     chat_completion_router = APIRouter(prefix="/chat/completions")
 
     @chat_completion_router.post("/")
@@ -25,7 +25,7 @@ def create_open_ai_compatible_chat_completion_router(
         request: OpenAIChatCompletionRequest, authorization: str = Header(None)
     ):
         api_key = get_bearer_token(authorization)
-        agent_factory = container.resolve(AgentFactory)
+        agent_factory = container.get(AgentFactory)
         create_agent_dto = CreateAgentDto(
             model=request.model,
             api_key=api_key,

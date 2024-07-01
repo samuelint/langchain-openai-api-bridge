@@ -12,6 +12,9 @@ from langchain_openai_api_bridge.assistant import (
 from langchain_openai_api_bridge.fastapi import (
     include_assistant,
 )
+from tests.test_functional.tiny_di_container import (
+    AssistantLibInjector,
+)
 from tests.test_functional.fastapi_assistant_agent_openai_advanced.my_agent_factory import (
     MyAgentFactory,
 )
@@ -20,6 +23,7 @@ _ = load_dotenv(find_dotenv())
 
 
 assistant_app = AssistantApp(
+    injector=AssistantLibInjector(),
     thread_repository_type=InMemoryThreadRepository,
     message_repository_type=InMemoryMessageRepository,
     run_repository=InMemoryRunRepository,
