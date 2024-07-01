@@ -12,6 +12,7 @@ from langchain_openai_api_bridge.fastapi import include_chat_completion
 from tests.test_functional.fastapi_chat_completion_anthropic.my_anthropic_agent_factory import (
     MyAnthropicAgentFactory,
 )
+from tests.test_functional.tiny_di_container import AssistantLibInjector
 
 _ = load_dotenv(find_dotenv())
 
@@ -32,6 +33,7 @@ api.add_middleware(
 )
 
 assistant_app = AssistantApp(
+    injector=AssistantLibInjector(),
     thread_repository_type=InMemoryThreadRepository,
     message_repository_type=InMemoryMessageRepository,
     run_repository=InMemoryRunRepository,
