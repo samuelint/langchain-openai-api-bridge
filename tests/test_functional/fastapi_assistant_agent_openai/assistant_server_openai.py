@@ -8,7 +8,7 @@ from langchain_openai_api_bridge.assistant import (
     InMemoryRunRepository,
     InMemoryThreadRepository,
 )
-from langchain_openai_api_bridge.fastapi import (
+from langchain_openai_api_bridge.fastapi.langchain_openai_api_bridge_fastapi import (
     LangchainOpenaiApiBridgeFastAPI,
 )
 from tests.test_functional.fastapi_assistant_agent_openai.my_agent_factory import (

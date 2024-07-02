@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv, find_dotenv
 import uvicorn
 
-from langchain_openai_api_bridge.fastapi import (
+from langchain_openai_api_bridge.fastapi.langchain_openai_api_bridge_fastapi import (
     LangchainOpenaiApiBridgeFastAPI,
 )
 from tests.test_functional.fastapi_chat_completion_openai.my_openai_agent_factory import (
