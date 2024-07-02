@@ -226,6 +226,9 @@ export async function POST(request: NextRequest) {
 
 ## More Examples
 
+- [Expose Anthropic Claude as an OpenAI compatible API](tests/test_functional/fastapi_chat_completion_anthropic/README.md)
+- [Use a third party library injector library](tests/test_functional/injector/README.md)
+
 More examples can be found in [`tests/test_functional`](tests/test_functional) directory.
 This project is not limited to OpenAI’s models; some examples demonstrate the use of Anthropic’s language models. Anthropic is just one example, and any LangChain-supported vendor is also supported by this library.
 
