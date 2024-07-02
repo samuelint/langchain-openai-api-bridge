@@ -22,6 +22,8 @@ class InMemoryRunRepository(RunRepository):
         required_action: Optional[RequiredAction] = None,
         tools: List[AssistantTool] = [],
         parallel_tool_calls: bool = True,
+        temperature: Optional[float] = None,
+        top_p: Optional[float] = None,
     ) -> Run:
         id = str(uuid.uuid4())
         run = create_run(
@@ -34,6 +36,8 @@ class InMemoryRunRepository(RunRepository):
             required_action=required_action,
             tools=tools,
             parallel_tool_calls=parallel_tool_calls,
+            temperature=temperature,
+            top_p=top_p,
         )
         self.runs[id] = run
 

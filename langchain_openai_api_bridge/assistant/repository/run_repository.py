@@ -22,6 +22,8 @@ class RunRepository(ABC):
         required_action: Optional[RequiredAction] = None,
         tools: List[AssistantTool] = [],
         parallel_tool_calls: bool = True,
+        temperature: Optional[float] = None,
+        top_p: Optional[float] = None,
     ) -> Run:
         pass
 
