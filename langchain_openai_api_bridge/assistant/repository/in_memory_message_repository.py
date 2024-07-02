@@ -15,8 +15,8 @@ from openai.pagination import SyncCursorPage
 
 
 class InMemoryMessageRepository(MessageRepository):
-    def __init__(self, data: dict[str, Message] = {}) -> None:
-        self.messages = data
+    def __init__(self, data: Optional[dict[str, Message]] = None) -> None:
+        self.messages = data or {}
 
     def create(
         self,
