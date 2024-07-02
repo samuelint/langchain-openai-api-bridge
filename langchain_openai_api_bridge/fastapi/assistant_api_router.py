@@ -100,6 +100,7 @@ def create_thread_router(
         thread_run_dto: ThreadRunsDto,
         thread_id: str,
         authorization: str = Header(None),
+        stream: bool = True,
     ):
         thread_run_dto.thread_id = thread_id
 

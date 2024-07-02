@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 from typing import Iterable, List, Literal, Optional, Union
-from openai.types.beta.threads import Message, MessageDeleted, MessageContentPartParam
+from openai.types.beta.threads import MessageDeleted, MessageContentPartParam
 from openai.types.beta import thread_create_params
 from openai.pagination import SyncCursorPage
+from openai.types.beta.threads.message import Message, Attachment
 
 
 class MessageRepository(ABC):
@@ -19,6 +20,8 @@ class MessageRepository(ABC):
         role: Literal["user", "assistant"],
         content: Union[str, Iterable[MessageContentPartParam]],
         status: Literal["in_progress", "incomplete", "completed"] = "completed",
+        assistant_id: Optional[str] = None,
+        attachments: Optional[List[Attachment]] = None,
         run_id: Optional[str] = None,
         metadata: Optional[dict] = {},
     ) -> Message:
