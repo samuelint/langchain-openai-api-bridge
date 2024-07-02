@@ -32,7 +32,7 @@ class RunRepository(ABC):
         pass
 
     @abstractmethod
-    def retreive(self, thread_id: str) -> Run:
+    def retreive(self, run_id: str) -> Run:
         pass
 
     @abstractmethod
