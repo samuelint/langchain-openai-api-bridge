@@ -19,21 +19,19 @@ from langchain_openai_api_bridge.assistant.adapter.thread_run_event_handler impo
 from langchain_openai_api_bridge.assistant.adapter.thread_to_langchain_input_messages_service import (
     ThreadToLangchainInputMessagesService,
 )
-from langchain_openai_api_bridge.assistant.assistant_lib_injector import (
-    BaseAssistantLibInjector,
-)
+from langchain_openai_api_bridge.core.utils.tiny_di_container import TinyDIContainer
 
 
 def register_assistant_adapter(
-    injector: BaseAssistantLibInjector,
-) -> BaseAssistantLibInjector:
-    injector.register(OnChatModelStreamHandler)
-    injector.register(OnChatModelEndHandler)
-    injector.register(ThreadRunEventHandler)
-    injector.register(OnToolStartHandler)
-    injector.register(OnToolEndHandler)
+    tiny_di_container: TinyDIContainer,
+) -> TinyDIContainer:
+    tiny_di_container.register(OnChatModelStreamHandler)
+    tiny_di_container.register(OnChatModelEndHandler)
+    tiny_di_container.register(ThreadRunEventHandler)
+    tiny_di_container.register(OnToolStartHandler)
+    tiny_di_container.register(OnToolEndHandler)
 
-    injector.register(ThreadToLangchainInputMessagesService)
-    injector.register(LanggraphEventToOpenAIAssistantEventStream)
+    tiny_di_container.register(ThreadToLangchainInputMessagesService)
+    tiny_di_container.register(LanggraphEventToOpenAIAssistantEventStream)
 
-    return injector
+    return tiny_di_container

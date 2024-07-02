@@ -1,10 +1,9 @@
-from .assistant_route_builder import include_assistant
-from .add_assistant_routes import create_open_ai_compatible_assistant_router
-from .chat_completion_route_builder import include_chat_completion
-
+from .assistant_api_router import create_openai_assistant_router
+from .chat_completion_router import create_openai_chat_completion_router
+from .langchain_openai_api_bridge_fastapi import LangchainOpenaiApiBridgeFastAPI
 
 __all__ = [
-    "include_assistant",
-    "create_open_ai_compatible_assistant_router",
-    "include_chat_completion",
+    "create_openai_assistant_router",
+    "create_openai_chat_completion_router",
+    "LangchainOpenaiApiBridgeFastAPI",
 ]

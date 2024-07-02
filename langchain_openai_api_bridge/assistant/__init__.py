@@ -1,4 +1,3 @@
-from .assistant_app import AssistantApp
 from .repository import (
     MessageRepository,
     RunRepository,
@@ -10,7 +9,6 @@ from .repository import (
 
 
 __all__ = [
-    "AssistantApp",
     "MessageRepository",
     "RunRepository",
     "ThreadRepository",

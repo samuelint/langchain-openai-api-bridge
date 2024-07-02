@@ -8,7 +8,7 @@ readme = "README.md"
 repository = "https://github.com/samuelint/langchain-openai-api-bridge"
 
 [tool.poetry.dependencies]
-python = "<4.0,>=3.10"
+python = "<3.12,>=3.10"
 langchain = "^0.2.2"
 langchain-openai = "^0.1.8"
 fastapi = "^0.111.0"
@@ -19,17 +19,19 @@ openai = "^1.35.1"
 
 
 [tool.poetry.group.dev.dependencies]
-pytest-asyncio = "^0.23.7"
-pytest = "^8.2.2"
-pytest-watch = "^4.2.0"
 flake8 = "^7.0.0"
 validators = "^0.28.3"
 pytest-mock = "^3.14.0"
-decoy = "^2.1.1"
 
 
 [tool.poetry.group.test.dependencies]
 langchain-anthropic = "^0.1.15"
+pytest-asyncio = "^0.23.7"
+pytest = "^8.2.2"
+pytest-watch = "^4.2.0"
+decoy = "^2.1.1"
+injector = "^0.21.0"
+fastapi-injector = "^0.6.0"
 
 [build-system]
 requires = ["poetry-core"]

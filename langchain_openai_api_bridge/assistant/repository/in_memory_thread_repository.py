@@ -6,8 +6,8 @@ from openai.types.beta import Thread, ThreadDeleted
 
 
 class InMemoryThreadRepository(ThreadRepository):
-    def __init__(self):
-        self.threads: dict[str, Thread] = {}
+    def __init__(self, data: Optional[dict[str, Thread]] = None) -> None:
+        self.threads = data or {}
 
     def create(self, metadata: Optional[object] = None) -> Thread:
         thread_id = str(uuid.uuid4())

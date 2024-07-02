@@ -4,6 +4,9 @@ from langchain_core.runnables.schema import StreamEvent
 from langchain_openai_api_bridge.chat_completion.chat_completion_chunk_object_factory import (
     create_chat_completion_chunk_object,
 )
+from langchain_openai_api_bridge.chat_completion.content_adapter import (
+    to_string_content,
+)
 from langchain_openai_api_bridge.core.types.openai import (
     OpenAIChatCompletionChunkChoice,
     OpenAIChatCompletionChunkObject,
@@ -16,7 +19,7 @@ def to_openai_chat_message(
     role: str = "assistant",
 ) -> OpenAIChatMessage:
     content = event["data"]["chunk"].content
-    return OpenAIChatMessage(content=content, role=role)
+    return OpenAIChatMessage(content=to_string_content(content), role=role)
 
 
 def to_openai_chat_completion_chunk_choice(
