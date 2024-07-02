@@ -54,7 +54,7 @@ class MessageRepository(ABC):
         pass
 
     @abstractmethod
-    def retreive(self, message_id: str, thread_id: str) -> Message:
+    def retreive(self, message_id: str, thread_id: str) -> Union[Message, None]:
         pass
 
     @abstractmethod
