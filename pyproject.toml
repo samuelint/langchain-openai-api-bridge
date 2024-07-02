@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "langchain-openai-api-bridge"
-version = "0.5.0"
+version = "0.5.1"
 description = "A bridge to use Langchain output as an OpenAI-compatible API."
 authors = ["Samuel Magny <samuelint@gmail.com>"]
 license = "MIT"
