@@ -177,6 +177,16 @@ class TestThread:
 
         assert validators.uuid(thread.id)
 
+    def test_create_update_thread(self, openai_client: OpenAI):
+        thread = openai_client.beta.threads.create(metadata={"key": "value"})
+
+        openai_client.beta.threads.update(
+            thread_id=thread.id, metadata={"key": "value2"}
+        )
+        retreived_thread = openai_client.beta.threads.retrieve(thread_id=thread.id)
+
+        assert retreived_thread.metadata == {"key": "value2"}
+
     def test_delete_thread(self, openai_client: OpenAI):
         created_thread = openai_client.beta.threads.create()
 

@@ -37,6 +37,13 @@ class TestInMemoryThreadRepository:
 
         assert retreived.id == created.id
 
+    def test_updated_thread_is_retreivable(self):
+        created = self.instance.create(metadata={"a": "AAA"})
+        self.instance.update(thread_id=created.id, metadata={"a": "BBB"})
+        retreived = self.instance.retreive(created.id)
+
+        assert retreived.metadata == {"a": "BBB"}
+
     def test_retreived_thread_is_immuable(self):
         metadata = SomeMetadata(a="AAA")
         created = self.instance.create(metadata=metadata)

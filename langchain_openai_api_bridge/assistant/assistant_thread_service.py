@@ -1,3 +1,4 @@
+from typing import Optional
 from openai.types.beta import Thread, ThreadDeleted
 from langchain_openai_api_bridge.assistant.create_thread_api_dto import CreateThreadDto
 from langchain_openai_api_bridge.assistant.repository.message_repository import (
@@ -39,6 +40,12 @@ class AssistantThreadService:
         # client.beta.threads.retrieve()
 
         return self.thread_repository.retreive(thread_id=thread_id)
+
+    def update(self, thread_id: str, metadata: Optional[object] = None) -> Thread:
+        # Reference:
+        # client.beta.threads.update()
+
+        return self.thread_repository.update(thread_id=thread_id, metadata=metadata)
 
     def delete(
         self,

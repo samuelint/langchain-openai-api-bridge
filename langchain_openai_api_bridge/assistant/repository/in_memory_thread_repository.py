@@ -16,6 +16,20 @@ class InMemoryThreadRepository(ThreadRepository):
 
         return self.retreive(thread_id)
 
+    def update(
+        self,
+        thread_id: str,
+        metadata: Optional[object] = None,
+    ) -> Thread:
+        if thread_id not in self.threads:
+            raise ValueError(f"Thread with id {thread_id} not found")
+
+        thread = self.threads[thread_id].copy(deep=True)
+        thread.metadata = metadata
+        self.threads[thread_id] = thread
+
+        return thread
+
     def retreive(self, thread_id: str) -> Thread | None:
         result = self.threads.get(thread_id)
         if result is None:

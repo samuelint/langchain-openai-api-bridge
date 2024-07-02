@@ -1,3 +1,4 @@
+from typing import Optional
 from openai.types.beta import Thread, ThreadDeleted
 from abc import ABC, abstractmethod
 
@@ -12,6 +13,16 @@ class ThreadRepository(ABC):
     @abstractmethod
     def create(
         self,
+        metadata: Optional[object] = None,
+    ) -> Thread:
+        # client.beta.threads.create(messages)
+        pass
+
+    @abstractmethod
+    def update(
+        self,
+        thread_id: str,
+        metadata: Optional[object] = None,
     ) -> Thread:
         # client.beta.threads.create(messages)
         pass
