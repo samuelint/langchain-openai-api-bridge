@@ -4,6 +4,7 @@ Usage example using a third party injector library.
 `poetry add injector` https://github.com/python-injector/injector for this example
 
 ```python
+# with_injector_assistant_server_openai.py (main)
 from fastapi import FastAPI
 from dotenv import load_dotenv, find_dotenv
 import uvicorn
@@ -44,5 +45,32 @@ bridge.bind_openai_assistant_api(
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost")
+
+```
+
+```python
+# app_module.py
+from injector import Binder, Module, singleton
+
+from langchain_openai_api_bridge.assistant import (
+    ThreadRepository,
+    MessageRepository,
+    RunRepository,
+    InMemoryThreadRepository,
+    InMemoryMessageRepository,
+    InMemoryRunRepository,
+)
+from langchain_openai_api_bridge.core import AgentFactory
+from tests.test_functional.injector.with_injector_my_agent_factory import (
+    WithInjectorMyAgentFactory,
+)
+
+
+class MyAppModule(Module):
+    def configure(self, binder: Binder):
+        binder.bind(ThreadRepository, to=InMemoryThreadRepository, scope=singleton)
+        binder.bind(MessageRepository, to=InMemoryMessageRepository, scope=singleton)
+        binder.bind(RunRepository, to=InMemoryRunRepository, scope=singleton)
+        binder.bind(AgentFactory, to=WithInjectorMyAgentFactory)
 
 ```
