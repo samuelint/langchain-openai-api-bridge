@@ -1,4 +1,9 @@
-from fastapi.middleware.cors import CORSMiddleware
+# With Injector Example
+
+Usage example using a third party injector library.
+`poetry add injector` https://github.com/python-injector/injector for this example
+
+```python
 from fastapi import FastAPI
 from dotenv import load_dotenv, find_dotenv
 import uvicorn
@@ -25,15 +30,6 @@ app = FastAPI(
     description="OpenAI API exposing langchain agent using injector",
 )
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-    expose_headers=["*"],
-)
-
 injector = Injector([MyAppModule()])
 
 bridge = LangchainOpenaiApiBridgeFastAPI(
@@ -48,3 +44,5 @@ bridge.bind_openai_assistant_api(
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost")
+
+```

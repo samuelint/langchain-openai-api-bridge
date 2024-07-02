@@ -15,7 +15,7 @@ _ = load_dotenv(find_dotenv())
 app = FastAPI(
     title="Langchain Agent OpenAI API Bridge",
     version="1.0",
-    description="OpenAI API exposing langchain agent",
+    description="OpenAI API exposing langchain agent running on Anthropic Claude",
 )
 
 app.add_middleware(
