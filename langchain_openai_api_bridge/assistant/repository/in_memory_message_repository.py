@@ -1,7 +1,7 @@
 from typing import Iterable, List, Literal, Optional, Union
 import uuid
 
-from langchain_openai_api_bridge.assistant.openai_message_factory import create_message
+from langchain_openai_api_bridge.assistant.adapter.openai_message_factory import create_message
 from .message_repository import (
     MessageRepository,
 )

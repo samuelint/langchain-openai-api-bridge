@@ -4,7 +4,7 @@ from openai.types.beta.threads import Message
 from langchain_openai_api_bridge.assistant.adapter.thread_to_langchain_input_messages_service import (
     ThreadToLangchainInputMessagesService,
 )
-from langchain_openai_api_bridge.assistant.openai_message_factory import create_message
+from langchain_openai_api_bridge.assistant.adapter.openai_message_factory import create_message
 from langchain_openai_api_bridge.assistant.repository.message_repository import (
     MessageRepository,
 )

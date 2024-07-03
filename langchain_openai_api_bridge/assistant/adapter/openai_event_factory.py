@@ -21,7 +21,7 @@ from openai.types.beta.threads.runs import (
 )
 from openai.types.beta.threads.runs.function_tool_call_delta import Function
 
-from langchain_openai_api_bridge.assistant.openai_message_factory import (
+from langchain_openai_api_bridge.assistant.adapter.openai_message_factory import (
     create_text_message_delta,
 )
 
