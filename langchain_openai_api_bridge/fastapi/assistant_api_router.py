@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Optional
 from fastapi import APIRouter, Header
 
 from langchain_openai_api_bridge.assistant.assistant_message_service import (
@@ -40,6 +40,12 @@ def create_thread_router(
     def assistant_retreive_thread(thread_id: str):
         service = tiny_di_container.resolve(AssistantThreadService)
         return service.retreive(thread_id=thread_id)
+
+    @thread_router.post("/{thread_id}")
+    def assistant_update_thread(thread_id: str, request: Optional[dict] = None):
+        metadata = request.get("metadata") if request else None
+        service = tiny_di_container.resolve(AssistantThreadService)
+        return service.update(thread_id=thread_id, metadata=metadata)
 
     @thread_router.delete("/{thread_id}")
     def assistant_delete_thread(thread_id: str):
@@ -94,6 +100,7 @@ def create_thread_router(
         thread_run_dto: ThreadRunsDto,
         thread_id: str,
         authorization: str = Header(None),
+        stream: bool = True,
     ):
         thread_run_dto.thread_id = thread_id
 

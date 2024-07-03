@@ -22,6 +22,8 @@ class RunRepository(ABC):
         required_action: Optional[RequiredAction] = None,
         tools: List[AssistantTool] = [],
         parallel_tool_calls: bool = True,
+        temperature: Optional[float] = None,
+        top_p: Optional[float] = None,
     ) -> Run:
         pass
 
@@ -30,7 +32,7 @@ class RunRepository(ABC):
         pass
 
     @abstractmethod
-    def retreive(self, thread_id: str) -> Run:
+    def retreive(self, run_id: str) -> Run:
         pass
 
     @abstractmethod

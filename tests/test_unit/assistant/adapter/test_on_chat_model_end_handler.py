@@ -8,7 +8,7 @@ from langchain_openai_api_bridge.assistant.adapter.on_chat_model_end_handler imp
 from langchain_openai_api_bridge.assistant.create_thread_runs_api_dto import (
     ThreadRunsDto,
 )
-from langchain_openai_api_bridge.assistant.openai_message_factory import create_message
+from langchain_openai_api_bridge.assistant.adapter.openai_message_factory import create_message
 from langchain_openai_api_bridge.assistant.repository.message_repository import (
     MessageRepository,
 )

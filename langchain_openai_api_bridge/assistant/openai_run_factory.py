@@ -14,6 +14,8 @@ def create_run(
     required_action: Optional[RequiredAction] = None,
     parallel_tool_calls: bool = True,
     tools: List[AssistantTool] = [],
+    temperature: Optional[float] = None,
+    top_p: Optional[float] = None,
 ) -> Run:
     return Run(
         id=id,
@@ -27,4 +29,6 @@ def create_run(
         required_action=required_action,
         status=status,
         tools=tools,
+        temperature=temperature,
+        top_p=top_p,
     )
