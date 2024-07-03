@@ -1,44 +1,17 @@
 import time
-from typing import Iterable, List, Literal, Optional, Type, Union
-from openai import BaseModel
+from typing import Iterable, List, Literal, Optional, Union
 from openai.types.beta.threads import (
     Message,
     MessageDelta,
     MessageContentPartParam,
     AnnotationDelta,
-    TextContentBlock,
-    ImageFileContentBlock,
-    ImageURLContentBlock,
     TextDeltaBlock,
     TextDelta,
-    Text,
 )
-from openai.types.beta.threads.message import MessageContent
 
-
-def create_message_content(
-    content: Union[str, Iterable[MessageContentPartParam]] = ""
-) -> List[MessageContent]:
-    if isinstance(content, str):
-        inner_content = [
-            TextContentBlock(text=Text(value=content, annotations=[]), type="text")
-        ]
-    else:
-        inner_content = content
-
-    return inner_content
-
-
-def deserialize_message_content(data: dict) -> MessageContent:
-    type_to_model: dict[str, Type[BaseModel]] = {
-        "image_file": ImageFileContentBlock,
-        "image_url": ImageURLContentBlock,
-        "text": TextContentBlock,
-    }
-
-    content_type = data["type"]
-    model_cls = type_to_model[content_type]
-    return model_cls.parse_obj(data)
+from langchain_openai_api_bridge.assistant.adapter.openai_message_content_adapter import (
+    to_openai_message_content_list,
+)
 
 
 def create_message(
@@ -58,7 +31,7 @@ def create_message(
         status=status,
         object="thread.message",
         created_at=time.time(),
-        content=create_message_content(content=content),
+        content=to_openai_message_content_list(content=content),
         run_id=run_id,
         metadata=metadata,
     )
