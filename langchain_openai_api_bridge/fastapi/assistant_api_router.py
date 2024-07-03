@@ -36,6 +36,16 @@ def create_thread_router(
         service = tiny_di_container.resolve(AssistantThreadService)
         return service.create(create_request)
 
+    @thread_router.get("/")
+    def assistant_list_threads(
+        after: str = None,
+        before: str = None,
+        limit: int = 100,
+        order: Literal["asc", "desc"] = None,
+    ):
+        service = tiny_di_container.resolve(AssistantThreadService)
+        return service.list(after=after, before=before, limit=limit, order=order)
+
     @thread_router.get("/{thread_id}")
     def assistant_retreive_thread(thread_id: str):
         service = tiny_di_container.resolve(AssistantThreadService)

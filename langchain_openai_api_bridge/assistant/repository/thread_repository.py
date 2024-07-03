@@ -1,6 +1,7 @@
-from typing import Optional
-from openai.types.beta import Thread, ThreadDeleted
+from typing import Literal, Optional
 from abc import ABC, abstractmethod
+from openai.types.beta import Thread, ThreadDeleted
+from openai.pagination import SyncCursorPage
 
 
 class ThreadRepository(ABC):
@@ -25,6 +26,16 @@ class ThreadRepository(ABC):
         metadata: Optional[object] = None,
     ) -> Thread:
         # client.beta.threads.create(messages)
+        pass
+
+    @abstractmethod
+    def list(
+        self,
+        after: str = None,
+        before: str = None,
+        limit: int = None,
+        order: Literal["asc", "desc"] = None,
+    ) -> SyncCursorPage[Thread]:
         pass
 
     @abstractmethod
