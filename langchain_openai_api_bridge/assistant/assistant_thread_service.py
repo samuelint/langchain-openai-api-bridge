@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Literal, Optional
 from openai.types.beta import Thread, ThreadDeleted
 from langchain_openai_api_bridge.assistant.create_thread_api_dto import CreateThreadDto
 from langchain_openai_api_bridge.assistant.repository.message_repository import (
@@ -7,6 +7,7 @@ from langchain_openai_api_bridge.assistant.repository.message_repository import 
 from langchain_openai_api_bridge.assistant.repository.thread_repository import (
     ThreadRepository,
 )
+from openai.pagination import SyncCursorPage
 
 
 class AssistantThreadService:
@@ -34,6 +35,17 @@ class AssistantThreadService:
             )
 
         return thread
+
+    def list(
+        self,
+        after: str = None,
+        before: str = None,
+        limit: int = None,
+        order: Literal["asc", "desc"] = None,
+    ) -> SyncCursorPage[Thread]:
+        return self.thread_repository.list(
+            after=after, before=before, limit=limit, order=order
+        )
 
     def retreive(self, thread_id: str) -> Thread:
         # Reference:

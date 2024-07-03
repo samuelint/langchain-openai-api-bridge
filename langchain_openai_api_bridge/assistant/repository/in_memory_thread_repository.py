@@ -1,8 +1,9 @@
 import time
 import uuid
-from .thread_repository import ThreadRepository
-from typing import Optional
+from typing import Literal, Optional
 from openai.types.beta import Thread, ThreadDeleted
+from openai.pagination import SyncCursorPage
+from .thread_repository import ThreadRepository
 
 
 class InMemoryThreadRepository(ThreadRepository):
@@ -29,6 +30,19 @@ class InMemoryThreadRepository(ThreadRepository):
         self.threads[thread_id] = thread
 
         return thread
+
+    def list(
+        self,
+        after: str = None,
+        before: str = None,
+        limit: int = None,
+        order: Literal["asc", "desc"] = None,
+    ) -> SyncCursorPage[Thread]:
+        # Not optimal, but works well for test cases.
+        # Production should use database implementation
+        threads = list(self.threads.values())
+
+        return SyncCursorPage(data=threads)
 
     def retreive(self, thread_id: str) -> Thread | None:
         result = self.threads.get(thread_id)
