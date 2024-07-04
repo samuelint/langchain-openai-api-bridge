@@ -10,11 +10,13 @@ class TestCreateLangchainFunction:
         assert result.arguments == '{"test": "test"}'
 
     def test_dict_output_is_set_to_json(self):
-        result = create_langchain_function(output={"test": "test"})
+        result = create_langchain_function(
+            arguments={"a": "a"}, output={"test": "test"}
+        )
 
         assert result.output == '{"test": "test"}'
 
     def test_float_output_is_set_to_string(self):
-        result = create_langchain_function(output=2.1)
+        result = create_langchain_function(arguments={"a": "a"}, output=2.1)
 
         assert result.output == "2.1"
