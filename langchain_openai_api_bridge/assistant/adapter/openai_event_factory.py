@@ -19,7 +19,7 @@ from openai.types.beta.threads.runs import (
     FunctionToolCall,
     ToolCallsStepDetails,
 )
-from openai.types.beta.threads.runs.function_tool_call_delta import Function
+from openai.types.beta.threads.runs import function_tool_call
 
 from langchain_openai_api_bridge.assistant.adapter.openai_message_factory import (
     create_text_message_delta,
@@ -120,7 +120,7 @@ def create_langchain_tool_run_step(
     return RunStep(
         id=step_id,
         assistant_id=assistant_id,
-        created_at=time.time(),
+        created_at=int(time.time()),
         metadata=metadata,
         object="thread.run.step",
         run_id=step_id,
@@ -147,11 +147,11 @@ def create_langchain_tool_tool_call(
     arguments: Optional[Union[dict[object], float, str]] = None,
     output: Optional[Union[dict[object], float, str]] = None,
 ) -> FunctionToolCall:
-    return FunctionToolCall(
+
+    function = create_langchain_function(name=name, arguments=arguments, output=output)
+    return function_tool_call.FunctionToolCall(
         id=id,
-        function=create_langchain_function(
-            name=name, arguments=arguments, output=output
-        ),
+        function=function,
         type="function",
     )
 
@@ -160,7 +160,9 @@ def create_langchain_function(
     name: Optional[str] = "",
     arguments: Optional[Union[dict[object], float, str]] = None,
     output: Optional[Union[dict[object], float, str]] = None,
-) -> Function:
+) -> function_tool_call.Function:
     arguments_json = json.dumps(arguments) if arguments else None
     output_json = json.dumps(output) if output else None
-    return Function(name=name, arguments=arguments_json, output=output_json)
+    return function_tool_call.Function(
+        name=name, arguments=arguments_json, output=output_json
+    )

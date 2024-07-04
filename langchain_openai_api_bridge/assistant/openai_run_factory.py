@@ -22,7 +22,7 @@ def create_run(
         assistant_id=assistant_id,
         thread_id=thread_id,
         model=model,
-        created_at=time.time(),
+        created_at=int(time.time()),
         instructions=instructions,
         object="thread.run",
         parallel_tool_calls=parallel_tool_calls,

@@ -64,7 +64,10 @@ class InMemoryThreadRepository(ThreadRepository):
     @staticmethod
     def __create_thread(thread_id: str, metadata: Optional[object] = None) -> Thread:
         return Thread(
-            id=thread_id, object="thread", created_at=time.time(), metadata=metadata
+            id=thread_id,
+            object="thread",
+            created_at=int(time.time()),
+            metadata=metadata,
         )
 
     @staticmethod

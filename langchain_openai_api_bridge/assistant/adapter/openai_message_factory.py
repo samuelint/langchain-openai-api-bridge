@@ -30,7 +30,7 @@ def create_message(
         role=role,
         status=status,
         object="thread.message",
-        created_at=time.time(),
+        created_at=int(time.time()),
         content=to_openai_message_content_list(content=content),
         run_id=run_id,
         metadata=metadata,
