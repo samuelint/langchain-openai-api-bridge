@@ -1,11 +1,12 @@
 from openai.types.beta.threads import Run
 import uuid
-from typing import List, Optional
+from typing import List, Literal, Optional
 from langchain_openai_api_bridge.assistant.openai_run_factory import create_run
 from langchain_openai_api_bridge.assistant.repository.run_repository import (
     RunRepository,
 )
 from openai.types.beta.threads.run import RequiredAction, RunStatus, AssistantTool
+from openai.pagination import SyncCursorPage
 
 
 class InMemoryRunRepository(RunRepository):
@@ -49,6 +50,21 @@ class InMemoryRunRepository(RunRepository):
             return None
 
         return result.copy(deep=True)
+
+    def list(self, thread_id: str) -> Run:
+        return [run for run in self.runs.values() if run.thread_id == thread_id]
+
+    def listByPage(
+        self,
+        thread_id: str,
+        after: str = None,
+        before: str = None,
+        limit: int = None,
+        order: Literal["asc", "desc"] = None,
+    ) -> SyncCursorPage[Run]:
+        runs = self.list(thread_id=thread_id)
+
+        return SyncCursorPage(data=runs)
 
     def update(self, run: Run) -> Run:
         id = run.id

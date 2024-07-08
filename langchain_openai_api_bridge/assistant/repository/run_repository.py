@@ -1,7 +1,8 @@
 from openai.types.beta.threads import Run
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List, Literal, Optional
 from openai.types.beta.threads.run import RequiredAction, RunStatus, AssistantTool
+from openai.pagination import SyncCursorPage
 
 
 class RunRepository(ABC):
@@ -33,6 +34,21 @@ class RunRepository(ABC):
 
     @abstractmethod
     def retreive(self, run_id: str) -> Run:
+        pass
+
+    @abstractmethod
+    def list(self, thread_id: str) -> Run:
+        pass
+
+    @abstractmethod
+    def listByPage(
+        self,
+        thread_id: str,
+        after: str = None,
+        before: str = None,
+        limit: int = None,
+        order: Literal["asc", "desc"] = None,
+    ) -> SyncCursorPage[Run]:
         pass
 
     @abstractmethod
