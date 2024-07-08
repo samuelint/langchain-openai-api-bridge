@@ -80,5 +80,5 @@ class MessageRepository(ABC):
         pass
 
     @abstractmethod
-    def delete_with_thread_id(self, thread_id: str) -> MessageDeleted:
+    def delete_with_thread_id(self, thread_id: str) -> None:
         pass
