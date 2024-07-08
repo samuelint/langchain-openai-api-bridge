@@ -51,6 +51,7 @@ class TestCreateThreadRun:
                 thread_id="thread1",
                 model="some-model",
                 status="in_progress",
+                temperature=None,
             )
         ).then_return(some_run)
 
@@ -73,6 +74,7 @@ class TestCreateThreadRun:
                 thread_id="thread1",
                 model="some-model",
                 status="in_progress",
+                temperature=None,
             )
         ).then_return(some_run)
 

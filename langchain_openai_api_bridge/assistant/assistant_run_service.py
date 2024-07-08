@@ -11,6 +11,9 @@ from langgraph.graph.graph import CompiledGraph
 from langchain_openai_api_bridge.assistant.adapter.thread_to_langchain_input_messages_service import (
     ThreadToLangchainInputMessagesService,
 )
+from langchain_openai_api_bridge.assistant.repository.run_repository import (
+    RunRepository,
+)
 
 
 class AssistantRunService:
@@ -19,9 +22,20 @@ class AssistantRunService:
         self,
         thread_message_service: ThreadToLangchainInputMessagesService,
         stream_adapter: LanggraphEventToOpenAIAssistantEventStream,
+        run_repository: RunRepository,
     ) -> None:
         self.thread_message_service = thread_message_service
         self.stream_adapter = stream_adapter
+        self.run_repository = run_repository
+
+    def create(self, dto: ThreadRunsDto):
+        return self.run_repository.create(
+            assistant_id=dto.assistant_id,
+            thread_id=dto.thread_id,
+            model=dto.model,
+            temperature=dto.temperature,
+            status="queued",
+        )
 
     def astream(
         self, agent: CompiledGraph, dto: ThreadRunsDto

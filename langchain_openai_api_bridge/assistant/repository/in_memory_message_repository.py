@@ -1,7 +1,9 @@
 from typing import Iterable, List, Literal, Optional, Union
 import uuid
 
-from langchain_openai_api_bridge.assistant.adapter.openai_message_factory import create_message
+from langchain_openai_api_bridge.assistant.adapter.openai_message_factory import (
+    create_message,
+)
 from .message_repository import (
     MessageRepository,
 )
@@ -124,6 +126,15 @@ class InMemoryMessageRepository(MessageRepository):
             return None
         del self.messages[message_id]
         return self.__create_message_deleted(message_id=message_id)
+
+    def delete_with_thread_id(self, thread_id: str) -> MessageDeleted:
+        messages_to_delete = [
+            message
+            for message in self.messages.values()
+            if message.thread_id == thread_id
+        ]
+        for message in messages_to_delete:
+            del self.messages[message.id]
 
     @staticmethod
     def __create_message_deleted(message_id: str) -> MessageDeleted:
