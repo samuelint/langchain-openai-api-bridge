@@ -145,6 +145,20 @@ def create_thread_router(
 
         return run_repository.retreive(run_id=run_id)
 
+    @thread_router.get("/{thread_id}/runs")
+    async def list_runs(
+        thread_id: str,
+        after: str = None,
+        before: str = None,
+        limit: int = 100,
+        order: Literal["asc", "desc"] = None,
+    ):
+        run_repository = tiny_di_container.resolve(RunRepository)
+
+        return run_repository.listByPage(
+            thread_id=thread_id, after=after, before=before, limit=limit, order=order
+        )
+
     return thread_router
 
 
