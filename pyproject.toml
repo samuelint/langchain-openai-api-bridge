@@ -8,7 +8,7 @@ readme = "README.md"
 repository = "https://github.com/samuelint/langchain-openai-api-bridge"
 
 [tool.poetry.dependencies]
-python = ">=3.10,<3.13"
+python = ">=3.9,<4.0"
 langchain = "^0.2.2"
 langchain-openai = "^0.1.8"
 fastapi = "^0.111.0"
@@ -30,7 +30,7 @@ pytest = "^8.2.2"
 pytest-watch = "^4.2.0"
 decoy = "^2.1.1"
 injector = "^0.21.0"
-fastapi-injector = "^0.6.0"
+fastapi-injector = { version = "^0.6.0", python = ">=3.9,<3.13" }
 
 [build-system]
 requires = ["poetry-core"]
