@@ -1,3 +1,4 @@
+from typing import Optional
 from openai.types.beta.assistant_stream_event import (
     ThreadRunCreated,
     ThreadRunCompleted,
@@ -20,12 +21,17 @@ class ThreadRunEventHandler:
         self.run_repository = run_repository
 
     def on_thread_run_start(
-        self, assistant_id: str, thread_id: str, model: str
+        self,
+        assistant_id: str,
+        thread_id: str,
+        model: str,
+        temperature: Optional[float] = None,
     ) -> ThreadRunCreated:
         run = self.run_repository.create(
             assistant_id=assistant_id,
             thread_id=thread_id,
             model=model,
+            temperature=temperature,
             status="in_progress",
         )
 

@@ -20,6 +20,9 @@ from langchain_openai_api_bridge.assistant.create_thread_message_api_dto import 
 from langchain_openai_api_bridge.assistant.create_thread_runs_api_dto import (
     ThreadRunsDto,
 )
+from langchain_openai_api_bridge.assistant.repository.run_repository import (
+    RunRepository,
+)
 from langchain_openai_api_bridge.core.agent_factory import AgentFactory
 from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 from langchain_openai_api_bridge.core.utils.tiny_di_container import TinyDIContainer
@@ -110,7 +113,6 @@ def create_thread_router(
         thread_run_dto: ThreadRunsDto,
         thread_id: str,
         authorization: str = Header(None),
-        stream: bool = True,
     ):
         thread_run_dto.thread_id = thread_id
 
@@ -127,11 +129,21 @@ def create_thread_router(
         agent = agent_factory.create_agent(llm=llm, dto=create_agent_dto)
 
         service = tiny_di_container.resolve(AssistantRunService)
-        stream = service.astream(agent=agent, dto=thread_run_dto)
 
-        response_factory = AssistantStreamEventAdapter()
+        if thread_run_dto.stream is True:
+            response_factory = AssistantStreamEventAdapter()
+            stream = service.astream(agent=agent, dto=thread_run_dto)
+            return response_factory.to_streaming_response(stream)
+        else:
+            return service.create(dto=thread_run_dto)
 
-        return response_factory.to_streaming_response(stream)
+    @thread_router.get("/{thread_id}/runs/{run_id}")
+    async def get_run(
+        run_id: str,
+    ):
+        run_repository = tiny_di_container.resolve(RunRepository)
+
+        return run_repository.retreive(run_id=run_id)
 
     return thread_router
 

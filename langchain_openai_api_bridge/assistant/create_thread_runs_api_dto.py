@@ -7,3 +7,4 @@ class ThreadRunsDto(BaseModel):
     thread_id: str = ""
     model: Optional[str] = None
     temperature: float = 0.7
+    stream: Optional[bool] = True

@@ -4,6 +4,9 @@ from langchain_openai_api_bridge.assistant.create_thread_api_dto import CreateTh
 from langchain_openai_api_bridge.assistant.repository.message_repository import (
     MessageRepository,
 )
+from langchain_openai_api_bridge.assistant.repository.run_repository import (
+    RunRepository,
+)
 from langchain_openai_api_bridge.assistant.repository.thread_repository import (
     ThreadRepository,
 )
@@ -16,9 +19,11 @@ class AssistantThreadService:
         self,
         thread_repository: ThreadRepository,
         message_repository: MessageRepository,
+        run_repository: RunRepository,
     ) -> None:
         self.thread_repository = thread_repository
         self.message_repository = message_repository
+        self.run_repository = run_repository
 
     def create(
         self,
@@ -65,4 +70,8 @@ class AssistantThreadService:
     ) -> ThreadDeleted:
         # Reference:
         # client.beta.threads.delete()
-        return self.thread_repository.delete(thread_id=thread_id)
+        deleted_thread = self.thread_repository.delete(thread_id=thread_id)
+        self.run_repository.delete_with_thread_id(thread_id=thread_id)
+        self.message_repository.delete_with_thread_id(thread_id=thread_id)
+
+        return deleted_thread

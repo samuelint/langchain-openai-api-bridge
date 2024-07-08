@@ -64,3 +64,10 @@ class InMemoryRunRepository(RunRepository):
             id = run_id
 
         del self.runs[id]
+
+    def delete_with_thread_id(self, thread_id: str) -> None:
+        runs_to_delete = [
+            run for run in self.runs.values() if run.thread_id == thread_id
+        ]
+        for run in runs_to_delete:
+            del self.runs[run.id]

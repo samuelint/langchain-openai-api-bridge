@@ -32,7 +32,7 @@ class MessageRepository(ABC):
         self,
         thread_id: str,
         messages: List[thread_create_params.Message],
-    ) -> Message:
+    ) -> List[Message]:
         pass
 
     @abstractmethod
@@ -77,4 +77,8 @@ class MessageRepository(ABC):
 
     @abstractmethod
     def delete(self, message_id: str, thread_id: str) -> MessageDeleted:
+        pass
+
+    @abstractmethod
+    def delete_with_thread_id(self, thread_id: str) -> MessageDeleted:
         pass

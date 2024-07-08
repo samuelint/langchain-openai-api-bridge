@@ -38,3 +38,7 @@ class RunRepository(ABC):
     @abstractmethod
     def delete(self, run: Optional[Run], run_id: Optional[str]) -> None:
         pass
+
+    @abstractmethod
+    def delete_with_thread_id(self, thread_id: str) -> None:
+        pass
