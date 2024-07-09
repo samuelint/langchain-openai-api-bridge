@@ -49,9 +49,11 @@ def to_openai_message_content(
 
 
 def to_openai_message_content_list(
-    content: Union[str, Iterable[MessageContentPartParam]] = ""
+    content: Union[str, Iterable[MessageContentPartParam], None] = None
 ) -> List[MessageContent]:
-    if isinstance(content, str):
+    if content is None:
+        return []
+    elif isinstance(content, str):
         return [to_openai_message_content(content)]
     elif isinstance(content, Iterable):
         return [to_openai_message_content(item) for item in content]

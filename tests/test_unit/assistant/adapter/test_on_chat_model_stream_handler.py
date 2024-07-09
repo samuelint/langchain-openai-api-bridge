@@ -141,7 +141,6 @@ class TestOnChatModelStreamHandler:
         instance: OnChatModelStreamHandler,
         some_thread_dto: ThreadRunsDto,
         some_run: Run,
-        some_message: Message,
     ):
         event = create_stream_chunk_event(
             run_id="a", event="on_chat_model_stream", content="Hello"
@@ -153,13 +152,12 @@ class TestOnChatModelStreamHandler:
             )
         ).then_return(None)
         created_message = create_message(
-            id="1", thread_id="thread1", role="assistant", content=""
+            id="1", thread_id="thread1", role="assistant", content=[]
         )
         decoy.when(
             thread_message_repository.create(
                 thread_id="thread1",
                 role="assistant",
-                content="",
                 status="in_progress",
                 run_id="a",
             )
@@ -167,6 +165,7 @@ class TestOnChatModelStreamHandler:
 
         result = instance.handle(event=event, dto=some_thread_dto, run=some_run)
 
+        assert len(result[0].data.content) == 0
         assert result[0].event == "thread.message.created"
         assert result[0].data == created_message
         assert result[1].event == "thread.message.delta"

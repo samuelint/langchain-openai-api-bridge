@@ -1,3 +1,4 @@
+import copy
 from langchain_core.runnables.schema import StreamEvent
 from openai.types.beta import AssistantStreamEvent
 from openai.types.beta.threads import (
@@ -40,8 +41,11 @@ class OnChatModelStreamHandler:
             run_id=run_id, thread_id=dto.thread_id
         )
         if message is None:
-            message = self._create_new_message(thread_id=dto.thread_id, run_id=run_id)
-            events.append(create_thread_message_created_event(message=message))
+            created_message = self._create_new_message(
+                thread_id=dto.thread_id, run_id=run_id
+            )
+            events.append(create_thread_message_created_event(message=created_message))
+            message = copy.deepcopy(created_message)
 
         message_id = message.id
         events.append(self._create_text_thread_message_delta(message_id, content))
@@ -53,7 +57,6 @@ class OnChatModelStreamHandler:
         return self.thread_message_repository.create(
             thread_id=thread_id,
             role="assistant",
-            content="",
             status="in_progress",
             run_id=run_id,
         )
