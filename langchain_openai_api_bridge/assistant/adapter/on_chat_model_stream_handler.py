@@ -2,7 +2,10 @@ from langchain_core.runnables.schema import StreamEvent
 from openai.types.beta import AssistantStreamEvent
 from openai.types.beta.threads import (
     Run,
+    TextContentBlock,
+    Text,
 )
+from openai.types.beta.threads.message import Message
 from langchain_openai_api_bridge.assistant.adapter.openai_event_factory import (
     create_text_thread_message_delta,
     create_thread_message_created_event,
@@ -33,24 +36,35 @@ class OnChatModelStreamHandler:
         if content is None or content == "":
             return events
 
-        message_id = self.thread_message_repository.retreive_message_id_by_run_id(
+        message = self.thread_message_repository.retreive_unique_by_run_id(
             run_id=run_id, thread_id=dto.thread_id
         )
-        if message_id is None:
-            created_message = self.thread_message_repository.create(
-                thread_id=dto.thread_id,
-                role="assistant",
-                content="",
-                status="in_progress",
-                run_id=run_id,
-            )
-            message_id = created_message.id
-            events.append(create_thread_message_created_event(message=created_message))
+        if message is None:
+            message = self._create_new_message(thread_id=dto.thread_id, run_id=run_id)
+            events.append(create_thread_message_created_event(message=message))
 
-        events.append(
-            create_text_thread_message_delta(
-                message_id=message_id, content=content, role="assistant"
-            )
-        )
+        message_id = message.id
+        events.append(self._create_text_thread_message_delta(message_id, content))
+        self._update_message_content(message=message, content=content)
 
         return events
+
+    def _create_new_message(self, thread_id: str, run_id: str) -> Message:
+        return self.thread_message_repository.create(
+            thread_id=thread_id,
+            role="assistant",
+            content="",
+            status="in_progress",
+            run_id=run_id,
+        )
+
+    def _create_text_thread_message_delta(self, message_id: str, content: str):
+        return create_text_thread_message_delta(
+            message_id=message_id, content=content, role="assistant"
+        )
+
+    def _update_message_content(self, message: Message, content: str):
+        message.content.append(
+            TextContentBlock(text=Text(value=content, annotations=[]), type="text")
+        )
+        self.thread_message_repository.update(message=message)
