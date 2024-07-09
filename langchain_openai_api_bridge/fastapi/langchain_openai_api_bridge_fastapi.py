@@ -1,4 +1,4 @@
-from typing import Callable, Union
+from typing import Callable, Optional, Union
 from fastapi import FastAPI
 
 from langchain_openai_api_bridge.assistant.adapter.container import (
@@ -48,12 +48,30 @@ class LangchainOpenaiApiBridgeFastAPI(LangchainOpenaiApiBridge):
         thread_repository_provider: Union[Callable[[], ThreadRepository]],
         message_repository_provider: Union[Callable[[], MessageRepository]],
         run_repository_provider: Union[Callable[[], RunRepository]],
+        assistant_thread_service_provider: Optional[
+            Union[Callable[[], AssistantThreadService]]
+        ] = None,
+        assistant_run_service_provider: Optional[
+            Union[Callable[[], AssistantRunService]]
+        ] = None,
+        assistant_message_service_provider: Optional[
+            Union[Callable[[], AssistantMessageService]]
+        ] = None,
         prefix: str = "",
     ) -> None:
 
-        self.tiny_di_container.register(AssistantThreadService)
-        self.tiny_di_container.register(AssistantMessageService)
-        self.tiny_di_container.register(AssistantRunService)
+        self.tiny_di_container.register(
+            AssistantThreadService,
+            to=assistant_thread_service_provider or AssistantThreadService,
+        )
+        self.tiny_di_container.register(
+            AssistantMessageService,
+            to=assistant_message_service_provider or AssistantMessageService,
+        )
+        self.tiny_di_container.register(
+            AssistantRunService,
+            to=assistant_run_service_provider or AssistantRunService,
+        )
         self.tiny_di_container.register(ThreadRepository, to=thread_repository_provider)
         self.tiny_di_container.register(
             MessageRepository, to=message_repository_provider

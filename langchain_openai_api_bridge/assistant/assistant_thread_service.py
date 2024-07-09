@@ -1,13 +1,9 @@
 from typing import Literal, Optional
 from openai.types.beta import Thread, ThreadDeleted
 from langchain_openai_api_bridge.assistant.create_thread_api_dto import CreateThreadDto
-from langchain_openai_api_bridge.assistant.repository.message_repository import (
-    MessageRepository,
-)
-from langchain_openai_api_bridge.assistant.repository.run_repository import (
+from langchain_openai_api_bridge.assistant.repository import (
     RunRepository,
-)
-from langchain_openai_api_bridge.assistant.repository.thread_repository import (
+    MessageRepository,
     ThreadRepository,
 )
 from openai.pagination import SyncCursorPage
