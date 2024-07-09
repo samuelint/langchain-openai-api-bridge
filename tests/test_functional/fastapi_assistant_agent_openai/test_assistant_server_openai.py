@@ -127,9 +127,8 @@ class TestRunStream:
 
 class TestFollowupMessage:
 
-    @pytest.fixture(scope="session")
-    def thread(self, openai_client: OpenAI) -> Thread:
-        return openai_client.beta.threads.create(
+    def test_run_stream_starts_with_thread_run_created(self, openai_client: OpenAI):
+        thread = openai_client.beta.threads.create(
             messages=[
                 {
                     "role": "user",
@@ -138,9 +137,6 @@ class TestFollowupMessage:
             ]
         )
 
-    def test_run_stream_starts_with_thread_run_created(
-        self, openai_client: OpenAI, thread: Thread
-    ):
         openai_client.beta.threads.runs.create(
             thread_id=thread.id,
             model="gpt-3.5-turbo",
@@ -168,3 +164,30 @@ class TestFollowupMessage:
         followup_response = assistant_stream_events_to_str_response(events_2)
 
         assert "banana" in followup_response
+
+    def test_run_data_is_retreivable_from_message(self, openai_client: OpenAI):
+        thread = openai_client.beta.threads.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": "Remember that my favorite fruit is banana. I Like bananas.",
+                },
+            ]
+        )
+        openai_client.beta.threads.runs.create(
+            thread_id=thread.id,
+            model="gpt-3.5-turbo",
+            assistant_id="any",
+            temperature=0,
+            stream=True,
+        )
+        messages = openai_client.beta.threads.messages.list(
+            thread_id=thread.id,
+        ).data
+        last_message_run_id = messages[-1].run_id
+        last_message_run = openai_client.beta.threads.runs.retrieve(
+            thread_id=thread.id,
+            run_id=last_message_run_id,
+        )
+
+        assert last_message_run is not None

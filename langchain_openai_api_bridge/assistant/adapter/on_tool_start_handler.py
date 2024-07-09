@@ -1,6 +1,5 @@
 from langchain_core.runnables.schema import StreamEvent
 from openai.types.beta import AssistantStreamEvent
-
 from langchain_openai_api_bridge.assistant.adapter.openai_event_factory import (
     create_langchain_tool_run_step_tools_created,
 )
