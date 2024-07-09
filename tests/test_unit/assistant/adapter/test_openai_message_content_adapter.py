@@ -69,6 +69,11 @@ class TestToOpenaiMessageContent:
 
 
 class TestToOpenaiMessageContentList:
+    def test_no_content_is_empty_array(self):
+        result = to_openai_message_content_list(content=None)
+
+        assert isinstance(result, list)
+
     def test_string_content_is_converted_to_TextContentBlock(self):
         result = to_openai_message_content_list(content="test")
 
