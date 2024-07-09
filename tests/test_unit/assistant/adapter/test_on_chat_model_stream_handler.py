@@ -7,10 +7,13 @@ from langchain_openai_api_bridge.assistant.adapter.on_chat_model_stream_handler 
 from langchain_openai_api_bridge.assistant.create_thread_runs_api_dto import (
     ThreadRunsDto,
 )
-from langchain_openai_api_bridge.assistant.adapter.openai_message_factory import create_message
+from langchain_openai_api_bridge.assistant.adapter.openai_message_factory import (
+    create_message,
+)
 from langchain_openai_api_bridge.assistant.repository.message_repository import (
     MessageRepository,
 )
+from openai.types.beta.threads import Run
 from tests.test_unit.core.agent_stream_utils import create_stream_chunk_event
 
 
@@ -25,6 +28,22 @@ def some_thread_dto():
         assistant_id="assistant1",
         thread_id="thread1",
         model="some-model",
+    )
+
+
+@pytest.fixture
+def some_run() -> Run:
+    return Run(
+        id="a",
+        assistant_id="assistant1",
+        created_at=0,
+        tools=[],
+        thread_id="thread1",
+        model="some-model",
+        status="in_progress",
+        instructions="",
+        object="thread.run",
+        parallel_tool_calls=True,
     )
 
 
@@ -45,6 +64,7 @@ class TestOnChatModelStreamHandler:
         thread_message_repository: MessageRepository,
         instance: OnChatModelStreamHandler,
         some_thread_dto: ThreadRunsDto,
+        some_run: Run,
     ):
         event = create_stream_chunk_event(
             run_id="a", event="on_chat_model_stream", content=" World!"
@@ -55,7 +75,7 @@ class TestOnChatModelStreamHandler:
             )
         ).then_return("1")
 
-        result = instance.handle(event=event, dto=some_thread_dto)
+        result = instance.handle(event=event, dto=some_thread_dto, run=some_run)
 
         assert result[0].event == "thread.message.delta"
         assert result[0].data.delta.content[0].text.value == " World!"
@@ -66,6 +86,7 @@ class TestOnChatModelStreamHandler:
         thread_message_repository: MessageRepository,
         instance: OnChatModelStreamHandler,
         some_thread_dto: ThreadRunsDto,
+        some_run: Run,
     ):
         event = create_stream_chunk_event(
             run_id="a", event="on_chat_model_stream", content="Hello"
@@ -89,7 +110,7 @@ class TestOnChatModelStreamHandler:
             )
         ).then_return(created_message)
 
-        result = instance.handle(event=event, dto=some_thread_dto)
+        result = instance.handle(event=event, dto=some_thread_dto, run=some_run)
 
         assert result[0].event == "thread.message.created"
         assert result[0].data == created_message
@@ -97,12 +118,15 @@ class TestOnChatModelStreamHandler:
         assert result[1].data.delta.content[0].text.value == "Hello"
 
     def test_event_without_content_returns_no_events(
-        self, instance: OnChatModelStreamHandler, some_thread_dto: ThreadRunsDto
+        self,
+        instance: OnChatModelStreamHandler,
+        some_thread_dto: ThreadRunsDto,
+        some_run: Run,
     ):
         event = create_stream_chunk_event(
             run_id="a", event="on_chat_model_stream", content=""
         )
 
-        result = instance.handle(event=event, dto=some_thread_dto)
+        result = instance.handle(event=event, dto=some_thread_dto, run=some_run)
 
         assert len(result) == 0

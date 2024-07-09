@@ -1,5 +1,8 @@
 from langchain_core.runnables.schema import StreamEvent
 from openai.types.beta import AssistantStreamEvent
+from openai.types.beta.threads import (
+    Run,
+)
 from langchain_openai_api_bridge.assistant.adapter.openai_event_factory import (
     create_thread_message_completed,
 )
@@ -24,10 +27,10 @@ class OnChatModelEndHandler:
         self.thread_message_repository = thread_message_repository
 
     def handle(
-        self, event: StreamEvent, dto: ThreadRunsDto
+        self, event: StreamEvent, dto: ThreadRunsDto, run: Run
     ) -> list[AssistantStreamEvent]:
         events = []
-        run_id = event["run_id"]
+        run_id = run.id
         thread_id = dto.thread_id
         final_content_str = event["data"]["output"].content
 

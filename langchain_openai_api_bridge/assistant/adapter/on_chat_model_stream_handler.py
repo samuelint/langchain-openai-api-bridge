@@ -1,5 +1,8 @@
 from langchain_core.runnables.schema import StreamEvent
 from openai.types.beta import AssistantStreamEvent
+from openai.types.beta.threads import (
+    Run,
+)
 from langchain_openai_api_bridge.assistant.adapter.openai_event_factory import (
     create_text_thread_message_delta,
     create_thread_message_created_event,
@@ -19,11 +22,13 @@ class OnChatModelStreamHandler:
     ):
         self.thread_message_repository = thread_message_repository
 
-    def handle(self, event: StreamEvent, dto: ThreadRunsDto) -> AssistantStreamEvent:
+    def handle(
+        self, event: StreamEvent, dto: ThreadRunsDto, run: Run
+    ) -> AssistantStreamEvent:
         events = []
         chunk = event["data"]["chunk"]
         content: str = chunk.content
-        run_id = event["run_id"]
+        run_id = run.id
 
         if content is None or content == "":
             return events

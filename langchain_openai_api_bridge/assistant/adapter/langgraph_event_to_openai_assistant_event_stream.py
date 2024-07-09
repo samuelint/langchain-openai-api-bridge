@@ -56,11 +56,15 @@ class LanggraphEventToOpenAIAssistantEventStream:
             match kind:
                 case "on_chat_model_stream":
                     adapted_events += self.on_chat_model_stream_handler.handle(
-                        event=event, dto=dto
+                        event=event,
+                        dto=dto,
+                        run=thread_run.data,
                     )
                 case "on_chat_model_end":
                     adapted_events += self.on_chat_model_end_handler.handle(
-                        event=event, dto=dto
+                        event=event,
+                        dto=dto,
+                        run=thread_run.data,
                     )
                 case "on_tool_start":
                     adapted_events += self.on_tool_start_handler.handle(
