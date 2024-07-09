@@ -1,4 +1,4 @@
-from decoy import Decoy
+from decoy import Decoy, matchers
 import pytest
 
 from langchain_openai_api_bridge.assistant.adapter.on_chat_model_stream_handler import (
@@ -13,7 +13,12 @@ from langchain_openai_api_bridge.assistant.adapter.openai_message_factory import
 from langchain_openai_api_bridge.assistant.repository.message_repository import (
     MessageRepository,
 )
-from openai.types.beta.threads import Run
+from openai.types.beta.threads import (
+    Run,
+    TextContentBlock,
+    Text,
+)
+from openai.types.beta.threads.message import Message
 from tests.test_unit.core.agent_stream_utils import create_stream_chunk_event
 
 
@@ -48,6 +53,19 @@ def some_run() -> Run:
 
 
 @pytest.fixture
+def some_message() -> Message:
+    return Message(
+        id="msg1",
+        object="thread.message",
+        created_at=0,
+        content=[],
+        role="assistant",
+        status="in_progress",
+        thread_id="thread1",
+    )
+
+
+@pytest.fixture
 def instance(
     thread_message_repository: MessageRepository,
 ):
@@ -65,20 +83,56 @@ class TestOnChatModelStreamHandler:
         instance: OnChatModelStreamHandler,
         some_thread_dto: ThreadRunsDto,
         some_run: Run,
+        some_message: Message,
     ):
         event = create_stream_chunk_event(
             run_id="a", event="on_chat_model_stream", content=" World!"
         )
         decoy.when(
-            thread_message_repository.retreive_message_id_by_run_id(
+            thread_message_repository.retreive_unique_by_run_id(
                 run_id="a", thread_id="thread1"
             )
-        ).then_return("1")
+        ).then_return(some_message)
 
         result = instance.handle(event=event, dto=some_thread_dto, run=some_run)
 
         assert result[0].event == "thread.message.delta"
         assert result[0].data.delta.content[0].text.value == " World!"
+
+    def test_message_delta_is_persisted(
+        self,
+        decoy: Decoy,
+        thread_message_repository: MessageRepository,
+        instance: OnChatModelStreamHandler,
+        some_thread_dto: ThreadRunsDto,
+        some_run: Run,
+        some_message: Message,
+    ):
+        event = create_stream_chunk_event(
+            run_id="a", event="on_chat_model_stream", content=" World!"
+        )
+        decoy.when(
+            thread_message_repository.retreive_unique_by_run_id(
+                run_id="a", thread_id="thread1"
+            )
+        ).then_return(some_message)
+
+        instance.handle(event=event, dto=some_thread_dto, run=some_run)
+
+        decoy.verify(
+            thread_message_repository.update(
+                matchers.HasAttributes(
+                    {
+                        "id": "msg1",
+                        "content": [
+                            TextContentBlock(
+                                text=Text(value=" World!", annotations=[]), type="text"
+                            )
+                        ],
+                    }
+                )
+            )
+        )
 
     def test_not_persisted_message_is_created_and_then_content_chunk_is_put_as_delta_event(
         self,
@@ -87,6 +141,7 @@ class TestOnChatModelStreamHandler:
         instance: OnChatModelStreamHandler,
         some_thread_dto: ThreadRunsDto,
         some_run: Run,
+        some_message: Message,
     ):
         event = create_stream_chunk_event(
             run_id="a", event="on_chat_model_stream", content="Hello"
