@@ -29,7 +29,7 @@ def to_openai_message_content(
                 type="image_file",
                 image_file=ImageFile(
                     file_id=content["image_file"]["file_id"],
-                    detail=content["image_file"]["detail"],
+                    detail=content.get("image_file", {}).get("detail", None),
                 ),
             )
         if content["type"] == "image_url":
@@ -37,7 +37,7 @@ def to_openai_message_content(
                 type="image_url",
                 image_url=ImageURL(
                     url=content["image_url"]["url"],
-                    detail=content["image_url"]["detail"],
+                    detail=content.get("image_url", {}).get("detail", None),
                 ),
             )
     elif (

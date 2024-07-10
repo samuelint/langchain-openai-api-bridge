@@ -106,6 +106,19 @@ class TestDeserializeMessageContent:
         assert result.image_url.url == "http://my-image.com"
         assert result.image_url.detail == "low"
 
+    def test_image_url_no_details_is_accepted(self):
+        result = deserialize_message_content(
+            data={
+                "type": "image_url",
+                "image_url": {"url": "http://my-image.com"},
+            }
+        )
+
+        assert isinstance(result, ImageURLContentBlock)
+        assert result.type == "image_url"
+        assert result.image_url.url == "http://my-image.com"
+        assert result.image_url.detail is None
+
     def test_deserialize_image_file(self):
         result = deserialize_message_content(
             data={
@@ -118,3 +131,16 @@ class TestDeserializeMessageContent:
         assert result.type == "image_file"
         assert result.image_file.file_id == "abc"
         assert result.image_file.detail == "auto"
+
+    def test_image_file_no_details_is_accepted(self):
+        result = deserialize_message_content(
+            data={
+                "type": "image_file",
+                "image_file": {"file_id": "abc"},
+            }
+        )
+
+        assert isinstance(result, ImageFileContentBlock)
+        assert result.type == "image_file"
+        assert result.image_file.file_id == "abc"
+        assert result.image_file.detail is None
