@@ -1,10 +1,8 @@
 import base64
 import logging
 import os
-from typing import List
 import pytest
 from openai import OpenAI
-from openai.types.beta import AssistantStreamEvent, Thread
 
 from fastapi.testclient import TestClient
 from assistant_server_openai import app
