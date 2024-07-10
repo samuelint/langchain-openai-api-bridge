@@ -2,27 +2,54 @@ from typing import List
 from langchain_openai_api_bridge.assistant.repository.message_repository import (
     MessageRepository,
 )
-from langchain_openai_api_bridge.core.types.openai.message import OpenAIChatMessage
+from langchain_core.messages import BaseMessage, AIMessage, HumanMessage
+from openai.types.beta.threads.message import MessageContent
 
 
 class ThreadToLangchainInputMessagesService:
     def __init__(self, message_repository: MessageRepository):
         self.message_repository = message_repository
 
-    def retreive_input(self, thread_id: str) -> List[OpenAIChatMessage]:
-        thread_messages = self.message_repository.list(thread_id=thread_id)
-        messages = [
-            OpenAIChatMessage(
-                role=message.role,
-                content=message.content[0].text.value,
-            )
-            for message in thread_messages
-        ]
+    def retreive_input(self, thread_id: str) -> List[BaseMessage]:
+        messages = self.message_repository.list(thread_id=thread_id)
 
-        return messages
+        converted_messages = []
 
-    def retreive_input_dict(self, thread_id: str) -> dict:
-        messages = self.retreive_input(thread_id=thread_id)
-        return {
-            "messages": [message.dict() for message in messages],
-        }
+        for message in messages:
+            content = self._to_langchain_content(message.content)
+
+            if message.role == "user":
+                converted_messages.append(HumanMessage(content=content))
+            elif message.role == "assistant":
+                converted_messages.append(AIMessage(content=content))
+        return converted_messages
+
+    def _to_langchain_content(self, content: List[MessageContent]) -> list[dict]:
+        converted_content = []
+
+        if isinstance(content, str):
+            content = [
+                {
+                    "type": "text",
+                    "text": content,
+                }
+            ]
+
+        for c in content:
+            if c.type == "text":
+                converted_content.append(
+                    {
+                        "type": "text",
+                        "text": c.text.value,
+                    }
+                )
+
+            if c.type == "image_url":
+                converted_content.append(
+                    {
+                        "type": "image_url",
+                        "image_url": {"url": c.image_url.url},
+                    }
+                )
+
+        return converted_content

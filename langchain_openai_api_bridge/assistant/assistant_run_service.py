@@ -41,9 +41,9 @@ class AssistantRunService:
         self, agent: CompiledGraph, dto: ThreadRunsDto
     ) -> AsyncIterator[AssistantStreamEvent]:
 
-        input = self.thread_message_service.retreive_input_dict(thread_id=dto.thread_id)
+        input = self.thread_message_service.retreive_input(thread_id=dto.thread_id)
         astream_events = agent.astream_events(
-            input=input,
+            input={"messages": input},
             version="v2",
         )
 
