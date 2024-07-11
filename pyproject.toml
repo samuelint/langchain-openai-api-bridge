@@ -24,7 +24,7 @@ validators = "^0.28.3"
 pytest-mock = "^3.14.0"
 
 [tool.poetry.group.test.dependencies]
-langchain-anthropic = "^0.1.15"
+langchain-anthropic = "^0.1.19"
 pytest-asyncio = "^0.23.7"
 pytest = "^8.2.2"
 pytest-watch = "^4.2.0"

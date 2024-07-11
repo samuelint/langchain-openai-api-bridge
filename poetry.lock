@@ -2821,4 +2821,4 @@ langchain-serve = ["fastapi", "python-dotenv"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "056f8f3e53faeeb4151c2ce125aa08d8cebde08d14da24c5897289e13dd9506c"
+content-hash = "09c69b5eed53efd3a3e786995eb595b6e5906be1f2f8c9027bd20e077b5168b5"
