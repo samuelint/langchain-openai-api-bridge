@@ -1,50 +1,21 @@
-# Expose as an OpenAI API groq assistant (Assistant API)
+# Expose as an OpenAI API Groq assistant (Assistant API)
 
-The default `from langchain_anthropic import ChatAnthropic` is not compatible with multimodal prompts as the image format differs between OpenAI and Anthropic.
-
-To use multimodal prompts, use the `OpenAICompatibleAnthropicChatModel` adapter (from `langchain_openai_api_bridge.chat_model_adapter`) which transforms OpenAI format to Anthropic format. This enables you to use one or the other seamlessly.
-Look at `my_anthropic_agent_factory.py` for usage example.
-
-#### Multimodal Formats
-
-##### Anthropic
+:warning: Groq does not support streaming with tools. Make sure to set `streaming=False,`
 
 ```python
-{
-    "role": "user",
-    "content": [
-        {
-            "type": "image",
-            "source": {
-                "type": "base64",
-                "media_type": "image/jpeg",
-                "data": "iVBORw0KGgo=",
-            },
-        },
-        {
-            "type": "text",
-            "text": "Describe this image."
-        }
-    ],
-}
+chat_model = ChatGroq(
+    model="llama3-8b-8192",
+    streaming=False, # <<--- Must be set to False when used with LangGraph / Tools
+)
 ```
 
-##### OpenAI
+:warning: Note that Groq models do not currently support multi-modal capabilities. Do not use payload with image reference
 
 ```python
 {
-    "role": "user",
-    "content": [
-        {
-            "type": "image_url",
-            "image_url": {
-                "url": "data:image/jpeg;base64,iVBORw0KGgo="
-            },
-        },
-        {
-            "type": "text",
-            "text": "Describe this image."
-        }
-    ],
-}
+    "type": "image_url",
+    "image_url": {
+        "url": "data:image/jpeg;base64,iVBORw0KGgo="
+    },
+},
 ```

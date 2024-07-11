@@ -6,7 +6,9 @@ A `FastAPI` + `Langchain` / `langgraph` extension to expose agent result as an O
 
 Use any OpenAI-compatible UI or UI framework with your custom `Langchain Agent`.
 
-Support:
+### Support:
+
+#### OpenAI API features:
 
 - ✅ [Chat Completions API](https://platform.openai.com/docs/api-reference/chat)
   - ✅ Invoke
@@ -18,6 +20,12 @@ Support:
   - ✅ Run
   - ✅ Tools step stream
   - 🚧 Human In The Loop
+
+#### Vendors features:
+
+- ✅ OpenAI
+- ✅ Anthropic
+- ✅ Groq (excluding multimodal)
 
 If you find this project useful, please give it a star ⭐!
 
