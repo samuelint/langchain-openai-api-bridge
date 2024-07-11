@@ -1,5 +1,7 @@
 # Langchain Openai API Bridge
 
+[![PyPI version](https://badge.fury.io/py/langchain-openai-api-bridge.svg)](https://badge.fury.io/py/langchain-openai-api-bridge) [![Downloads](https://pepy.tech/badge/langchain-openai-api-bridge)](https://pepy.tech/project/langchain-openai-api-bridge)
+
 🚀 Expose [Langchain](https://github.com/langchain-ai/langchain) Agent ([Langgraph](https://github.com/langchain-ai/langgraph)) result as an OpenAI-compatible API 🚀
 
 A `FastAPI` + `Langchain` / `langgraph` extension to expose agent result as an OpenAI-compatible API.
