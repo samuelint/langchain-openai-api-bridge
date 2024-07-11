@@ -21,7 +21,7 @@ class MyAnthropicAgentFactory(AgentFactory):
     def create_agent(self, llm: BaseChatModel, dto: CreateAgentDto) -> CompiledGraph:
         return create_react_agent(
             llm,
-            [],
+            [magic_number_tool],
             messages_modifier="""You are a helpful assistant.""",
         )
 
