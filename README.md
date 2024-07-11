@@ -23,7 +23,7 @@ Use any OpenAI-compatible UI or UI framework with your custom `Langchain Agent`.
   - ✅ Tools step stream
   - 🚧 Human In The Loop
 
-#### Vendors features:
+#### Supporetd Vendors:
 
 - ✅ OpenAI
 - ✅ Anthropic
