@@ -1,12 +1,15 @@
-from langchain_openai_api_bridge.chat_model_adapter.anthropic_openai_message_adapter import (
-    AnthropicOpenAIChatMessageAdapter,
+from langchain_openai_api_bridge.chat_model_adapter.anthropic_openai_compatible_chat_model_adapter import (
+    AnthropicOpenAICompatibleChatModelAdapter,
 )
+
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
+
+instance = AnthropicOpenAICompatibleChatModelAdapter()
 
 
 class TestToOpenAIFormatMessages:
     def test_string_content_is_unchanged(self):
-        result = AnthropicOpenAIChatMessageAdapter.to_openai_format_messages(
+        result = instance.to_openai_format_messages(
             [
                 [
                     SystemMessage(content="Your are an assistant"),
@@ -24,7 +27,7 @@ class TestToOpenAIFormatMessages:
         assert result[0][2].content == "Hi, human. I am an AI"
 
     def test_content_in_array_format_is_preserved(self):
-        result = AnthropicOpenAIChatMessageAdapter.to_openai_format_messages(
+        result = instance.to_openai_format_messages(
             [
                 [
                     SystemMessage(content="Your are an assistant"),
@@ -45,7 +48,7 @@ class TestToOpenAIFormatMessages:
         assert result[0][1].content[0]["text"] == "What is in the image?"
 
     def test_base64_image_url_is_converted_to_anthropic_format(self):
-        result = AnthropicOpenAIChatMessageAdapter.to_openai_format_messages(
+        result = instance.to_openai_format_messages(
             [
                 [
                     SystemMessage(content="Your are an assistant"),
