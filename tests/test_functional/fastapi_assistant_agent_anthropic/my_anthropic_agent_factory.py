@@ -1,4 +1,4 @@
-from langchain_openai_api_bridge.chat_model_adapter.anthropic_openai_chat_model import (
+from langchain_openai_api_bridge.chat_model_adapter import (
     OpenAICompatibleAnthropicChatModel,
 )
 from langchain_openai_api_bridge.core.agent_factory import AgentFactory
