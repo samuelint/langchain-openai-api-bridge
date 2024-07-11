@@ -1,8 +1,8 @@
-from .anthropic_openai_chat_model import (
-    OpenAICompatibleAnthropicChatModel,
+from .openai_compatible_chat_model import (
+    OpenAICompatibleChatModel,
 )
 
 
 __all__ = [
-    "OpenAICompatibleAnthropicChatModel",
+    "OpenAICompatibleChatModel",
 ]
