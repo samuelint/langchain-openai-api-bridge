@@ -16,7 +16,7 @@ langchain-openai = { version = "^0.1.8", optional = true }
 fastapi = { version = "^0.111.0", optional = true }
 python-dotenv = { version = "^1.0.1", optional = true }
 langgraph = { version = "^0.0.62", optional = true }
-
+langchain-anthropic = { version = "^0.1.19", optional = true }
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.0.0"
@@ -24,7 +24,6 @@ validators = "^0.28.3"
 pytest-mock = "^3.14.0"
 
 [tool.poetry.group.test.dependencies]
-langchain-anthropic = "^0.1.19"
 pytest-asyncio = "^0.23.7"
 pytest = "^8.2.2"
 pytest-watch = "^4.2.0"
@@ -34,6 +33,7 @@ fastapi-injector = { version = "^0.6.0", python = ">=3.9,<3.13" }
 
 [tool.poetry.extras]
 langchain = ["langchain", "langchain-openai", "langgraph"]
+langchain-anthropic = ["langchain-anthropic"]
 langchain_serve = ["fastapi", "python-dotenv"]
 
 

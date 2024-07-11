@@ -1,4 +1,3 @@
-import logging
 import pytest
 from openai import OpenAI
 
@@ -10,9 +9,6 @@ from tests.test_functional.assistant_stream_utils import (
 
 
 test_api = TestClient(app)
-
-
-logging.getLogger("openai").setLevel(logging.DEBUG)
 
 
 @pytest.fixture(scope="session")

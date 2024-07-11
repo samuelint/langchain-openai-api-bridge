@@ -1,11 +1,9 @@
-import base64
-import logging
-import os
 import pytest
 from openai import OpenAI
 
 from fastapi.testclient import TestClient
-from assistant_server_openai import app
+from assistant_server_anthropic import app
+from tests.test_functional.assets.assets import base64_url_pig_image
 from tests.test_functional.assistant_stream_utils import (
     assistant_stream_events_to_str_response,
 )
@@ -14,13 +12,10 @@ from tests.test_functional.assistant_stream_utils import (
 test_api = TestClient(app)
 
 
-logging.getLogger("openai").setLevel(logging.DEBUG)
-
-
 @pytest.fixture(scope="session")
 def openai_client():
     return OpenAI(
-        base_url="http://testserver/my-assistant/openai/v1",
+        base_url="http://testserver/my-anthropic-assistant/openai/v1",
         http_client=test_api,
     )
 
@@ -29,10 +24,7 @@ class TestMultiModal:
 
     @pytest.fixture
     def base64_pig_image(self):
-        image_path = os.path.join(os.path.dirname(__file__), "pig.jpg")
-        with open(image_path, "rb") as img_file:
-            img_bytes = img_file.read()
-            return f"data:image/png;base64,{base64.b64encode(img_bytes).decode()}"
+        return base64_url_pig_image()
 
     def test_run_stream_message_deltas(
         self, openai_client: OpenAI, base64_pig_image: str
@@ -57,7 +49,7 @@ class TestMultiModal:
 
         stream = openai_client.beta.threads.runs.create(
             thread_id=thread.id,
-            model="gpt-4o",
+            model="claude-3-5-sonnet-20240620",
             assistant_id="any",
             stream=True,
             temperature=0,
