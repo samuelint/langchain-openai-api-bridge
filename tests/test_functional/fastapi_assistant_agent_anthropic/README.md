@@ -2,12 +2,25 @@
 
 The default `from langchain_anthropic import ChatAnthropic` is not compatible with multimodal prompts as the image format differs between OpenAI and Anthropic.
 
-To use multimodal prompts, use the `OpenAICompatibleAnthropicChatModel` adapter (from `langchain_openai_api_bridge.chat_model_adapter`) which transforms OpenAI format to Anthropic format. This enables you to use one or the other seamlessly.
+To use multimodal prompts, use the `OpenAICompatibleChatModel` which transforms OpenAI format to Anthropic format. This enables you to use one or the other seamlessly.
 Look at `my_anthropic_agent_factory.py` for usage example.
 
-#### Multimodal Formats
+```python
+chat_model = ChatAnthropic(
+    model="claude-3-5-sonnet-20240620",
+    max_tokens=1024,
+    streaming=True,
+)
+
+return OpenAICompatibleChatModel(chat_model=chat_model)
+
+```
+
+#### Multimodal Formats differences
 
 ##### Anthropic
+
+https://docs.anthropic.com/en/docs/build-with-claude/vision#about-the-prompt-examples
 
 ```python
 {

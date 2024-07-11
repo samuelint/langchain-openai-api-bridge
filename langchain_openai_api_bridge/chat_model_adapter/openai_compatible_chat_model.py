@@ -3,6 +3,11 @@ from langchain_core.messages import BaseMessage
 from langchain_core.language_models import BaseChatModel
 from langchain_core.pydantic_v1 import root_validator
 
+from langchain_openai_api_bridge.chat_model_adapter.default_openai_compatible_chat_model_adapter import (
+    DefaultOpenAICompatibleChatModelAdapter,
+)
+
+
 from .anthropic_openai_compatible_chat_model_adapter import (
     AnthropicOpenAICompatibleChatModelAdapter,
 )
@@ -10,7 +15,9 @@ from langchain_openai_api_bridge.chat_model_adapter.base_openai_compatible_chat_
     BaseOpenAICompatibleChatModelAdapter,
 )
 
-default_adapters = [AnthropicOpenAICompatibleChatModelAdapter()]
+default_adapters = [
+    AnthropicOpenAICompatibleChatModelAdapter(),
+]
 
 
 class OpenAICompatibleChatModel(BaseChatModel):
@@ -20,12 +27,16 @@ class OpenAICompatibleChatModel(BaseChatModel):
 
     @root_validator()
     def set_adapter(cls, values):
-        adapter = values.get(
-            "adapter",
-            OpenAICompatibleChatModel._find_adatper(
-                values.get("chat_model"), values.get("adapters", default_adapters)
-            ),
-        )
+        adapter = values.get("adapter")
+
+        if adapter is None:
+            chat_model = values.get("chat_model")
+            adapters = values.get("adapters", default_adapters)
+            adapter = OpenAICompatibleChatModel._find_adatper(chat_model, adapters)
+
+        if adapter is None:
+            raise ValueError("Could not find an adapter for the given chat model")
+
         values["adapter"] = adapter
 
         return values
@@ -43,7 +54,7 @@ class OpenAICompatibleChatModel(BaseChatModel):
             messages=messages, stop=stop, run_manager=run_manager, **kwargs
         )
 
-    def _astream(self, messages, stop, run_manager, **kwargs):
+    async def _astream(self, messages, stop, run_manager, **kwargs):
         return self.chat_model._astream(
             messages=messages, stop=stop, run_manager=run_manager, **kwargs
         )
@@ -74,4 +85,4 @@ class OpenAICompatibleChatModel(BaseChatModel):
             if adapter.is_compatible(llm_type):
                 return adapter
 
-        raise ValueError(f"Could not find an adapter for {llm_type}")
+        return DefaultOpenAICompatibleChatModelAdapter()
