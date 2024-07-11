@@ -1,9 +1,11 @@
 from typing import List
+from langchain_openai_api_bridge.assistant.adapter.langchain_input_content_adapter import (
+    to_langchain_input_content,
+)
 from langchain_openai_api_bridge.assistant.repository.message_repository import (
     MessageRepository,
 )
 from langchain_core.messages import BaseMessage, AIMessage, HumanMessage
-from openai.types.beta.threads.message import MessageContent
 
 
 class ThreadToLangchainInputMessagesService:
@@ -16,40 +18,10 @@ class ThreadToLangchainInputMessagesService:
         converted_messages = []
 
         for message in messages:
-            content = self._to_langchain_content(message.content)
+            content = to_langchain_input_content(content=message.content)
 
             if message.role == "user":
                 converted_messages.append(HumanMessage(content=content))
             elif message.role == "assistant":
                 converted_messages.append(AIMessage(content=content))
         return converted_messages
-
-    def _to_langchain_content(self, content: List[MessageContent]) -> list[dict]:
-        converted_content = []
-
-        if isinstance(content, str):
-            content = [
-                {
-                    "type": "text",
-                    "text": content,
-                }
-            ]
-
-        for c in content:
-            if c.type == "text":
-                converted_content.append(
-                    {
-                        "type": "text",
-                        "text": c.text.value,
-                    }
-                )
-
-            if c.type == "image_url":
-                converted_content.append(
-                    {
-                        "type": "image_url",
-                        "image_url": {"url": c.image_url.url},
-                    }
-                )
-
-        return converted_content

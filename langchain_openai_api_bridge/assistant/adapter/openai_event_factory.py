@@ -22,6 +22,7 @@ from openai.types.beta.threads.runs import (
 from openai.types.beta.threads.runs import function_tool_call
 
 from langchain_openai_api_bridge.assistant.adapter.openai_message_factory import (
+    FromLanggraphMessageChunkContent,
     create_text_message_delta,
 )
 
@@ -34,7 +35,7 @@ def create_thread_message_created_event(message: Message) -> ThreadMessageCreate
 
 
 def create_text_thread_message_delta(
-    message_id: str, content: str, role: str
+    message_id: str, content: FromLanggraphMessageChunkContent, role: str
 ) -> ThreadMessageDelta:
     return ThreadMessageDelta(
         event="thread.message.delta",
