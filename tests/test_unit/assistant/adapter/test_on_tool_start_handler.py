@@ -1,5 +1,5 @@
 import pytest
-from langchain_core.runnables.schema import StreamEvent
+from langchain_core.runnables.schema import StandardStreamEvent
 from langchain_openai_api_bridge.assistant.adapter.on_tool_start_handler import (
     OnToolStartHandler,
 )
@@ -26,7 +26,7 @@ class TestOnToolStartHandler:
     def test_input_arguments(
         self, instance: OnToolStartHandler, some_thread_dto: ThreadRunsDto
     ):
-        event = StreamEvent(
+        event = StandardStreamEvent(
             run_id="r1",
             event="on_tool_start",
             name="my_tool",
@@ -43,7 +43,7 @@ class TestOnToolStartHandler:
     def test_no_input_raise_exception(
         self, instance: OnToolStartHandler, some_thread_dto: ThreadRunsDto
     ):
-        event = StreamEvent(
+        event = StandardStreamEvent(
             run_id="r1",
             event="on_tool_start",
             name="my_tool",
