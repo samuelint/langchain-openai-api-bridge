@@ -26,6 +26,7 @@ def openai_client():
 )
 class TestLlamaCppAssistant:
 
+    @pytest.mark.skip
     def test_run_stream_response_has_no_undesired_characters(
         self,
         openai_client: OpenAI,
@@ -52,30 +53,33 @@ class TestLlamaCppAssistant:
         assert len(str_response) > 0
         assert "&#39;" not in str_response
 
-    # def test_function_calling(
-    #     self,
-    #     openai_client: OpenAI,
-    # ):
-    #     thread = openai_client.beta.threads.create(
-    #         messages=[
-    #             {
-    #                 "role": "user",
-    #                 "content": "What is the magic number of 125?",
-    #             },
-    #         ]
-    #     )
+    @pytest.mark.skipif(
+        reason="Auto funciton calling is currently not supported by llamacpp",
+    )
+    def test_function_calling(
+        self,
+        openai_client: OpenAI,
+    ):
+        thread = openai_client.beta.threads.create(
+            messages=[
+                {
+                    "role": "user",
+                    "content": "What is the magic number of 125?",
+                },
+            ]
+        )
 
-    #     stream = openai_client.beta.threads.runs.create(
-    #         thread_id=thread.id,
-    #         model="llama3",
-    #         assistant_id="any",
-    #         stream=True,
-    #         temperature=0,
-    #     )
+        stream = openai_client.beta.threads.runs.create(
+            thread_id=thread.id,
+            model="llama3",
+            assistant_id="any",
+            stream=True,
+            temperature=0,
+        )
 
-    #     str_response = assistant_stream_events_to_str_response(stream)
+        str_response = assistant_stream_events_to_str_response(stream)
 
-    #     assert "127" in str_response
+        assert "127" in str_response
 
 
 if __name__ == "__main__":

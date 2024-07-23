@@ -26,7 +26,7 @@ class MyLlamacppAgentFactory(AgentFactory):
         return create_react_agent(
             llm,
             [magic_number_tool],
-            messages_modifier="""You are a helpful assistant.""",
+            # messages_modifier="""You are a helpful assistant.""",
         )
 
     def create_llm(self, dto: CreateAgentDto) -> BaseChatModel:
@@ -40,7 +40,6 @@ class MyLlamacppAgentFactory(AgentFactory):
             n_gpu_layers=-1,
             offload_kqv=True,  # Equivalent of f16_kv=True
             n_threads=multiprocessing.cpu_count() - 1,
-            # chat_template="llama3",
             chat_format="chatml-function-calling",
         )
 
