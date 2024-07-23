@@ -1,6 +1,5 @@
-from langchain_anthropic import ChatAnthropic
-from langchain_openai_api_bridge.chat_model_adapter import (
-    OpenAICompatibleChatModel,
+from langchain_openai_api_bridge.chat_model_adapter.anthropic.anthropic_openai_compatible_chat_model import (
+    AnthropicOpenAICompatibleChatModel,
 )
 
 from langchain_openai_api_bridge.core.agent_factory import AgentFactory
@@ -28,10 +27,8 @@ class MyAnthropicAgentFactory(AgentFactory):
         )
 
     def create_llm(self, dto: CreateAgentDto) -> CompiledGraph:
-        chat_model = ChatAnthropic(
+        return AnthropicOpenAICompatibleChatModel(
             model=dto.model,
             max_tokens=1024,
             streaming=True,
         )
-
-        return OpenAICompatibleChatModel(chat_model=chat_model)

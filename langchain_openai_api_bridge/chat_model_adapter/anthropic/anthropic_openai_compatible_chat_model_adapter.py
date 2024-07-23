@@ -1,19 +1,15 @@
 from typing import Dict, Union
 from langchain_core.messages import BaseMessage
-
 from langchain_openai_api_bridge.chat_model_adapter.url_extractor import (
     extract_base64_url,
 )
 
-from .base_openai_compatible_chat_model_adapter import (
+from ..base_openai_compatible_chat_model_adapter import (
     BaseOpenAICompatibleChatModelAdapter,
 )
 
 
 class AnthropicOpenAICompatibleChatModelAdapter(BaseOpenAICompatibleChatModelAdapter):
-    def is_compatible(self, llm_type: str):
-        return "anthropic" in llm_type
-
     def to_openai_format_message(self, message: BaseMessage):
         if isinstance(message.content, list):
             message.content = [

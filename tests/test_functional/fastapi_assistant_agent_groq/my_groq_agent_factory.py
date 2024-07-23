@@ -1,7 +1,4 @@
 from langchain_groq import ChatGroq
-from langchain_openai_api_bridge.chat_model_adapter import (
-    OpenAICompatibleChatModel,
-)
 from langchain_openai_api_bridge.core.agent_factory import AgentFactory
 from langgraph.graph.graph import CompiledGraph
 from langchain_core.language_models import BaseChatModel
@@ -29,7 +26,7 @@ class MyGroqAgentFactory(AgentFactory):
     def create_llm(self, dto: CreateAgentDto) -> CompiledGraph:
         chat_model = ChatGroq(
             model=dto.model,
-            streaming=False,
+            streaming=False,  # Must be set to false. Groq does not support tool calling with stream at the moment (23/07/2024)
         )
 
-        return OpenAICompatibleChatModel(chat_model=chat_model)
+        return chat_model
