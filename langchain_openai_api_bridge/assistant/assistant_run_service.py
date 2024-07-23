@@ -37,11 +37,19 @@ class AssistantRunService:
             status="queued",
         )
 
+    async def ainvoke(self, agent: CompiledGraph, dto: ThreadRunsDto):
+        input = self.thread_message_service.retreive_input(thread_id=dto.thread_id)
+
+        return await agent.ainvoke(
+            input={"messages": input},
+        )
+
     def astream(
         self, agent: CompiledGraph, dto: ThreadRunsDto
     ) -> AsyncIterator[AssistantStreamEvent]:
 
         input = self.thread_message_service.retreive_input(thread_id=dto.thread_id)
+
         astream_events = agent.astream_events(
             input={"messages": input},
             version="v2",

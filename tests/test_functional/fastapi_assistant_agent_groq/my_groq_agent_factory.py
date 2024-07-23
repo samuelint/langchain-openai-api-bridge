@@ -1,7 +1,4 @@
 from langchain_groq import ChatGroq
-from langchain_openai_api_bridge.chat_model_adapter import (
-    OpenAICompatibleChatModel,
-)
 from langchain_openai_api_bridge.core.agent_factory import AgentFactory
 from langgraph.graph.graph import CompiledGraph
 from langchain_core.language_models import BaseChatModel
@@ -32,4 +29,4 @@ class MyGroqAgentFactory(AgentFactory):
             streaming=False,
         )
 
-        return OpenAICompatibleChatModel(chat_model=chat_model)
+        return chat_model

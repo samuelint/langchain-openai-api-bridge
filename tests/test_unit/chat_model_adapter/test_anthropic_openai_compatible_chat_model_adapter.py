@@ -1,4 +1,4 @@
-from langchain_openai_api_bridge.chat_model_adapter.anthropic_openai_compatible_chat_model_adapter import (
+from langchain_openai_api_bridge.chat_model_adapter.anthropic.anthropic_openai_compatible_chat_model_adapter import (
     AnthropicOpenAICompatibleChatModelAdapter,
 )
 

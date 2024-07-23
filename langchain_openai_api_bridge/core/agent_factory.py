@@ -11,5 +11,5 @@ class AgentFactory(ABC):
         pass
 
     @abstractmethod
-    def create_llm(self, dto: CreateAgentDto) -> CompiledGraph:
+    def create_llm(self, dto: CreateAgentDto) -> BaseChatModel:
         pass

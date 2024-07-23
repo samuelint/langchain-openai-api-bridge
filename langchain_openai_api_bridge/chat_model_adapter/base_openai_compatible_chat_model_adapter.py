@@ -1,13 +1,8 @@
-from abc import abstractmethod
 from typing import List, Union
 from langchain_core.messages import BaseMessage
 
 
 class BaseOpenAICompatibleChatModelAdapter:
-
-    @abstractmethod
-    def is_compatible(self, llm_type: str):
-        pass
 
     def to_openai_format_messages(
         self, messages: Union[List[BaseMessage], List[List[BaseMessage]]]
