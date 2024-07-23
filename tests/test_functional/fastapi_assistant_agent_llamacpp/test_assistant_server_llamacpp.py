@@ -1,3 +1,4 @@
+import os
 import pytest
 from openai import OpenAI
 
@@ -19,6 +20,10 @@ def openai_client():
     )
 
 
+@pytest.mark.skipif(
+    os.getenv("GITHUB_ACTIONS") == "true",
+    reason="Tests using local inference are disabled for now",
+)
 class TestLlamaCppAssistant:
 
     def test_run_stream_response_has_no_undesired_characters(

@@ -26,7 +26,7 @@ class MyGroqAgentFactory(AgentFactory):
     def create_llm(self, dto: CreateAgentDto) -> CompiledGraph:
         chat_model = ChatGroq(
             model=dto.model,
-            streaming=False,
+            streaming=False,  # Must be set to false. Groq does not support tool calling with stream at the moment (23/07/2024)
         )
 
         return chat_model
