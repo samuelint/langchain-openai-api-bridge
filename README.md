@@ -26,8 +26,21 @@ Use any OpenAI-compatible UI or UI framework with your custom `Langchain Agent`.
 #### Supporetd Vendors:
 
 - ✅ OpenAI
+  - ✅ Stream 
+  - ✅ Multimodal
+  - ✅ Auto tool choice
 - ✅ Anthropic
-- ✅ Groq (excluding multimodal)
+  - ✅ Stream 
+  - ✅ Multimodal
+  - ✅ Auto tool choice
+- ✅ Groq
+  - ✅ Stream 
+  - ❌ Multimodal
+  - ✅ Auto tool choice
+- ✅ LLamaCPP local inference
+  - ✅ Stream 
+  - ❌ Multimodal
+  - ❌ Auto tool choice
 
 If you find this project useful, please give it a star ⭐!
 
