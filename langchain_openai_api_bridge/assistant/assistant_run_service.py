@@ -6,7 +6,7 @@ from langchain_openai_api_bridge.assistant.adapter.langgraph_event_to_openai_ass
 from langchain_openai_api_bridge.assistant.create_thread_runs_api_dto import (
     ThreadRunsDto,
 )
-from langgraph.graph.graph import CompiledGraph
+from langchain_core.runnables import Runnable
 
 from langchain_openai_api_bridge.assistant.adapter.thread_to_langchain_input_messages_service import (
     ThreadToLangchainInputMessagesService,
@@ -37,7 +37,7 @@ class AssistantRunService:
             status="queued",
         )
 
-    async def ainvoke(self, agent: CompiledGraph, dto: ThreadRunsDto):
+    async def ainvoke(self, agent: Runnable, dto: ThreadRunsDto):
         input = self.thread_message_service.retreive_input(thread_id=dto.thread_id)
 
         return await agent.ainvoke(
@@ -45,7 +45,7 @@ class AssistantRunService:
         )
 
     def astream(
-        self, agent: CompiledGraph, dto: ThreadRunsDto
+        self, agent: Runnable, dto: ThreadRunsDto
     ) -> AsyncIterator[AssistantStreamEvent]:
 
         input = self.thread_message_service.retreive_input(thread_id=dto.thread_id)

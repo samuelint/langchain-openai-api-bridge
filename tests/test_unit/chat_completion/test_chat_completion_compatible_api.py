@@ -3,7 +3,7 @@ import pytest
 from langchain_openai_api_bridge.chat_completion.chat_completion_compatible_api import (
     ChatCompletionCompatibleAPI,
 )
-from langgraph.graph.graph import CompiledGraph
+from langchain_core.runnables import Runnable
 from langchain_openai_api_bridge.core.types.openai import OpenAIChatMessage
 from langchain_core.messages import AIMessage
 
@@ -16,7 +16,7 @@ some_messages = [OpenAIChatMessage(role="user", content="hello")]
 
 @pytest.fixture
 def agent():
-    agent = MagicMock(spec=CompiledGraph)
+    agent = MagicMock(spec=Runnable)
 
     return agent
 

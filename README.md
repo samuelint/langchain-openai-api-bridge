@@ -26,19 +26,19 @@ Use any OpenAI-compatible UI or UI framework with your custom `Langchain Agent`.
 #### Supporetd Vendors:
 
 - ✅ OpenAI
-  - ✅ Stream 
+  - ✅ Stream
   - ✅ Multimodal
   - ✅ Auto tool choice
 - ✅ Anthropic
-  - ✅ Stream 
+  - ✅ Stream
   - ✅ Multimodal
   - ✅ Auto tool choice
 - ✅ Groq
-  - ✅ Stream 
+  - ✅ Stream
   - ❌ Multimodal
   - ✅ Auto tool choice
 - ✅ LLamaCPP local inference
-  - ✅ Stream 
+  - ✅ Stream
   - ❌ Multimodal
   - ❌ Auto tool choice
 
@@ -133,14 +133,14 @@ def magic_number_tool(input: int) -> int:
 
 class MyAgentFactory(AgentFactory):
 
-    def create_agent(self, llm: BaseChatModel, dto: CreateLLMDto) -> CompiledGraph:
+    def create_agent(self, llm: BaseChatModel, dto: CreateLLMDto) -> Runnable:
         return create_react_agent(
             llm,
             [magic_number_tool],
             messages_modifier="""You are a helpful assistant.""",
         )
 
-    def create_llm(self, dto: CreateLLMDto) -> CompiledGraph:
+    def create_llm(self, dto: CreateLLMDto) -> Runnable:
         return ChatOpenAI(
             model=dto.model,
             api_key=dto.api_key,

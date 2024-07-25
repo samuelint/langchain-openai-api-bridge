@@ -1,5 +1,5 @@
 from typing import AsyncIterator, List, Optional
-from langgraph.graph.graph import CompiledGraph
+from langchain_core.runnables import Runnable
 from langchain_openai_api_bridge.chat_completion.langchain_invoke_adapter import (
     LangchainInvokeAdapter,
 )
@@ -14,7 +14,7 @@ class ChatCompletionCompatibleAPI:
 
     @staticmethod
     def from_agent(
-        agent: CompiledGraph, llm_model: str, system_fingerprint: Optional[str] = ""
+        agent: Runnable, llm_model: str, system_fingerprint: Optional[str] = ""
     ):
         return ChatCompletionCompatibleAPI(
             LangchainStreamAdapter(llm_model, system_fingerprint),
@@ -26,7 +26,7 @@ class ChatCompletionCompatibleAPI:
         self,
         stream_adapter: LangchainStreamAdapter,
         invoke_adapter: LangchainInvokeAdapter,
-        agent: CompiledGraph,
+        agent: Runnable,
     ) -> None:
         self.stream_adapter = stream_adapter
         self.invoke_adapter = invoke_adapter

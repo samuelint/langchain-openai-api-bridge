@@ -1,7 +1,7 @@
 from typing import TypedDict
 from langgraph.graph import StateGraph, END
 from langchain_core.language_models import BaseChatModel
-from langgraph.graph.graph import CompiledGraph
+from langchain_core.runnables import Runnable
 from langchain_core.runnables import RunnableConfig, RunnableLambda
 from langchain_core.messages import AIMessage, BaseMessage
 
@@ -18,7 +18,7 @@ class SimpleAgentBuilder:
     def __init__(self, llm: BaseChatModel) -> None:
         self.llm = llm
 
-    def build(self) -> CompiledGraph:
+    def build(self) -> Runnable:
         workflow = StateGraph(AgentState)
         llm = self.llm
 
