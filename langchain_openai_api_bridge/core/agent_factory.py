@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from langgraph.graph.graph import CompiledGraph
+from langchain_core.runnables import Runnable
 from langchain_core.language_models import BaseChatModel
 from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 
@@ -7,7 +7,7 @@ from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 class AgentFactory(ABC):
 
     @abstractmethod
-    def create_agent(self, llm: BaseChatModel, dto: CreateAgentDto) -> CompiledGraph:
+    def create_agent(self, llm: BaseChatModel, dto: CreateAgentDto) -> Runnable:
         pass
 
     @abstractmethod
