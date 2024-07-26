@@ -8,3 +8,4 @@ class CreateAgentDto(BaseModel):
     temperature: float = 0.7
     max_tokens: Optional[int] = None
     assistant_id: Optional[str] = ""
+    thread_id: Optional[str] = ""
