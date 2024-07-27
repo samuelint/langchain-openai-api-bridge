@@ -32,6 +32,9 @@ from langchain_openai_api_bridge.fastapi.assistant_api_router import (
 from langchain_openai_api_bridge.fastapi.chat_completion_router import (
     create_openai_chat_completion_router,
 )
+from langchain_openai_api_bridge.fastapi.internal_agent_factory import (
+    InternalAgentFactory,
+)
 
 
 class LangchainOpenaiApiBridgeFastAPI(LangchainOpenaiApiBridge):
@@ -78,6 +81,8 @@ class LangchainOpenaiApiBridgeFastAPI(LangchainOpenaiApiBridge):
         )
         self.tiny_di_container.register(RunRepository, to=run_repository_provider)
         register_assistant_adapter(self.tiny_di_container)
+
+        self.tiny_di_container.register(InternalAgentFactory)
 
         assistant_router = create_openai_assistant_router(
             tiny_di_container=self.tiny_di_container,

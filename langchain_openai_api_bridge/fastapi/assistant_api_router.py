@@ -23,8 +23,9 @@ from langchain_openai_api_bridge.assistant.create_thread_runs_api_dto import (
 from langchain_openai_api_bridge.assistant.repository.run_repository import (
     RunRepository,
 )
-from langchain_openai_api_bridge.core.agent_factory import AgentFactory
-from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
+from langchain_openai_api_bridge.fastapi.internal_agent_factory import (
+    InternalAgentFactory,
+)
 from langchain_openai_api_bridge.core.utils.tiny_di_container import TinyDIContainer
 from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
 
@@ -117,16 +118,10 @@ def create_thread_router(
         thread_run_dto.thread_id = thread_id
 
         api_key = get_bearer_token(authorization)
-
-        agent_factory = tiny_di_container.resolve(AgentFactory)
-        create_agent_dto = CreateAgentDto(
-            model=thread_run_dto.model,
-            api_key=api_key,
-            temperature=thread_run_dto.temperature,
-            assistant_id=thread_run_dto.assistant_id,
+        agent_factory = tiny_di_container.resolve(InternalAgentFactory)
+        agent = agent_factory.create_agent(
+            thread_run_dto=thread_run_dto, api_key=api_key
         )
-        llm = agent_factory.create_llm(dto=create_agent_dto)
-        agent = agent_factory.create_agent(llm=llm, dto=create_agent_dto)
 
         service = tiny_di_container.resolve(AssistantRunService)
 
