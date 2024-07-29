@@ -7,6 +7,7 @@ from openai.types.beta import AssistantStreamEvent, Thread
 from fastapi.testclient import TestClient
 from assistant_server_openai import app
 from tests.test_functional.assistant_stream_utils import (
+    assistant_stream_events,
     assistant_stream_events_to_str_response,
 )
 
@@ -51,11 +52,7 @@ class TestRunStream:
             temperature=0,
         )
 
-        events: List[AssistantStreamEvent] = []
-        for event in stream:
-            events.append(event)
-
-        return events
+        return assistant_stream_events(stream)
 
     @pytest.fixture
     def shared_stream_response_events(self, request) -> List[AssistantStreamEvent]:

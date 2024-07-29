@@ -50,27 +50,41 @@ class LanggraphEventToOpenAIAssistantEventStream:
 
         yield thread_run
 
+        # Have that distributed, do not keep the state in memory.
+        # Use this solution until implemented correctly.
+        tools_run_id: set[str] = set()
+
         async for event in astream_events:
             kind = event["event"]
             adapted_events: list[AssistantStreamEvent] = []
             match kind:
                 case "on_chat_model_stream":
+                    parent_ids_set = set(event["parent_ids"])
+                    if parent_ids_set.intersection(tools_run_id):
+                        continue
+
                     adapted_events += self.on_chat_model_stream_handler.handle(
                         event=event,
                         dto=dto,
                         run=thread_run.data,
                     )
                 case "on_chat_model_end":
+                    parent_ids_set = set(event["parent_ids"])
+                    if parent_ids_set.intersection(tools_run_id):
+                        continue
+
                     adapted_events += self.on_chat_model_end_handler.handle(
                         event=event,
                         dto=dto,
                         run=thread_run.data,
                     )
                 case "on_tool_start":
+                    tools_run_id.add(event["run_id"])
                     adapted_events += self.on_tool_start_handler.handle(
                         event=event, dto=dto
                     )
                 case "on_tool_end":
+                    tools_run_id.remove(event["run_id"])
                     adapted_events += self.on_tool_end_handler.handle(
                         event=event, dto=dto
                     )
