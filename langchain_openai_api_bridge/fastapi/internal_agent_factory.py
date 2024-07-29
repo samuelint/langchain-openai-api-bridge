@@ -18,5 +18,4 @@ class InternalAgentFactory:
             temperature=thread_run_dto.temperature,
             assistant_id=thread_run_dto.assistant_id,
         )
-        llm = self.agent_factory.create_llm(dto=create_agent_dto)
-        return self.agent_factory.create_agent(llm=llm, dto=create_agent_dto)
+        return self.agent_factory.create_agent(dto=create_agent_dto)

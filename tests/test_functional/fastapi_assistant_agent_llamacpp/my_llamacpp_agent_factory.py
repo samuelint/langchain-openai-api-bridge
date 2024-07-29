@@ -22,7 +22,9 @@ def magic_number_tool(input: int) -> int:
 
 class MyLlamacppAgentFactory(BaseAgentFactory):
 
-    def create_agent(self, llm: BaseChatModel, dto: CreateAgentDto) -> Runnable:
+    def create_agent(self, dto: CreateAgentDto) -> Runnable:
+        llm = self.create_llm(dto=dto)
+
         return create_react_agent(
             llm,
             [magic_number_tool],
@@ -45,6 +47,6 @@ class MyLlamacppAgentFactory(BaseAgentFactory):
 
         return LLamacppOpenAICompatibleChatModel(
             llama=llama,
-            temperature=0,
+            temperature=dto.temperature or 0,
             streaming=True,
         )

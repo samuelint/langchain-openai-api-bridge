@@ -30,8 +30,8 @@ def create_chat_completion_router(
             api_key=api_key,
             temperature=request.temperature,
         )
-        llm = agent_factory.create_llm(dto=create_agent_dto)
-        agent = agent_factory.create_agent(llm=llm, dto=create_agent_dto)
+
+        agent = agent_factory.create_agent(dto=create_agent_dto)
 
         adapter = ChatCompletionCompatibleAPI.from_agent(agent, create_agent_dto.model)
 
