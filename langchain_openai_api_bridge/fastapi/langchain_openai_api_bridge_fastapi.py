@@ -22,7 +22,7 @@ from langchain_openai_api_bridge.assistant.repository.run_repository import (
 from langchain_openai_api_bridge.assistant.repository.thread_repository import (
     ThreadRepository,
 )
-from langchain_openai_api_bridge.core.agent_factory import AgentFactory
+from langchain_openai_api_bridge.core.base_agent_factory import BaseAgentFactory
 from langchain_openai_api_bridge.core.langchain_openai_api_bridge import (
     LangchainOpenaiApiBridge,
 )
@@ -41,7 +41,7 @@ class LangchainOpenaiApiBridgeFastAPI(LangchainOpenaiApiBridge):
     def __init__(
         self,
         app: FastAPI,
-        agent_factory_provider: Union[Callable[[], AgentFactory], AgentFactory],
+        agent_factory_provider: Union[Callable[[], BaseAgentFactory], BaseAgentFactory],
     ) -> None:
         super().__init__(agent_factory_provider=agent_factory_provider)
         self.app = app

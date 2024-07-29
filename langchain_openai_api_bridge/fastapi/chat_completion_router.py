@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Header
 from fastapi.responses import JSONResponse
 
-from langchain_openai_api_bridge.core.agent_factory import AgentFactory
+from langchain_openai_api_bridge.core.base_agent_factory import BaseAgentFactory
 from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 from langchain_openai_api_bridge.chat_completion.http_stream_response_adapter import (
     HttpStreamResponseAdapter,
@@ -24,7 +24,7 @@ def create_chat_completion_router(
         request: OpenAIChatCompletionRequest, authorization: str = Header(None)
     ):
         api_key = get_bearer_token(authorization)
-        agent_factory = tiny_di_container.resolve(AgentFactory)
+        agent_factory = tiny_di_container.resolve(BaseAgentFactory)
         create_agent_dto = CreateAgentDto(
             model=request.model,
             api_key=api_key,

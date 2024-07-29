@@ -1,5 +1,5 @@
 from langchain_groq import ChatGroq
-from langchain_openai_api_bridge.core.agent_factory import AgentFactory
+from langchain_openai_api_bridge.core.base_agent_factory import BaseAgentFactory
 from langchain_core.runnables import Runnable
 from langchain_core.language_models import BaseChatModel
 from langgraph.prebuilt import create_react_agent
@@ -7,7 +7,7 @@ from langgraph.prebuilt import create_react_agent
 from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 
 
-class MyGroqAgentFactory(AgentFactory):
+class MyGroqAgentFactory(BaseAgentFactory):
 
     def create_agent(self, llm: BaseChatModel, dto: CreateAgentDto) -> Runnable:
         return create_react_agent(

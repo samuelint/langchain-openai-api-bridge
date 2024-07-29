@@ -4,7 +4,7 @@ from langchain_core.language_models import BaseChatModel
 from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 
 
-class AgentFactory(ABC):
+class BaseAgentFactory(ABC):
 
     @abstractmethod
     def create_agent(self, llm: BaseChatModel, dto: CreateAgentDto) -> Runnable:
