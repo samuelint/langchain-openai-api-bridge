@@ -1,5 +1,5 @@
-from .agent_factory import AgentFactory
+from .base_agent_factory import BaseAgentFactory
 
 __all__ = [
-    "AgentFactory",
+    "BaseAgentFactory",
 ]

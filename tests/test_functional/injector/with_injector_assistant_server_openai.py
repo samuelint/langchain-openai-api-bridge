@@ -9,7 +9,7 @@ from langchain_openai_api_bridge.assistant import (
     MessageRepository,
     RunRepository,
 )
-from langchain_openai_api_bridge.core.agent_factory import AgentFactory
+from langchain_openai_api_bridge.core.base_agent_factory import BaseAgentFactory
 from langchain_openai_api_bridge.fastapi import (
     LangchainOpenaiApiBridgeFastAPI,
 )
@@ -37,7 +37,7 @@ app.add_middleware(
 injector = Injector([MyAppModule()])
 
 bridge = LangchainOpenaiApiBridgeFastAPI(
-    app=app, agent_factory_provider=lambda: injector.get(AgentFactory)
+    app=app, agent_factory_provider=lambda: injector.get(BaseAgentFactory)
 )
 bridge.bind_openai_assistant_api(
     thread_repository_provider=lambda: injector.get(ThreadRepository),

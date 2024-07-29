@@ -8,7 +8,7 @@ from langchain_openai_api_bridge.assistant import (
     InMemoryMessageRepository,
     InMemoryRunRepository,
 )
-from langchain_openai_api_bridge.core import AgentFactory
+from langchain_openai_api_bridge.core import BaseAgentFactory
 from tests.test_functional.injector.with_injector_my_agent_factory import (
     WithInjectorMyAgentFactory,
 )
@@ -19,4 +19,4 @@ class MyAppModule(Module):
         binder.bind(ThreadRepository, to=InMemoryThreadRepository, scope=singleton)
         binder.bind(MessageRepository, to=InMemoryMessageRepository, scope=singleton)
         binder.bind(RunRepository, to=InMemoryRunRepository, scope=singleton)
-        binder.bind(AgentFactory, to=WithInjectorMyAgentFactory)
+        binder.bind(BaseAgentFactory, to=WithInjectorMyAgentFactory)
