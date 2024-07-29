@@ -133,7 +133,9 @@ def magic_number_tool(input: int) -> int:
 
 class MyAgentFactory(AgentFactory):
 
-    def create_agent(self, llm: BaseChatModel, dto: CreateLLMDto) -> Runnable:
+    def create_agent(self, dto: CreateLLMDto) -> Runnable:
+        llm = self.create_llm(dto=dto)
+        
         return create_react_agent(
             llm,
             [magic_number_tool],
