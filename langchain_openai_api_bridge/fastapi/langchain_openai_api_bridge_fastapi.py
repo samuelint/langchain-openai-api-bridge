@@ -23,6 +23,7 @@ from langchain_openai_api_bridge.assistant.repository.thread_repository import (
     ThreadRepository,
 )
 from langchain_openai_api_bridge.core.base_agent_factory import BaseAgentFactory
+from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 from langchain_openai_api_bridge.core.langchain_openai_api_bridge import (
     LangchainOpenaiApiBridge,
 )
@@ -35,13 +36,18 @@ from langchain_openai_api_bridge.fastapi.chat_completion_router import (
 from langchain_openai_api_bridge.fastapi.internal_agent_factory import (
     InternalAgentFactory,
 )
+from langchain_core.runnables import Runnable
 
 
 class LangchainOpenaiApiBridgeFastAPI(LangchainOpenaiApiBridge):
     def __init__(
         self,
         app: FastAPI,
-        agent_factory_provider: Union[Callable[[], BaseAgentFactory], BaseAgentFactory],
+        agent_factory_provider: Union[
+            Callable[[], BaseAgentFactory],
+            Callable[[CreateAgentDto], Runnable],
+            BaseAgentFactory,
+        ],
     ) -> None:
         super().__init__(agent_factory_provider=agent_factory_provider)
         self.app = app

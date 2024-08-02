@@ -3,12 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv, find_dotenv
 import uvicorn
 
+from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 from langchain_openai_api_bridge.fastapi.langchain_openai_api_bridge_fastapi import (
     LangchainOpenaiApiBridgeFastAPI,
 )
-from tests.test_functional.fastapi_chat_completion_openai.my_openai_agent_factory import (
-    MyOpenAIAgentFactory,
-)
+from langchain_openai import ChatOpenAI
 
 _ = load_dotenv(find_dotenv())
 
@@ -28,9 +27,17 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
-bridge = LangchainOpenaiApiBridgeFastAPI(
-    app=app, agent_factory_provider=lambda: MyOpenAIAgentFactory()
-)
+
+def create_agent(dto: CreateAgentDto):
+    return ChatOpenAI(
+        temperature=dto.temperature or 0.7,
+        model=dto.model,
+        max_tokens=dto.max_tokens,
+        api_key=dto.api_key,
+    )
+
+
+bridge = LangchainOpenaiApiBridgeFastAPI(app=app, agent_factory_provider=create_agent)
 bridge.bind_openai_chat_completion(prefix="/my-custom-path")
 
 if __name__ == "__main__":
