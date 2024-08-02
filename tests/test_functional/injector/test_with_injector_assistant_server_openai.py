@@ -39,7 +39,7 @@ class TestFollowupMessage:
     ):
         openai_client.beta.threads.runs.create(
             thread_id=thread.id,
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             assistant_id="any",
             temperature=0,
             stream=True,
@@ -52,7 +52,7 @@ class TestFollowupMessage:
         stream_2 = openai_client.beta.threads.runs.create(
             thread_id=thread.id,
             temperature=0,
-            model="gpt-3.5-turbo",
+            model="gpt-4o-mini",
             assistant_id="any",
             stream=True,
         )

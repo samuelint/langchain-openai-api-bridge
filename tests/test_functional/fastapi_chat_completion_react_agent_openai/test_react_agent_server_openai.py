@@ -17,7 +17,7 @@ def openai_client():
 
 def test_chat_completion_invoke(openai_client):
     chat_completion = openai_client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini",
         messages=[
             {
                 "role": "user",
@@ -30,7 +30,7 @@ def test_chat_completion_invoke(openai_client):
 
 def test_chat_completion_stream(openai_client):
     chunks = openai_client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini",
         messages=[{"role": "user", "content": 'Say "This is a test"'}],
         stream=True,
     )
@@ -47,7 +47,7 @@ def test_chat_completion_stream(openai_client):
 def test_tool(openai_client):
 
     chat_completion = openai_client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model="gpt-4o-mini",
         messages=[
             {
                 "role": "user",

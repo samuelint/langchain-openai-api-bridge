@@ -10,7 +10,7 @@ from langchain_core.messages import AIMessage
 from tests.stream_utils import assemble_stream, generate_stream
 from tests.test_unit.core.agent_stream_utils import create_on_chat_model_stream_event
 
-some_llm_model = "gpt-3.5-turbo"
+some_llm_model = "gpt-4o-mini"
 some_messages = [OpenAIChatMessage(role="user", content="hello")]
 
 

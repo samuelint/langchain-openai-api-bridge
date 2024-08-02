@@ -135,7 +135,7 @@ class MyAgentFactory(AgentFactory):
 
     def create_agent(self, dto: CreateLLMDto) -> Runnable:
         llm = self.create_llm(dto=dto)
-        
+
         return create_react_agent(
             llm,
             [magic_number_tool],
@@ -193,7 +193,7 @@ openai_client = OpenAI(
 )
 
 chat_completion = openai_client.chat.completions.create(
-    model="gpt-3.5-turbo",
+    model="gpt-4o-mini",
     messages=[
         {
             "role": "user",
