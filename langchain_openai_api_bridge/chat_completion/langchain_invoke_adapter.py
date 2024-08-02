@@ -10,6 +10,7 @@ from langchain_openai_api_bridge.core.types.openai import (
     OpenAIChatCompletionObject,
     OpenAIChatMessage,
 )
+from langchain_core.messages import AIMessage
 
 
 class LangchainInvokeAdapter:
@@ -18,20 +19,38 @@ class LangchainInvokeAdapter:
         self.system_fingerprint = system_fingerprint
 
     def to_chat_completion_object(self, invoke_result) -> OpenAIChatCompletionObject:
-        last_message = invoke_result["messages"][-1]
+        message = self.__create_openai_chat_message(invoke_result)
+        id = self.__get_id(invoke_result)
 
         return ChatCompletionObjectFactory.create(
-            id=last_message.id,
+            id=id,
             model=self.llm_model,
             system_fingerprint=self.system_fingerprint,
             choices=[
                 OpenAIChatCompletionChoice(
                     index=0,
-                    message=OpenAIChatMessage(
-                        role=to_openai_role(last_message.type),
-                        content=to_string_content(content=last_message.content),
-                    ),
+                    message=message,
                     finish_reason="stop",
                 )
             ],
+        )
+
+    def __get_id(self, invoke_result):
+        if isinstance(invoke_result, AIMessage):
+            return invoke_result.id
+
+        last_message = invoke_result["messages"][-1]
+        return last_message.id
+
+    def __create_openai_chat_message(self, invoke_result) -> OpenAIChatMessage:
+        if isinstance(invoke_result, AIMessage):
+            return OpenAIChatMessage(
+                role=to_openai_role(invoke_result.type),
+                content=to_string_content(content=invoke_result.content),
+            )
+
+        last_message = invoke_result["messages"][-1]
+        return OpenAIChatMessage(
+            role=to_openai_role(last_message.type),
+            content=to_string_content(content=last_message.content),
         )
