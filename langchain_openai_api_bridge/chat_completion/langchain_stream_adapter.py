@@ -21,8 +21,10 @@ class LangchainStreamAdapter:
     async def ato_chat_completion_chunk_stream(
         self,
         astream_event: AsyncIterator[StreamEvent],
-        id: str = str(uuid.uuid4()),
+        id: str = "",
     ) -> AsyncIterator[OpenAIChatCompletionChunkObject]:
+        if id == "":
+            id = str(uuid.uuid4())
         async for event in astream_event:
             kind = event["event"]
             match kind:
