@@ -1,6 +1,13 @@
 name: Build
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - "**.py"
+      - "**.toml"
+      - "**.yml"
   pull_request:
   workflow_call:
     secrets:
