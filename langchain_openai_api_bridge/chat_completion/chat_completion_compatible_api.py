@@ -15,12 +15,13 @@ class ChatCompletionCompatibleAPI:
 
     @staticmethod
     def from_agent(
-        agent: Runnable, llm_model: str, system_fingerprint: Optional[str] = ""
+        agent: Runnable, llm_model: str, system_fingerprint: Optional[str] = "", custom_event_handler = lambda event: None
     ):
         return ChatCompletionCompatibleAPI(
             LangchainStreamAdapter(llm_model, system_fingerprint),
             LangchainInvokeAdapter(llm_model, system_fingerprint),
             agent,
+            custom_event_handler,
         )
 
     def __init__(
@@ -28,10 +29,12 @@ class ChatCompletionCompatibleAPI:
         stream_adapter: LangchainStreamAdapter,
         invoke_adapter: LangchainInvokeAdapter,
         agent: Runnable,
+        custom_event_handler=None,
     ) -> None:
         self.stream_adapter = stream_adapter
         self.invoke_adapter = invoke_adapter
         self.agent = agent
+        self.custom_event_handler = custom_event_handler
 
     def astream(self, messages: List[OpenAIChatMessage]) -> AsyncIterator[dict]:
         input = self.__to_input(messages)
@@ -40,7 +43,7 @@ class ChatCompletionCompatibleAPI:
             version="v2",
         )
         return ato_dict(
-            self.stream_adapter.ato_chat_completion_chunk_stream(astream_event)
+            self.stream_adapter.ato_chat_completion_chunk_stream(astream_event, custom_event_handler=self.custom_event_handler)
         )
 
     def invoke(self, messages: List[OpenAIChatMessage]) -> dict:

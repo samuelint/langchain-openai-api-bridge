@@ -4,6 +4,7 @@ from dotenv import load_dotenv, find_dotenv
 import uvicorn
 
 from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
+from langchain_openai_api_bridge.core.base_agent_factory import BaseAgentFactory
 from langchain_openai_api_bridge.fastapi.langchain_openai_api_bridge_fastapi import (
     LangchainOpenaiApiBridgeFastAPI,
 )
@@ -27,17 +28,28 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
+class AgentFactory(BaseAgentFactory):
+    def custom_event_handler(self, event):
+        if "chunk" in event["data"]:
+            return event
+        return None
 
-def create_agent(dto: CreateAgentDto):
-    return ChatOpenAI(
-        temperature=dto.temperature or 0.7,
-        model=dto.model,
-        max_tokens=dto.max_tokens,
-        api_key=dto.api_key,
-    )
+    def create_agent(self, dto: CreateAgentDto):
+        return ChatOpenAI(
+            temperature=dto.temperature or 0.7,
+            model=dto.model,
+            max_tokens=dto.max_tokens,
+            api_key=dto.api_key,
+        )
 
 
-bridge = LangchainOpenaiApiBridgeFastAPI(app=app, agent_factory_provider=create_agent)
+def custom_event_handler(event):
+    kind = event["event"]
+    match kind:
+        case "on_chat_model_stream":
+            return event
+
+bridge = LangchainOpenaiApiBridgeFastAPI(app=app, agent_factory_provider=AgentFactory())
 bridge.bind_openai_chat_completion(prefix="/my-custom-path")
 
 if __name__ == "__main__":

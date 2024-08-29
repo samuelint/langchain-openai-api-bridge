@@ -17,9 +17,9 @@ from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
 def create_chat_completion_router(
     tiny_di_container: TinyDIContainer,
 ):
-    chat_completion_router = APIRouter(prefix="/chat/completions")
+    chat_completion_router = APIRouter(prefix="/chat")
 
-    @chat_completion_router.post("/")
+    @chat_completion_router.post("/completions")
     async def assistant_retreive_thread_messages(
         request: OpenAIChatCompletionRequest, authorization: str = Header(None)
     ):
@@ -33,7 +33,7 @@ def create_chat_completion_router(
 
         agent = agent_factory.create_agent(dto=create_agent_dto)
 
-        adapter = ChatCompletionCompatibleAPI.from_agent(agent, create_agent_dto.model)
+        adapter = ChatCompletionCompatibleAPI.from_agent(agent, create_agent_dto.model, custom_event_handler=agent_factory.custom_event_handler)
 
         response_factory = HttpStreamResponseAdapter()
         if request.stream is True:
