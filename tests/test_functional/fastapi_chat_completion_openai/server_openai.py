@@ -29,11 +29,6 @@ app.add_middleware(
 )
 
 class AgentFactory(BaseAgentFactory):
-    def custom_event_handler(self, event):
-        if "chunk" in event["data"]:
-            return event
-        return None
-
     def create_agent(self, dto: CreateAgentDto):
         return ChatOpenAI(
             temperature=dto.temperature or 0.7,
@@ -42,6 +37,8 @@ class AgentFactory(BaseAgentFactory):
             api_key=dto.api_key,
         )
 
+bridge = LangchainOpenaiApiBridgeFastAPI(app=app, agent_factory_provider=AgentFactory())
+bridge.bind_openai_chat_completion(prefix="/my-custom-path")
 
 def custom_event_handler(event):
     kind = event["event"]
@@ -49,8 +46,7 @@ def custom_event_handler(event):
         case "on_chat_model_stream":
             return event
 
-bridge = LangchainOpenaiApiBridgeFastAPI(app=app, agent_factory_provider=AgentFactory())
-bridge.bind_openai_chat_completion(prefix="/my-custom-path")
+bridge.bind_openai_chat_completion(prefix="/my-custom-events-path", custom_event_handler=custom_event_handler)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost")

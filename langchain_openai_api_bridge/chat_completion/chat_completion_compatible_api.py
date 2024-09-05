@@ -15,7 +15,10 @@ class ChatCompletionCompatibleAPI:
 
     @staticmethod
     def from_agent(
-        agent: Runnable, llm_model: str, system_fingerprint: Optional[str] = "", custom_event_handler = lambda event: None
+        agent: Runnable,
+        llm_model: str,
+        system_fingerprint: Optional[str] = "",
+        custom_event_handler: callable = lambda event: None,
     ):
         return ChatCompletionCompatibleAPI(
             LangchainStreamAdapter(llm_model, system_fingerprint),
@@ -29,7 +32,7 @@ class ChatCompletionCompatibleAPI:
         stream_adapter: LangchainStreamAdapter,
         invoke_adapter: LangchainInvokeAdapter,
         agent: Runnable,
-        custom_event_handler=None,
+        custom_event_handler: callable = lambda event: None,
     ) -> None:
         self.stream_adapter = stream_adapter
         self.invoke_adapter = invoke_adapter
