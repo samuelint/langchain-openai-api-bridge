@@ -3,7 +3,6 @@ import operator
 from datetime import datetime
 from typing import TypedDict, Annotated, Sequence
 from langchain.agents import create_openai_tools_agent, AgentExecutor
-from langchain_community.tools import DuckDuckGoSearchResults
 from langchain_core.messages import HumanMessage, BaseMessage
 from langchain_core.output_parsers.openai_functions import JsonOutputFunctionsParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -16,14 +15,18 @@ from langgraph.graph import StateGraph
 from langchain_openai_api_bridge.core.base_agent_factory import BaseAgentFactory
 from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 
-# Define a tools that searches DuckDuckGo
-search_tool = DuckDuckGoSearchResults()
 
 # Define a new tool that returns the current datetime
 datetime_tool = Tool(
     name="Datetime",
     func=lambda x: datetime.now().isoformat(),
     description="Returns the current datetime",
+)
+
+mock_search_tool = Tool(
+    name="Search",
+    func=lambda x: "light",
+    description="Search the web about something",
 )
 
 
@@ -104,18 +107,24 @@ class AgentState(TypedDict):
 def create_graph(llm):
     # Construction of the chain for the supervisor agent
     supervisor_chain = (
-            prompt
-            | llm.bind_functions(functions=[function_def], function_call="route")
-            | JsonOutputFunctionsParser()
+        prompt
+        | llm.bind_functions(functions=[function_def], function_call="route")
+        | JsonOutputFunctionsParser()
     )
 
     # Add the research agent using the create_agent helper function
-    research_agent = create_agent(llm, "You are a web researcher.", [search_tool])
-    research_node = functools.partial(agent_node, agent=research_agent, name="Researcher")
+    research_agent = create_agent(llm, "You are a web researcher.", [mock_search_tool])
+    research_node = functools.partial(
+        agent_node, agent=research_agent, name="Researcher"
+    )
 
     # Add the time agent using the create_agent helper function
-    current_time_agent = create_agent(llm, "You can tell the current time at", [datetime_tool])
-    current_time_node = functools.partial(agent_node, agent=current_time_agent, name="CurrentTime")
+    current_time_agent = create_agent(
+        llm, "You can tell the current time at", [datetime_tool]
+    )
+    current_time_node = functools.partial(
+        agent_node, agent=current_time_agent, name="CurrentTime"
+    )
 
     workflow = StateGraph(AgentState)
 

@@ -31,7 +31,7 @@ class OpenAIChatCompletionChoice(BaseModel):
 
 
 class OpenAIChatCompletionObject(BaseModel):
-    id: str
+    id: Optional[str]
     object: str = ("chat.completion",)
     created: int
     model: str
