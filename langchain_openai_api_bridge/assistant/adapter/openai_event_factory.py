@@ -11,6 +11,7 @@ from openai.types.beta.assistant_stream_event import (
     ThreadRunStepDelta,
     RunStep,
 )
+from langchain_core.messages.tool import ToolMessage
 
 from openai.types.beta.threads import (
     Message,
@@ -163,7 +164,26 @@ def create_langchain_function(
     output: Optional[Union[dict[object], float, str]] = None,
 ) -> function_tool_call.Function:
     arguments_json = json.dumps(arguments) if arguments else None
-    output_json = json.dumps(output) if output else None
+
+    output_json = _serialize_output(output=output)
+
     return function_tool_call.Function(
         name=name, arguments=arguments_json, output=output_json
     )
+
+
+def _serialize_output(output: Optional[Union[dict[object], float, str]] = None):
+    if output is None:
+        return None
+
+    if isinstance(output, ToolMessage):
+        output_obj = {
+            "content": output.content,
+            "tool_call_id": output.tool_call_id,
+            "status": output.status,
+        }
+        if output.artifact is not None:
+            output_obj["artifact"] = output.artifact
+        return json.dumps(output_obj)
+
+    return json.dumps(output) if output else None
