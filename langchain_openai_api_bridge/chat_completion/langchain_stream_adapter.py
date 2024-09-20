@@ -21,29 +21,21 @@ class LangchainStreamAdapter:
         self,
         astream_event: AsyncIterator[StreamEvent],
         id: str = "",
-        custom_event_handler = lambda event: None,
+        event_adapter = lambda event: None,
     ) -> AsyncIterator[OpenAIChatCompletionChunkObject]:
         if id == "":
             id = str(uuid.uuid4())
         async for event in astream_event:
-            custom_event = custom_event_handler(event)
-            if custom_event is not None:
+            custom_event = event_adapter(event)
+            event_to_process = custom_event if custom_event is not None else event
+            kind = event_to_process["event"]
+            if kind == "on_chat_model_stream" or custom_event is not None:
                 yield to_openai_chat_completion_chunk_object(
-                    event=custom_event,
+                    event=event_to_process,
                     id=id,
                     model=self.llm_model,
                     system_fingerprint=self.system_fingerprint,
                 )
-            else:
-                kind = event["event"]
-                match kind:
-                    case "on_chat_model_stream":
-                        yield to_openai_chat_completion_chunk_object(
-                            event=event,
-                            id=id,
-                            model=self.llm_model,
-                            system_fingerprint=self.system_fingerprint,
-                        )
 
         stop_chunk = create_final_chat_completion_chunk_object(
             id=id, model=self.llm_model

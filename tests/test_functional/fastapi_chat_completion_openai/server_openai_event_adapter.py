@@ -36,7 +36,6 @@ def create_agent(dto: CreateAgentDto):
     )
 
 bridge = LangchainOpenaiApiBridgeFastAPI(app=app, agent_factory_provider=create_agent)
-bridge.bind_openai_chat_completion(prefix="/my-custom-path")
 
 def event_adapter(event):
     kind = event["event"]

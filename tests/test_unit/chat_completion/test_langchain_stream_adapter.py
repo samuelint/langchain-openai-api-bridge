@@ -64,13 +64,13 @@ class TestToChatCompletionChunkStream:
             ]
         )
 
-        def custom_event_handler(event):
+        def event_adapter(event):
             kind = event["event"]
             match kind:
                 case "on_chat_model_stream":
                     return event
 
-        response_stream = self.instance.ato_chat_completion_chunk_stream(input_stream, custom_event_handler=custom_event_handler)
+        response_stream = self.instance.ato_chat_completion_chunk_stream(input_stream, event_adapter=event_adapter)
 
         items = await assemble_stream(response_stream)
         assert items[0].dict() == ChatCompletionChunkStub({"key": "hello"}).dict()

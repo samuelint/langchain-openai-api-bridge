@@ -16,7 +16,7 @@ from langchain_openai_api_bridge.fastapi.token_getter import get_bearer_token
 
 def create_chat_completion_router(
     tiny_di_container: TinyDIContainer,
-    custom_event_handler: callable = lambda event: None,
+    event_adapter: callable = lambda event: None,
 ):
     chat_completion_router = APIRouter(prefix="/chat")
 
@@ -34,7 +34,7 @@ def create_chat_completion_router(
 
         agent = agent_factory.create_agent(dto=create_agent_dto)
 
-        adapter = ChatCompletionCompatibleAPI.from_agent(agent, create_agent_dto.model, custom_event_handler=custom_event_handler)
+        adapter = ChatCompletionCompatibleAPI.from_agent(agent, create_agent_dto.model, event_adapter=event_adapter)
 
         response_factory = HttpStreamResponseAdapter()
         if request.stream is True:
@@ -49,9 +49,9 @@ def create_chat_completion_router(
 def create_openai_chat_completion_router(
     tiny_di_container: TinyDIContainer,
     prefix: str = "",
-    custom_event_handler: callable = lambda event: None,
+    event_adapter: callable = lambda event: None,
 ):
-    router = create_chat_completion_router(tiny_di_container=tiny_di_container, custom_event_handler=custom_event_handler)
+    router = create_chat_completion_router(tiny_di_container=tiny_di_container, event_adapter=event_adapter)
     open_ai_router = APIRouter(prefix=f"{prefix}/openai/v1")
     open_ai_router.include_router(router)
 
