@@ -44,7 +44,6 @@ class TestToChatCompletionChunkStream:
         assert items[0].dict() == ChatCompletionChunkStub({"key": "hello"}).dict()
         assert items[1].dict() == ChatCompletionChunkStub({"key": "moto"}).dict()
 
-    
     @pytest.mark.asyncio
     @patch(
         "langchain_openai_api_bridge.chat_completion.langchain_stream_adapter.to_openai_chat_completion_chunk_object",
@@ -70,7 +69,9 @@ class TestToChatCompletionChunkStream:
                 case "on_chat_model_stream":
                     return event
 
-        response_stream = self.instance.ato_chat_completion_chunk_stream(input_stream, event_adapter=event_adapter)
+        response_stream = self.instance.ato_chat_completion_chunk_stream(
+            input_stream, event_adapter=event_adapter
+        )
 
         items = await assemble_stream(response_stream)
         assert items[0].dict() == ChatCompletionChunkStub({"key": "hello"}).dict()

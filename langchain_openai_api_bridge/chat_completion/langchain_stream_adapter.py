@@ -12,6 +12,7 @@ from langchain_openai_api_bridge.core.types.openai import (
     OpenAIChatCompletionChunkObject,
 )
 
+
 class LangchainStreamAdapter:
     def __init__(self, llm_model: str, system_fingerprint: str = ""):
         self.llm_model = llm_model
@@ -21,7 +22,7 @@ class LangchainStreamAdapter:
         self,
         astream_event: AsyncIterator[StreamEvent],
         id: str = "",
-        event_adapter = lambda event: None,
+        event_adapter=lambda event: None,
     ) -> AsyncIterator[OpenAIChatCompletionChunkObject]:
         if id == "":
             id = str(uuid.uuid4())

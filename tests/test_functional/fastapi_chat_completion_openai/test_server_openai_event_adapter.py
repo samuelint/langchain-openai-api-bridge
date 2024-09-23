@@ -6,12 +6,14 @@ from server_openai_event_adapter import app
 
 test_api = TestClient(app)
 
+
 @pytest.fixture
 def openai_client_custom_events():
     return OpenAI(
         base_url="http://testserver/my-custom-events-path/openai/v1",
         http_client=test_api,
     )
+
 
 def test_chat_completion_invoke_custom_events(openai_client_custom_events):
     chat_completion = openai_client_custom_events.chat.completions.create(

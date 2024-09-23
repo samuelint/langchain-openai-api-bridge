@@ -26,7 +26,8 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"],
 )
-    
+
+
 def create_agent(dto: CreateAgentDto):
     return ChatOpenAI(
         temperature=dto.temperature or 0.7,
@@ -35,7 +36,9 @@ def create_agent(dto: CreateAgentDto):
         api_key=dto.api_key,
     )
 
+
 bridge = LangchainOpenaiApiBridgeFastAPI(app=app, agent_factory_provider=create_agent)
+
 
 def event_adapter(event):
     kind = event["event"]
@@ -43,7 +46,10 @@ def event_adapter(event):
         case "on_chat_model_stream":
             return event
 
-bridge.bind_openai_chat_completion(prefix="/my-custom-events-path", event_adapter=event_adapter)
+
+bridge.bind_openai_chat_completion(
+    prefix="/my-custom-events-path", event_adapter=event_adapter
+)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost")
