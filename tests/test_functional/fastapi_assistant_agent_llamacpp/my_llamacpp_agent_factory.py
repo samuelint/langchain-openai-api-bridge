@@ -28,7 +28,7 @@ class MyLlamacppAgentFactory(BaseAgentFactory):
         return create_react_agent(
             llm,
             [magic_number_tool],
-            # messages_modifier="""You are a helpful assistant.""",
+            # prompt="""You are a helpful assistant.""",
         )
 
     def create_llm(self, dto: CreateAgentDto) -> BaseChatModel:
