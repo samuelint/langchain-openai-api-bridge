@@ -10,7 +10,7 @@ class InternalAgentFactory:
     def __init__(self, agent_factory: BaseAgentFactory) -> None:
         self.agent_factory = agent_factory
 
-    def create_agent(self, thread_run_dto: ThreadRunsDto, api_key: str) -> Runnable:
+    async def acreate_agent(self, thread_run_dto: ThreadRunsDto, api_key: str) -> Runnable:
         create_agent_dto = CreateAgentDto(
             model=thread_run_dto.model,
             thread_id=thread_run_dto.thread_id,
@@ -18,4 +18,4 @@ class InternalAgentFactory:
             temperature=thread_run_dto.temperature,
             assistant_id=thread_run_dto.assistant_id,
         )
-        return self.agent_factory.create_agent(dto=create_agent_dto)
+        return await self.agent_factory.acreate_agent(dto=create_agent_dto)

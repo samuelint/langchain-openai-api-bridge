@@ -1,5 +1,5 @@
 import inspect
-from typing import Callable, Optional, Union
+from typing import Callable, Optional, Union, Awaitable
 from langchain_openai_api_bridge.core.base_agent_factory import BaseAgentFactory
 from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 from langchain_openai_api_bridge.core.function_agent_factory import FunctionAgentFactory
@@ -12,7 +12,9 @@ class LangchainOpenaiApiBridge:
         self,
         agent_factory_provider: Union[
             Callable[[], BaseAgentFactory],
+            Callable[[], Awaitable[BaseAgentFactory]],
             Callable[[CreateAgentDto], Runnable],
+            Callable[[CreateAgentDto], Awaitable[Runnable]],
             BaseAgentFactory,
         ],
         tiny_di_container: Optional[TinyDIContainer] = None,
@@ -30,7 +32,9 @@ class LangchainOpenaiApiBridge:
     def __is_callable_runnable_provider(
         agent_factory_provider: Union[
             Callable[[], BaseAgentFactory],
+            Callable[[], Awaitable[BaseAgentFactory]],
             Callable[[CreateAgentDto], Runnable],
+            Callable[[CreateAgentDto], Awaitable[Runnable]],
             BaseAgentFactory,
         ],
     ):
