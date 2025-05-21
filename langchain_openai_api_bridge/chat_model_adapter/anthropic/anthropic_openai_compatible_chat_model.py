@@ -1,6 +1,6 @@
 from typing import List, ClassVar
 from langchain_core.messages import BaseMessage
-from langchain_community.chat_models import ChatAnthropic
+from langchain_anthropic import ChatAnthropic
 
 from .anthropic_openai_compatible_chat_model_adapter import (
     AnthropicOpenAICompatibleChatModelAdapter,

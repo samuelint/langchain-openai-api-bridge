@@ -1,7 +1,7 @@
 from langchain_openai_api_bridge.core.base_agent_factory import BaseAgentFactory
 from langchain_core.runnables import Runnable
 from langgraph.prebuilt import create_react_agent
-from langchain_community.chat_models import ChatAnthropic
+from langchain_anthropic import ChatAnthropic
 
 from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 

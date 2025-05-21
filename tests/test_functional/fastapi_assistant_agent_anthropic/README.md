@@ -1,6 +1,6 @@
 # Expose as an OpenAI API anthropic assistant (Assistant API)
 
-The default `from langchain_community.chat_models import ChatAnthropic` is not compatible with multimodal prompts as the image format differs between OpenAI and Anthropic.
+The default `from langchain_anthropic import ChatAnthropic` is not compatible with multimodal prompts as the image format differs between OpenAI and Anthropic.
 
 To use multimodal prompts, use the `OpenAICompatibleChatModel` which transforms OpenAI format to Anthropic format. This enables you to use one or the other seamlessly.
 Look at `my_anthropic_agent_factory.py` for usage example.

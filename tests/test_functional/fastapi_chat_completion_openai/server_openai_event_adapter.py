@@ -7,7 +7,7 @@ from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 from langchain_openai_api_bridge.fastapi.langchain_openai_api_bridge_fastapi import (
     LangchainOpenaiApiBridgeFastAPI,
 )
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 
 _ = load_dotenv(find_dotenv())
 
