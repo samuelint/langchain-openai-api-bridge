@@ -1,12 +1,12 @@
-# Langchain Openai API Bridge
+# LangChain OpenAI API Bridge
 
 [![PyPI version](https://badge.fury.io/py/langchain-openai-api-bridge.svg)](https://badge.fury.io/py/langchain-openai-api-bridge) [![Downloads](https://pepy.tech/badge/langchain-openai-api-bridge)](https://pepy.tech/project/langchain-openai-api-bridge)
 
-🚀 Expose [Langchain](https://github.com/langchain-ai/langchain) Agent ([Langgraph](https://github.com/langchain-ai/langgraph)) result as an OpenAI-compatible API 🚀
+🚀 Expose [LangChain](https://github.com/langchain-ai/langchain) Agent ([LangGraph](https://github.com/langchain-ai/langgraph)) result as an OpenAI-compatible API 🚀
 
-A `FastAPI` + `Langchain` / `langgraph` extension to expose agent result as an OpenAI-compatible API.
+A `FastAPI` + `LangChain` / `langgraph` extension to expose agent result as an OpenAI-compatible API.
 
-Use any OpenAI-compatible UI or UI framework with your custom `Langchain Agent`.
+Use any OpenAI-compatible UI or UI framework with your custom `LangChain Agent`.
 
 ### Support:
 
@@ -23,7 +23,7 @@ Use any OpenAI-compatible UI or UI framework with your custom `Langchain Agent`.
   - ✅ Tools step stream
   - 🚧 Human In The Loop
 
-#### Supporetd Vendors:
+#### Supported Vendors:
 
 - ✅ OpenAI
   - ✅ Stream
@@ -98,7 +98,7 @@ _ = load_dotenv(find_dotenv())
 
 
 app = FastAPI(
-    title="Langchain Agent OpenAI API Bridge",
+    title="LangChain Agent OpenAI API Bridge",
     version="1.0",
     description="OpenAI API exposing langchain agent",
 )
@@ -171,7 +171,7 @@ from langchain_openai_api_bridge.assistant import (
 from langchain_openai_api_bridge.fastapi import include_chat_completion
 
 app = FastAPI(
-    title="Langchain Agent OpenAI API Bridge",
+    title="LangChain Agent OpenAI API Bridge",
     version="1.0",
     description="OpenAI API exposing langchain agent",
 )
@@ -291,4 +291,4 @@ poetry env use ./.venv/bin/python
   - Functions cannot be passed through open ai API. Every functions need to be defined as a tool in langchain. [Usage Example](tests/test_functional/fastapi_chat_completion_openai/server_openai.py)
 
 - **LLM Usage Info**
-  - **Returned usage info is innacurate**. This is due to a Langchain/Langgraph limitation where usage info isn't available when calling a Langgraph Agent.
+  - **Returned usage info is innacurate**. This is due to a LangChain/LangGraph limitation where usage info isn't available when calling a LangGraph Agent.
