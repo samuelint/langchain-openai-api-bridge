@@ -1,15 +1,15 @@
-from typing import List
+from typing import List, ClassVar
 from langchain_core.messages import BaseMessage
-from langchain_llamacpp_chat_model import LlamaChatModel
+from langchain_community.chat_models.llamacpp import ChatLlamaCpp
 
 from langchain_openai_api_bridge.chat_model_adapter.llamacpp.llamacpp_openai_compatible_chat_model_adapter import (
     LlamacppOpenAICompatibleChatModelAdapter,
 )
 
 
-class LLamacppOpenAICompatibleChatModel(LlamaChatModel):
+class LLamacppOpenAICompatibleChatModel(ChatLlamaCpp):
 
-    adapter = LlamacppOpenAICompatibleChatModelAdapter()
+    adapter: ClassVar[LlamacppOpenAICompatibleChatModelAdapter] = LlamacppOpenAICompatibleChatModelAdapter()
 
     def _stream(self, messages: List[List[BaseMessage]], **kwargs):
         transformed_messages = self.adapter.to_openai_format_messages(messages)

@@ -1,4 +1,4 @@
-from typing import Callable, Optional, Union
+from typing import Callable, Optional, Union, Awaitable
 from fastapi import FastAPI
 
 from langchain_openai_api_bridge.assistant.adapter.container import (
@@ -45,7 +45,9 @@ class LangchainOpenaiApiBridgeFastAPI(LangchainOpenaiApiBridge):
         app: FastAPI,
         agent_factory_provider: Union[
             Callable[[], BaseAgentFactory],
+            Callable[[], Awaitable[BaseAgentFactory]],
             Callable[[CreateAgentDto], Runnable],
+            Callable[[CreateAgentDto], Awaitable[Runnable]],
             BaseAgentFactory,
         ],
     ) -> None:

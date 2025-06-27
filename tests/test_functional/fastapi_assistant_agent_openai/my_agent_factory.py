@@ -59,5 +59,5 @@ class MyAgentFactory(BaseAgentFactory):
         return create_react_agent(
             main_llm,
             [magic_number_tool, joker_tool],
-            messages_modifier="""You are a helpful assistant.""",
+            prompt="""You are a helpful assistant.""",
         )

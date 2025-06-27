@@ -58,6 +58,15 @@ class ChatCompletionCompatibleAPI:
 
         return self.invoke_adapter.to_chat_completion_object(result).dict()
 
+    async def ainvoke(self, messages: List[OpenAIChatMessage]) -> dict:
+        input = self.__to_input(messages)
+
+        result = await self.agent.ainvoke(
+            input=input,
+        )
+
+        return self.invoke_adapter.to_chat_completion_object(result).dict()
+
     def __to_input(self, messages: List[OpenAIChatMessage]):
         if isinstance(self.agent, CompiledGraph):
             return self.__to_react_agent_input(messages)

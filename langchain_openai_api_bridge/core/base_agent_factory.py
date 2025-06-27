@@ -6,5 +6,5 @@ from langchain_openai_api_bridge.core.create_agent_dto import CreateAgentDto
 class BaseAgentFactory(ABC):
 
     @abstractmethod
-    def create_agent(self, dto: CreateAgentDto) -> Runnable:
+    async def acreate_agent(self, dto: CreateAgentDto) -> Runnable:
         pass

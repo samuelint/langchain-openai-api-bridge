@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, ClassVar
 from langchain_core.messages import BaseMessage
 from langchain_anthropic import ChatAnthropic
 
@@ -9,7 +9,7 @@ from .anthropic_openai_compatible_chat_model_adapter import (
 
 class AnthropicOpenAICompatibleChatModel(ChatAnthropic):
 
-    adapter = AnthropicOpenAICompatibleChatModelAdapter()
+    adapter: ClassVar[AnthropicOpenAICompatibleChatModelAdapter] = AnthropicOpenAICompatibleChatModelAdapter()
 
     def _stream(self, messages: List[List[BaseMessage]], **kwargs):
         transformed_messages = self.adapter.to_openai_format_messages(messages)
