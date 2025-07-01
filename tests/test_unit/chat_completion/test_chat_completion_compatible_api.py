@@ -3,12 +3,14 @@ import pytest
 from langchain_openai_api_bridge.chat_completion.chat_completion_compatible_api import (
     ChatCompletionCompatibleAPI,
 )
+from langchain_openai_api_bridge.core.base_agent_factory import wrap_agent
 from langchain_core.runnables import Runnable
 from langchain_openai_api_bridge.core.types.openai import OpenAIChatMessage
 from langchain_core.messages import AIMessage
 
 from tests.stream_utils import assemble_stream, generate_stream
 from tests.test_unit.core.agent_stream_utils import create_on_chat_model_stream_event
+
 
 some_llm_model = "gpt-4o-mini"
 some_messages = [OpenAIChatMessage(role="user", content="hello")]
@@ -23,29 +25,31 @@ def agent():
 
 @pytest.fixture
 def instance(agent):
-    return ChatCompletionCompatibleAPI.from_agent(agent=agent, llm_model=some_llm_model)
+    return ChatCompletionCompatibleAPI.from_agent(agent=wrap_agent(agent), llm_model=some_llm_model)
 
 
 class TestInvoke:
-    def test_agent_response_is_in_openai_format(
+    @pytest.mark.asyncio
+    async def test_agent_response_is_in_openai_format(
         self, instance: ChatCompletionCompatibleAPI, agent
     ):
-        agent.invoke.return_value = {
+        agent.ainvoke.return_value = {
             "messages": [AIMessage(id="a", content="Hello world!")]
         }
 
-        result = instance.invoke(some_messages)
+        result = await instance.ainvoke(some_messages)
 
         assert result["choices"][0]["message"]["content"] == "Hello world!"
 
-    def test_agent_response_contains_id(
+    @pytest.mark.asyncio
+    async def test_agent_response_contains_id(
         self, instance: ChatCompletionCompatibleAPI, agent
     ):
-        agent.invoke.return_value = {
+        agent.ainvoke.return_value = {
             "messages": [AIMessage(id="a", content="Hello world!")]
         }
 
-        result = instance.invoke(some_messages)
+        result = await instance.ainvoke(some_messages)
 
         assert result["id"] == "a"
 

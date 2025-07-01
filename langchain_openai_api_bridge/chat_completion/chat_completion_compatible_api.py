@@ -1,4 +1,4 @@
-from typing import AsyncIterator, List, Optional
+from typing import AsyncIterator, List, Optional, AsyncContextManager
 from langchain_core.runnables import Runnable
 from langgraph.graph.state import CompiledStateGraph
 from langchain_openai_api_bridge.chat_completion.langchain_invoke_adapter import (
@@ -15,7 +15,7 @@ class ChatCompletionCompatibleAPI:
 
     @staticmethod
     def from_agent(
-        agent: Runnable,
+        agent: AsyncContextManager[Runnable],
         llm_model: str,
         system_fingerprint: Optional[str] = "",
         event_adapter: callable = lambda event: None,
@@ -31,7 +31,7 @@ class ChatCompletionCompatibleAPI:
         self,
         stream_adapter: LangchainStreamAdapter,
         invoke_adapter: LangchainInvokeAdapter,
-        agent: Runnable,
+        agent: AsyncContextManager[Runnable],
         event_adapter: callable = lambda event: None,
     ) -> None:
         self.stream_adapter = stream_adapter
@@ -39,27 +39,29 @@ class ChatCompletionCompatibleAPI:
         self.agent = agent
         self.event_adapter = event_adapter
 
-    def astream(self, messages: List[OpenAIChatMessage]) -> AsyncIterator[dict]:
-        input = self.__to_input(messages)
-        astream_event = self.agent.astream_events(
-            input=input,
-            version="v2",
-        )
-        return ato_dict(
-            self.stream_adapter.ato_chat_completion_chunk_stream(astream_event, event_adapter=self.event_adapter)
-        )
+    async def astream(self, messages: List[OpenAIChatMessage]) -> AsyncIterator[dict]:
+        async with self.agent as runnable:
+            input = self.__to_input(runnable, messages)
+            astream_event = runnable.astream_events(
+                input=input,
+                version="v2",
+            )
+            async for it in ato_dict(
+                self.stream_adapter.ato_chat_completion_chunk_stream(astream_event, event_adapter=self.event_adapter)
+            ):
+                yield it
 
-    def invoke(self, messages: List[OpenAIChatMessage]) -> dict:
-        input = self.__to_input(messages)
-
-        result = self.agent.invoke(
-            input=input,
-        )
+    async def ainvoke(self, messages: List[OpenAIChatMessage]) -> dict:
+        async with self.agent as runnable:
+            input = self.__to_input(runnable, messages)
+            result = await runnable.ainvoke(
+                input=input,
+            )
 
         return self.invoke_adapter.to_chat_completion_object(result).dict()
 
-    def __to_input(self, messages: List[OpenAIChatMessage]):
-        if isinstance(self.agent, CompiledStateGraph):
+    def __to_input(self, runnable: Runnable, messages: List[OpenAIChatMessage]):
+        if isinstance(runnable, CompiledStateGraph):
             return self.__to_react_agent_input(messages)
         else:
             return self.__to_chat_model_input(messages)
