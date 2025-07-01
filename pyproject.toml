@@ -9,15 +9,15 @@ repository = "https://github.com/samuelint/langchain-openai-api-bridge"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<4.0"
-openai = "^1.35.1"
+openai = "^1.93.0"
 
-langchain = { version = "^0.2.6", optional = true }
-langchain-openai = { version = "^0.1.8", optional = true }
-fastapi = { version = "^0.111.0", optional = true }
+langchain = { version = "^0.3.26", optional = true }
+langchain-openai = { version = "^0.3.27", optional = true }
+fastapi = { version = "^0.115.14", extras = ["standard"], optional = true }
 python-dotenv = { version = "^1.0.1", optional = true }
-langgraph = { version = "^0.2.16", optional = true }
-langchain-anthropic = { version = "^0.1.19", optional = true }
-langchain-groq = { version = "^0.1.6", optional = true }
+langgraph = { version = "^0.5.0", optional = true }
+langchain-anthropic = { version = "^0.3.16", optional = true }
+langchain-groq = { version = "^0.3.4", optional = true }
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.0.0"
@@ -31,9 +31,9 @@ pytest = "^8.2.2"
 pytest-watch = "^4.2.0"
 decoy = "^2.1.1"
 injector = "^0.21.0"
-langchain-llamacpp-chat-model = "^0.2.2"
-langchain-community = "^0.2.9"
-langchain-experimental = "^0.0.62"
+llama-cpp-python = "^0.3.9"
+langchain-community = "^0.3.26"
+langchain-experimental = "^0.3.4"
 fastapi-injector = { version = "^0.6.0", python = ">=3.9,<3.13" }
 
 [tool.poetry.extras]

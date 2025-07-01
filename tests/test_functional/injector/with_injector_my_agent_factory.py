@@ -26,5 +26,5 @@ class WithInjectorMyAgentFactory(BaseAgentFactory):
         return create_react_agent(
             llm,
             [magic_number_tool],
-            messages_modifier="""You are a helpful assistant.""",
+            prompt="""You are a helpful assistant.""",
         )

@@ -1,6 +1,6 @@
 from typing import AsyncIterator, List, Optional
 from langchain_core.runnables import Runnable
-from langgraph.graph.graph import CompiledGraph
+from langgraph.graph.state import CompiledStateGraph
 from langchain_openai_api_bridge.chat_completion.langchain_invoke_adapter import (
     LangchainInvokeAdapter,
 )
@@ -59,7 +59,7 @@ class ChatCompletionCompatibleAPI:
         return self.invoke_adapter.to_chat_completion_object(result).dict()
 
     def __to_input(self, messages: List[OpenAIChatMessage]):
-        if isinstance(self.agent, CompiledGraph):
+        if isinstance(self.agent, CompiledStateGraph):
             return self.__to_react_agent_input(messages)
         else:
             return self.__to_chat_model_input(messages)

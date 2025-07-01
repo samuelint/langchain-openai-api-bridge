@@ -19,11 +19,11 @@ class TestInMemoryThreadRepository:
         assert validators.uuid(result.id)
 
     def test_created_thread_contains_metadata(self):
-        metadata = SomeMetadata(a="AAA")
+        metadata = {"a": "AAA"}
 
         result = self.instance.create(metadata=metadata)
 
-        assert result.metadata.a == "AAA"
+        assert result.metadata["a"] == "AAA"
 
     @patch("time.time", return_value=1638316800)
     def test_created_thread_contains_created_at(self, mock_time):
@@ -45,13 +45,13 @@ class TestInMemoryThreadRepository:
         assert retreived.metadata == {"a": "BBB"}
 
     def test_retreived_thread_is_immuable(self):
-        metadata = SomeMetadata(a="AAA")
+        metadata = {"a": "AAA"}
         created = self.instance.create(metadata=metadata)
-        created.metadata.a = "B"
+        created.metadata["a"] = "B"
 
         retreived = self.instance.retreive(created.id)
 
-        assert retreived.metadata.a == "AAA"
+        assert retreived.metadata["a"] == "AAA"
 
     def test_thread_is_deleted(self):
         created = self.instance.create()

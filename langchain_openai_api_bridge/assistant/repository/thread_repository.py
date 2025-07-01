@@ -14,7 +14,7 @@ class ThreadRepository(ABC):
     @abstractmethod
     def create(
         self,
-        metadata: Optional[object] = None,
+        metadata: Optional[dict[str, str]] = None,
     ) -> Thread:
         # client.beta.threads.create(messages)
         pass
@@ -23,7 +23,7 @@ class ThreadRepository(ABC):
     def update(
         self,
         thread_id: str,
-        metadata: Optional[object] = None,
+        metadata: Optional[dict[str, str]] = None,
     ) -> Thread:
         # client.beta.threads.create(messages)
         pass

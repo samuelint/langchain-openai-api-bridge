@@ -33,7 +33,7 @@ def create_message(
     content: Union[str, Iterable[MessageContentPartParam], None] = None,
     status: Literal["in_progress", "incomplete", "completed"] = "completed",
     run_id: Optional[str] = None,
-    metadata: Optional[object] = {},
+    metadata: Optional[dict[str, str]] = {},
 ) -> Message:
 
     return Message(

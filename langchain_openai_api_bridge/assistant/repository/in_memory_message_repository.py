@@ -27,7 +27,7 @@ class InMemoryMessageRepository(MessageRepository):
         content: Union[str, Iterable[MessageContentPartParam], None] = None,
         status: Literal["in_progress", "incomplete", "completed"] = "completed",
         run_id: Optional[str] = None,
-        metadata: Optional[object] = {},
+        metadata: Optional[dict[str, str]] = {},
     ) -> Message:
         id = str(uuid.uuid4())
         message = create_message(
