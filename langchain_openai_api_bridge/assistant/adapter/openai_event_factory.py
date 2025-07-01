@@ -1,6 +1,6 @@
 import json
 import time
-from typing import Literal, Optional, Union
+from typing import Any, Literal, Optional, Union
 from openai.types.beta.assistant_stream_event import (
     ThreadMessageCreated,
     ThreadMessageDelta,
@@ -63,12 +63,12 @@ def create_langchain_tool_run_step_tools_created(
     assistant_id: str,
     thread_id: str,
     status: Literal["in_progress", "cancelled", "failed", "completed", "expired"],
-    metadata: Optional[object] = None,
+    metadata: Optional[dict[str, Any]] = None,
     name: Optional[str] = None,
     arguments: Optional[dict[object]] = None,
     output: Optional[str] = None,
 ) -> ThreadRunStepDelta:
-
+    metadata = {key: str(value) for key, value in metadata.items()}
     return ThreadRunStepCreated(
         event="thread.run.step.created",
         data=create_langchain_tool_run_step(
@@ -89,11 +89,12 @@ def create_langchain_tool_thread_run_step_completed(
     assistant_id: str,
     thread_id: str,
     status: Literal["in_progress", "cancelled", "failed", "completed", "expired"],
-    metadata: Optional[object] = None,
+    metadata: Optional[dict[str, Any]] = None,
     name: Optional[str] = None,
     arguments: Optional[Union[dict[object], float, str]] = None,
     output: Optional[Union[dict[object], float, str]] = None,
 ) -> ThreadRunStepCompleted:
+    metadata = {key: str(value) for key, value in metadata.items()}
     return ThreadRunStepCompleted(
         event="thread.run.step.completed",
         data=create_langchain_tool_run_step(
@@ -114,7 +115,7 @@ def create_langchain_tool_run_step(
     assistant_id: str,
     thread_id: str,
     status: Literal["in_progress", "cancelled", "failed", "completed", "expired"],
-    metadata: Optional[object] = None,
+    metadata: Optional[dict[str, str]] = None,
     name: Optional[str] = None,
     arguments: Optional[Union[dict[object], float, str]] = None,
     output: Optional[Union[dict[object], float, str]] = None,

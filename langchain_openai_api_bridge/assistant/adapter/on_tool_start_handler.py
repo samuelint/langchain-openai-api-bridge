@@ -18,7 +18,7 @@ class OnToolStartHandler:
         step_id = event["run_id"]
         name = event["name"]
         arguments = event["data"]["input"]
-        metadata = event.get("metadata", None)
+        metadata = event.get("metadata", {})
         tool_created_event = create_langchain_tool_run_step_tools_created(
             step_id=step_id,
             assistant_id=dto.assistant_id,
