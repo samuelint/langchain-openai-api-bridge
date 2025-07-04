@@ -7,8 +7,8 @@ from langchain_openai_api_bridge.chat_completion.langchain_invoke_adapter import
 from langchain_openai_api_bridge.chat_completion.langchain_stream_adapter import (
     LangchainStreamAdapter,
 )
-from langchain_openai_api_bridge.core.types.openai import OpenAIChatMessage
 from langchain_openai_api_bridge.core.utils.pydantic_async_iterator import ato_dict
+from openai.types.chat import ChatCompletionMessage
 
 
 class ChatCompletionCompatibleAPI:
@@ -39,7 +39,7 @@ class ChatCompletionCompatibleAPI:
         self.agent = agent
         self.event_adapter = event_adapter
 
-    async def astream(self, messages: List[OpenAIChatMessage]) -> AsyncIterator[dict]:
+    async def astream(self, messages: List[ChatCompletionMessage]) -> AsyncIterator[dict]:
         async with self.agent as runnable:
             input = self.__to_input(runnable, messages)
             astream_event = runnable.astream_events(
@@ -51,7 +51,7 @@ class ChatCompletionCompatibleAPI:
             ):
                 yield it
 
-    async def ainvoke(self, messages: List[OpenAIChatMessage]) -> dict:
+    async def ainvoke(self, messages: List[ChatCompletionMessage]) -> dict:
         async with self.agent as runnable:
             input = self.__to_input(runnable, messages)
             result = await runnable.ainvoke(
@@ -60,16 +60,16 @@ class ChatCompletionCompatibleAPI:
 
         return self.invoke_adapter.to_chat_completion_object(result).model_dump()
 
-    def __to_input(self, runnable: Runnable, messages: List[OpenAIChatMessage]):
+    def __to_input(self, runnable: Runnable, messages: List[ChatCompletionMessage]):
         if isinstance(runnable, CompiledStateGraph):
             return self.__to_react_agent_input(messages)
         else:
             return self.__to_chat_model_input(messages)
 
-    def __to_react_agent_input(self, messages: List[OpenAIChatMessage]):
+    def __to_react_agent_input(self, messages: List[ChatCompletionMessage]):
         return {
-            "messages": [message.model_dump() for message in messages],
+            "messages": [message for message in messages],
         }
 
-    def __to_chat_model_input(self, messages: List[OpenAIChatMessage]):
-        return [message.model_dump() for message in messages]
+    def __to_chat_model_input(self, messages: List[ChatCompletionMessage]):
+        return [message for message in messages]

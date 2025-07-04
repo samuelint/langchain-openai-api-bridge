@@ -9,8 +9,9 @@ from langchain_openai_api_bridge.chat_completion.chat_completion_chunk_choice_ad
 
 
 class FixtureEventChunk:
-    def __init__(self, content: str):
+    def __init__(self, content: str, tool_call_chunks: list = []):
         self.content = content
+        self.tool_call_chunks = tool_call_chunks
 
 
 class TestToChatMessage:
@@ -28,9 +29,9 @@ class TestToChatMessage:
             data={"chunk": FixtureEventChunk(content="some content")}
         )
 
-        result = to_openai_chat_message(event, role="ai")
+        result = to_openai_chat_message(event, role="assistant")
 
-        assert result.role == "ai"
+        assert result.role == "assistant"
 
     def test_message_have_assistant_role_by_default(self):
         event = StandardStreamEvent(
@@ -93,9 +94,9 @@ class TestToCompletionChunkChoice:
             data={"chunk": FixtureEventChunk(content="some content")}
         )
 
-        result = to_openai_chat_completion_chunk_choice(event, role="ai")
+        result = to_openai_chat_completion_chunk_choice(event, role="assistant")
 
-        assert result.delta.role == "ai"
+        assert result.delta.role == "assistant"
 
     def test_message_have_assistant_role_by_default(self):
         event = StandardStreamEvent(
@@ -195,9 +196,9 @@ class TestToCompletionChunkObject:
             data={"chunk": FixtureEventChunk(content="some content")}
         )
 
-        result = to_openai_chat_completion_chunk_object(event, role="ai")
+        result = to_openai_chat_completion_chunk_object(event, role="assistant")
 
-        assert result.choices[0].delta.role == "ai"
+        assert result.choices[0].delta.role == "assistant"
 
     def test_message_have_assistant_role_by_default(self):
         event = StandardStreamEvent(

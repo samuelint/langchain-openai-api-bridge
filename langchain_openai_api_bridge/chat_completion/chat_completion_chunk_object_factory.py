@@ -1,19 +1,16 @@
 import time
-from typing import Dict, List, Optional
+from typing import List, Optional
 
-from langchain_openai_api_bridge.core.types.openai import (
-    OpenAIChatCompletionChunkChoice,
-    OpenAIChatCompletionChunkObject,
-)
+from openai.types.chat.chat_completion_chunk import ChatCompletionChunk, Choice
 
 
 def create_chat_completion_chunk_object(
     id: str,
     model: str,
     system_fingerprint: Optional[str],
-    choices: List[OpenAIChatCompletionChunkChoice] = [],
-) -> OpenAIChatCompletionChunkObject:
-    return OpenAIChatCompletionChunkObject(
+    choices: List[Choice] = [],
+) -> ChatCompletionChunk:
+    return ChatCompletionChunk(
         id=id,
         object="chat.completion.chunk",
         created=int(time.time()),
@@ -25,15 +22,19 @@ def create_chat_completion_chunk_object(
 
 def create_final_chat_completion_chunk_choice(
     index: int,
-) -> OpenAIChatCompletionChunkChoice:
-    return OpenAIChatCompletionChunkChoice(index=index, delta={}, finish_reason="stop")
+) -> Choice:
+    return Choice(
+        index=index,
+        delta={},
+        finish_reason="stop",
+    )
 
 
 def create_final_chat_completion_chunk_object(
     id: str,
     model: str = "",
     system_fingerprint: Optional[str] = None,
-) -> Dict:
+) -> ChatCompletionChunk:
     return create_chat_completion_chunk_object(
         id=id,
         model=model,

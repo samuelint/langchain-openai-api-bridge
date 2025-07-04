@@ -8,9 +8,7 @@ from langchain_openai_api_bridge.chat_completion.chat_completion_chunk_choice_ad
 from langchain_openai_api_bridge.chat_completion.chat_completion_chunk_object_factory import (
     create_final_chat_completion_chunk_object,
 )
-from langchain_openai_api_bridge.core.types.openai import (
-    OpenAIChatCompletionChunkObject,
-)
+from openai.types.chat.chat_completion_chunk import ChatCompletionChunk
 
 
 class LangchainStreamAdapter:
@@ -23,7 +21,7 @@ class LangchainStreamAdapter:
         astream_event: AsyncIterator[StreamEvent],
         id: str = "",
         event_adapter=lambda event: None,
-    ) -> AsyncIterator[OpenAIChatCompletionChunkObject]:
+    ) -> AsyncIterator[ChatCompletionChunk]:
         if id == "":
             id = str(uuid.uuid4())
         async for event in astream_event:
