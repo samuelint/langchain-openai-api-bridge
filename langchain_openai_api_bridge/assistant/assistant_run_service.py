@@ -1,4 +1,4 @@
-from typing import AsyncIterator
+from typing import AsyncIterator, AsyncContextManager
 from openai.types.beta import AssistantStreamEvent
 from langchain_openai_api_bridge.assistant.adapter.langgraph_event_to_openai_assistant_event_stream import (
     LanggraphEventToOpenAIAssistantEventStream,
@@ -37,24 +37,27 @@ class AssistantRunService:
             status="queued",
         )
 
-    async def ainvoke(self, agent: Runnable, dto: ThreadRunsDto):
+    async def ainvoke(self, agent: AsyncContextManager[Runnable], dto: ThreadRunsDto):
         input = self.thread_message_service.retreive_input(thread_id=dto.thread_id)
 
-        return await agent.ainvoke(
-            input={"messages": input},
-        )
+        async with agent as runnable:
+            return await runnable.ainvoke(
+                input={"messages": input},
+            )
 
-    def astream(
-        self, agent: Runnable, dto: ThreadRunsDto
+    async def astream(
+        self, agent: AsyncContextManager[Runnable], dto: ThreadRunsDto
     ) -> AsyncIterator[AssistantStreamEvent]:
 
         input = self.thread_message_service.retreive_input(thread_id=dto.thread_id)
 
-        astream_events = agent.astream_events(
-            input={"messages": input},
-            version="v2",
-        )
+        async with agent as runnable:
+            astream_events = runnable.astream_events(
+                input={"messages": input},
+                version="v2",
+            )
 
-        return self.stream_adapter.to_openai_assistant_event_stream(
-            astream_events=astream_events, dto=dto
-        )
+            async for it in self.stream_adapter.to_openai_assistant_event_stream(
+                astream_events=astream_events, dto=dto
+            ):
+                yield it

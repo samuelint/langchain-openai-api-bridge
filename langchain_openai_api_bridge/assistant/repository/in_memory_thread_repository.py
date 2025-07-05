@@ -3,6 +3,7 @@ import uuid
 from typing import Literal, Optional
 from openai.types.beta import Thread, ThreadDeleted
 from openai.pagination import SyncCursorPage
+from pydantic import BaseModel
 from .thread_repository import ThreadRepository
 
 
@@ -10,7 +11,8 @@ class InMemoryThreadRepository(ThreadRepository):
     def __init__(self, data: Optional[dict[str, Thread]] = None) -> None:
         self.threads = data or {}
 
-    def create(self, metadata: Optional[object] = None) -> Thread:
+    def create(self, metadata: Optional[dict[str, str] | BaseModel] = None) -> Thread:
+        metadata = metadata.model_dump() if isinstance(metadata, BaseModel) else metadata
         thread_id = str(uuid.uuid4())
         thread = self.__create_thread(thread_id=thread_id, metadata=metadata)
         self.threads[thread_id] = thread
@@ -20,10 +22,11 @@ class InMemoryThreadRepository(ThreadRepository):
     def update(
         self,
         thread_id: str,
-        metadata: Optional[object] = None,
+        metadata: Optional[dict[str, str] | BaseModel] = None,
     ) -> Thread:
         if thread_id not in self.threads:
             raise ValueError(f"Thread with id {thread_id} not found")
+        metadata = metadata.model_dump() if isinstance(metadata, BaseModel) else metadata
 
         thread = self.threads[thread_id].copy(deep=True)
         thread.metadata = metadata
@@ -62,7 +65,7 @@ class InMemoryThreadRepository(ThreadRepository):
         return self.__create_thread_deleted(thread_id=thread_id)
 
     @staticmethod
-    def __create_thread(thread_id: str, metadata: Optional[object] = None) -> Thread:
+    def __create_thread(thread_id: str, metadata: Optional[dict[str, str]] = None) -> Thread:
         return Thread(
             id=thread_id,
             object="thread",

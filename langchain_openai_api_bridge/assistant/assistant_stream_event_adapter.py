@@ -1,4 +1,3 @@
-import json
 from typing import AsyncIterator
 from starlette.responses import StreamingResponse
 from openai.types.beta import AssistantStreamEvent
@@ -29,7 +28,7 @@ class AssistantStreamEventAdapter:
         )
 
     def __serialize_event(self, event: AssistantStreamEvent):
-        return self.__str_event(event.event, json.dumps(event.data.dict()))
+        return self.__str_event(event.event, event.data.model_dump_json())
 
     def __str_event(self, event: str, data: str) -> str:
         return f"event: {event}\ndata: {data}\n\n"
