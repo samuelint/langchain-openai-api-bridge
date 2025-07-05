@@ -10,6 +10,7 @@ repository = "https://github.com/samuelint/langchain-openai-api-bridge"
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
 openai = "^1.93.0"
+pydantic = "~2.8.0"
 
 langchain = { version = "^0.3.26", optional = true }
 langchain-openai = { version = "^0.3.27", optional = true }

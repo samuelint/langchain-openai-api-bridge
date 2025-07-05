@@ -17,7 +17,7 @@ PotentiallyRunnable = Union[
     Awaitable[Runnable],
     Generator[Runnable, None, None],
     ContextManager[Runnable],
-    AsyncGenerator[Runnable],
+    AsyncGenerator,
     AsyncContextManager[Runnable],
 ]
 
@@ -35,7 +35,7 @@ class BaseAgentFactory(ABC):
 
 
 @asynccontextmanager
-async def _agen_wrapper(agen: AsyncGenerator[Runnable]):
+async def _agen_wrapper(agen: AsyncGenerator):
     try:
         yield await agen.__anext__()
     finally:
