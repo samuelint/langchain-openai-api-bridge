@@ -58,7 +58,7 @@ class ChatCompletionCompatibleAPI:
                 input=input,
             )
 
-        return self.invoke_adapter.to_chat_completion_object(result).dict()
+        return self.invoke_adapter.to_chat_completion_object(result).model_dump()
 
     def __to_input(self, runnable: Runnable, messages: List[OpenAIChatMessage]):
         if isinstance(runnable, CompiledStateGraph):
@@ -68,8 +68,8 @@ class ChatCompletionCompatibleAPI:
 
     def __to_react_agent_input(self, messages: List[OpenAIChatMessage]):
         return {
-            "messages": [message.dict() for message in messages],
+            "messages": [message.model_dump() for message in messages],
         }
 
     def __to_chat_model_input(self, messages: List[OpenAIChatMessage]):
-        return [message.dict() for message in messages]
+        return [message.model_dump() for message in messages]

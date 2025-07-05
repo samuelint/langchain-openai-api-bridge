@@ -4,6 +4,7 @@ import uuid
 from langchain_openai_api_bridge.assistant.adapter.openai_message_factory import (
     create_message,
 )
+from pydantic import BaseModel
 from .message_repository import (
     MessageRepository,
 )
@@ -27,7 +28,7 @@ class InMemoryMessageRepository(MessageRepository):
         content: Union[str, Iterable[MessageContentPartParam], None] = None,
         status: Literal["in_progress", "incomplete", "completed"] = "completed",
         run_id: Optional[str] = None,
-        metadata: Optional[dict[str, str]] = {},
+        metadata: Optional[dict[str, str] | BaseModel] = None,
     ) -> Message:
         id = str(uuid.uuid4())
         message = create_message(

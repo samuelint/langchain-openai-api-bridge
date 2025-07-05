@@ -2,6 +2,7 @@ from typing import Literal, Optional
 from abc import ABC, abstractmethod
 from openai.types.beta import Thread, ThreadDeleted
 from openai.pagination import SyncCursorPage
+from pydantic import BaseModel
 
 
 class ThreadRepository(ABC):
@@ -14,7 +15,7 @@ class ThreadRepository(ABC):
     @abstractmethod
     def create(
         self,
-        metadata: Optional[dict[str, str]] = None,
+        metadata: Optional[dict[str, str] | BaseModel] = None,
     ) -> Thread:
         # client.beta.threads.create(messages)
         pass
@@ -23,7 +24,7 @@ class ThreadRepository(ABC):
     def update(
         self,
         thread_id: str,
-        metadata: Optional[dict[str, str]] = None,
+        metadata: Optional[dict[str, str] | BaseModel] = None,
     ) -> Thread:
         # client.beta.threads.create(messages)
         pass

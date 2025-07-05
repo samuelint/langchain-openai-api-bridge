@@ -26,6 +26,7 @@ from langchain_openai_api_bridge.assistant.adapter.openai_message_factory import
     FromLanggraphMessageChunkContent,
     create_text_message_delta,
 )
+from pydantic import BaseModel
 
 
 def create_thread_message_created_event(message: Message) -> ThreadMessageCreated:
@@ -115,11 +116,12 @@ def create_langchain_tool_run_step(
     assistant_id: str,
     thread_id: str,
     status: Literal["in_progress", "cancelled", "failed", "completed", "expired"],
-    metadata: Optional[dict[str, str]] = None,
+    metadata: Optional[dict[str, str] | BaseModel] = None,
     name: Optional[str] = None,
     arguments: Optional[Union[dict[object], float, str]] = None,
     output: Optional[Union[dict[object], float, str]] = None,
 ) -> RunStep:
+    metadata = metadata.model_dump() if isinstance(metadata, BaseModel) else metadata
     return RunStep(
         id=step_id,
         assistant_id=assistant_id,

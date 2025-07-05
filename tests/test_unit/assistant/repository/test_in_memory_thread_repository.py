@@ -7,7 +7,7 @@ from langchain_openai_api_bridge.assistant.repository.in_memory_thread_repositor
 
 
 class SomeMetadata(BaseModel):
-    a: str = None
+    a: str
 
 
 class TestInMemoryThreadRepository:
@@ -19,6 +19,13 @@ class TestInMemoryThreadRepository:
         assert validators.uuid(result.id)
 
     def test_created_thread_contains_metadata(self):
+        metadata = SomeMetadata(a="AAA")
+
+        result = self.instance.create(metadata=metadata)
+
+        assert result.metadata["a"] == "AAA"
+
+    def test_created_thread_contains_metadata_dict(self):
         metadata = {"a": "AAA"}
 
         result = self.instance.create(metadata=metadata)
