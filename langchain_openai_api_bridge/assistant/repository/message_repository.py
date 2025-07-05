@@ -4,6 +4,7 @@ from openai.types.beta.threads import MessageDeleted, MessageContentPartParam
 from openai.types.beta import thread_create_params
 from openai.pagination import SyncCursorPage
 from openai.types.beta.threads.message import Message, Attachment
+from pydantic import BaseModel
 
 
 class MessageRepository(ABC):
@@ -23,7 +24,7 @@ class MessageRepository(ABC):
         assistant_id: Optional[str] = None,
         attachments: Optional[List[Attachment]] = None,
         run_id: Optional[str] = None,
-        metadata: Optional[dict] = {},
+        metadata: Optional[dict[str, str] | BaseModel] = None,
     ) -> Message:
         pass
 

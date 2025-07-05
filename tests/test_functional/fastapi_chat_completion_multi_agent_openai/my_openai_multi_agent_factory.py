@@ -149,7 +149,7 @@ def create_graph(llm):
     workflow.add_edge(START, "supervisor")
 
     # To be able to run our graph, call "compile()" on the graph builder.
-    # This creates a "CompiledGraph" we can use invoke on our state.
+    # This creates a "CompiledStateGraph" we can use invoke on our state.
     graph = workflow.compile(debug=True).with_config(
         RunnableConfig(
             recursion_limit=10,

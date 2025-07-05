@@ -119,7 +119,7 @@ def create_thread_router(
 
         api_key = get_bearer_token(authorization)
         agent_factory = tiny_di_container.resolve(InternalAgentFactory)
-        agent = agent_factory.create_agent(
+        agent = agent_factory.create_agent_with_async_context(
             thread_run_dto=thread_run_dto, api_key=api_key
         )
 

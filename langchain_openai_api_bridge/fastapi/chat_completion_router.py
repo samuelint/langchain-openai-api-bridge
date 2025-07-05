@@ -32,7 +32,7 @@ def create_chat_completion_router(
             temperature=request.temperature,
         )
 
-        agent = agent_factory.create_agent(dto=create_agent_dto)
+        agent = agent_factory.create_agent_with_async_context(dto=create_agent_dto)
 
         adapter = ChatCompletionCompatibleAPI.from_agent(agent, create_agent_dto.model, event_adapter=event_adapter)
 
@@ -41,7 +41,7 @@ def create_chat_completion_router(
             stream = adapter.astream(request.messages)
             return response_factory.to_streaming_response(stream)
         else:
-            return JSONResponse(content=adapter.invoke(request.messages))
+            return JSONResponse(content=await adapter.ainvoke(request.messages))
 
     return chat_completion_router
 

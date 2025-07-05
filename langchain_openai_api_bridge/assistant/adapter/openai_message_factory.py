@@ -11,7 +11,7 @@ from openai.types.beta.threads import (
     TextContentBlock,
     Text,
 )
-
+from pydantic import BaseModel
 from langchain_openai_api_bridge.assistant.adapter.openai_message_content_adapter import (
     to_openai_message_content_list,
 )
@@ -33,9 +33,9 @@ def create_message(
     content: Union[str, Iterable[MessageContentPartParam], None] = None,
     status: Literal["in_progress", "incomplete", "completed"] = "completed",
     run_id: Optional[str] = None,
-    metadata: Optional[object] = {},
+    metadata: Optional[dict[str, str] | BaseModel] = None,
 ) -> Message:
-
+    metadata = metadata.model_dump() if isinstance(metadata, BaseModel) else metadata
     return Message(
         id=id,
         thread_id=thread_id,

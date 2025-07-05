@@ -17,5 +17,5 @@ class MyAnthropicAgentFactory(BaseAgentFactory):
         return create_react_agent(
             llm,
             [],
-            messages_modifier="""You are a helpful assistant.""",
+            prompt="""You are a helpful assistant.""",
         )
