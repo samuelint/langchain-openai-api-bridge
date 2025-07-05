@@ -1,30 +1,26 @@
 import time
 from typing import List, Optional
 
-from langchain_openai_api_bridge.core.types.openai import (
-    OpenAIChatCompletionChoice,
-    OpenAIChatCompletionObject,
-    OpenAIChatCompletionUsage,
-)
+from openai.types.chat.chat_completion import ChatCompletion, Choice, CompletionUsage
 
 
 class ChatCompletionObjectFactory:
     def create(
         id: str,
         model: str,
-        choices: List[OpenAIChatCompletionChoice] = [],
+        choices: List[Choice] = [],
         usage: Optional[
-            OpenAIChatCompletionUsage
-        ] = OpenAIChatCompletionUsage.default(),
+            CompletionUsage
+        ] = CompletionUsage(completion_tokens=-1, prompt_tokens=-1, total_tokens=-1),
         object: str = "chat.completion",
         system_fingerprint: str = "",
         created: int = None,
-    ) -> OpenAIChatCompletionObject:
-        return OpenAIChatCompletionObject(
+    ) -> ChatCompletion:
+        return ChatCompletion(
             id=id,
-            object=object,
-            created=created if created is not None else int(time.time()),
             model=model,
+            created=created or int(time.time()),
+            object=object,
             system_fingerprint=system_fingerprint,
             choices=choices,
             usage=usage,

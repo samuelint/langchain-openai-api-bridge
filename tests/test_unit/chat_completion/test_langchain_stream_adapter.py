@@ -14,6 +14,7 @@ from tests.test_unit.core.agent_stream_utils import create_on_chat_model_stream_
 class ChatCompletionChunkStub:
     def __init__(self, value: Dict):
         self.dict = lambda: value
+        self.choices = []
 
 
 class TestToChatCompletionChunkStream:

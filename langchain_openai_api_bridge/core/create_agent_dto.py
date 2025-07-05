@@ -1,5 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel
+from openai.types.chat import ChatCompletionToolChoiceOptionParam, ChatCompletionToolParam
 
 
 class CreateAgentDto(BaseModel):
@@ -9,3 +10,5 @@ class CreateAgentDto(BaseModel):
     max_tokens: Optional[int] = None
     assistant_id: Optional[str] = ""
     thread_id: Optional[str] = ""
+    tools: list[ChatCompletionToolParam] = []
+    tool_choice: ChatCompletionToolChoiceOptionParam = "none"

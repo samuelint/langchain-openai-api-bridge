@@ -3,11 +3,7 @@ from unittest.mock import patch
 from langchain_openai_api_bridge.chat_completion.chat_completion_object_factory import (
     ChatCompletionObjectFactory,
 )
-from langchain_openai_api_bridge.core.types.openai import (
-    OpenAIChatCompletionChoice,
-    OpenAIChatCompletionUsage,
-    OpenAIChatMessage,
-)
+from openai.types.chat.chat_completion import Choice, CompletionUsage, ChatCompletionMessage
 
 
 class TestChatCompletionObjectFactory:
@@ -69,7 +65,7 @@ class TestChatCompletionObjectFactory:
         result = ChatCompletionObjectFactory.create(
             id="test",
             model="test-model",
-            usage=OpenAIChatCompletionUsage(
+            usage=CompletionUsage(
                 total_tokens=100,
                 prompt_tokens=50,
                 completion_tokens=50,
@@ -95,9 +91,10 @@ class TestChatCompletionObjectFactory:
             id="test",
             model="test-model",
             choices=[
-                OpenAIChatCompletionChoice(
+                Choice(
                     index=0,
-                    message=OpenAIChatMessage(
+                    finish_reason="stop",
+                    message=ChatCompletionMessage(
                         role="assistant", content="test-message-assistant"
                     ),
                 ),

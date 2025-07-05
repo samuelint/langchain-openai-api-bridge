@@ -5,15 +5,15 @@ from langchain_openai_api_bridge.chat_completion.chat_completion_compatible_api 
 )
 from langchain_openai_api_bridge.core.base_agent_factory import wrap_agent
 from langchain_core.runnables import Runnable
-from langchain_openai_api_bridge.core.types.openai import OpenAIChatMessage
 from langchain_core.messages import AIMessage
+from openai.types.chat import ChatCompletionUserMessageParam
 
 from tests.stream_utils import assemble_stream, generate_stream
 from tests.test_unit.core.agent_stream_utils import create_on_chat_model_stream_event
 
 
 some_llm_model = "gpt-4o-mini"
-some_messages = [OpenAIChatMessage(role="user", content="hello")]
+some_messages = [ChatCompletionUserMessageParam(role="user", content="hello")]
 
 
 @pytest.fixture
