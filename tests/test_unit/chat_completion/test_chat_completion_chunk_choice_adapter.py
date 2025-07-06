@@ -208,3 +208,18 @@ class TestToCompletionChunkObject:
         result = to_openai_chat_completion_chunk_object(event)
 
         assert result.choices[0].delta.role == "assistant"
+
+    def test_delta_message_have_function_call(self):
+        event = StandardStreamEvent(
+            data={
+                "chunk": FixtureEventChunk(
+                    content="",
+                    tool_call_chunks=[{"name": "my_func", "args": '{"x": 1}'}],
+                )
+            }
+        )
+
+        result = to_openai_chat_completion_chunk_object(event)
+
+        assert result.choices[0].delta.function_call is not None
+        assert result.choices[0].delta.function_call.name == "my_func"
