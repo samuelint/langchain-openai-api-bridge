@@ -26,6 +26,7 @@ class LangchainStreamAdapter:
             id = str(uuid.uuid4())
 
         is_function_call = False
+        role = "assistant"
         async for event in astream_event:
             custom_event = event_adapter(event)
             event_to_process = custom_event if custom_event is not None else event
@@ -36,7 +37,9 @@ class LangchainStreamAdapter:
                     id=id,
                     model=self.llm_model,
                     system_fingerprint=self.system_fingerprint,
+                    role=role,
                 )
+                role = None
                 yield chat_completion_chunk
                 is_function_call = is_function_call or any(choice.delta.function_call for choice in chat_completion_chunk.choices)
 

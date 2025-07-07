@@ -98,14 +98,14 @@ class TestToCompletionChunkChoice:
 
         assert result.delta.role == "assistant"
 
-    def test_message_have_assistant_role_by_default(self):
+    def test_delta_message_have_none_role_by_default(self):
         event = StandardStreamEvent(
             data={"chunk": FixtureEventChunk(content="some content")}
         )
 
         result = to_openai_chat_completion_chunk_choice(event)
 
-        assert result.delta.role == "assistant"
+        assert result.delta.role is None
 
 
 class TestToCompletionChunkObject:
@@ -200,14 +200,14 @@ class TestToCompletionChunkObject:
 
         assert result.choices[0].delta.role == "assistant"
 
-    def test_message_have_assistant_role_by_default(self):
+    def test_delta_message_have_none_role_by_default(self):
         event = StandardStreamEvent(
             data={"chunk": FixtureEventChunk(content="some content")}
         )
 
         result = to_openai_chat_completion_chunk_object(event)
 
-        assert result.choices[0].delta.role == "assistant"
+        assert result.choices[0].delta.role is None
 
     def test_delta_message_have_function_call(self):
         event = StandardStreamEvent(

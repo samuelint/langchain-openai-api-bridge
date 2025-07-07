@@ -23,7 +23,7 @@ class TestToChatCompletionChunkStream:
     @pytest.mark.asyncio
     @patch(
         "langchain_openai_api_bridge.chat_completion.langchain_stream_adapter.to_openai_chat_completion_chunk_object",
-        side_effect=lambda event, id, model, system_fingerprint: (
+        side_effect=lambda event, id, model, system_fingerprint, role: (
             ChatCompletionChunkStub({"key": event["data"]["chunk"].content})
         ),
     )
@@ -48,7 +48,7 @@ class TestToChatCompletionChunkStream:
     @pytest.mark.asyncio
     @patch(
         "langchain_openai_api_bridge.chat_completion.langchain_stream_adapter.to_openai_chat_completion_chunk_object",
-        side_effect=lambda event, id, model, system_fingerprint: (
+        side_effect=lambda event, id, model, system_fingerprint, role: (
             ChatCompletionChunkStub({"key": event["data"]["chunk"].content})
         ),
     )

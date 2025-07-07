@@ -29,7 +29,7 @@ def to_openai_chat_message(
 def to_openai_chat_completion_chunk_choice(
     event: StreamEvent,
     index: int = 0,
-    role: str = "assistant",
+    role: Optional[str] = None,
     finish_reason: Optional[str] = None,
 ) -> Choice:
     message = to_openai_chat_message(event, role)
@@ -46,7 +46,7 @@ def to_openai_chat_completion_chunk_object(
     id: str = "",
     model: str = "",
     system_fingerprint: Optional[str] = None,
-    role: str = "assistant",
+    role: Optional[str] = None,
     finish_reason: Optional[str] = None,
 ) -> ChatCompletionChunk:
 
