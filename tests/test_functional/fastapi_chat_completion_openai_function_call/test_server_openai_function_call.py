@@ -1,6 +1,7 @@
 import json
 import pytest
 from openai import OpenAI
+from openai.types.chat import ChatCompletionToolParam
 from openai.lib.streaming.chat import ChatCompletionStreamState
 from fastapi.testclient import TestClient
 from server_openai_function_call import app
@@ -17,8 +18,9 @@ def openai_client():
     )
 
 
-def test_chat_completion_function_call_weather(openai_client: OpenAI):
-    tools = [{
+@pytest.fixture
+def tools():
+    return [{
         "type": "function",
         "function": {
             "name": "get_weather",
@@ -40,6 +42,8 @@ def test_chat_completion_function_call_weather(openai_client: OpenAI):
         }
     }]
 
+
+def test_chat_completion_function_call_weather(openai_client: OpenAI, tools: list[ChatCompletionToolParam]):
     chat_completion = openai_client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
@@ -59,29 +63,7 @@ def test_chat_completion_function_call_weather(openai_client: OpenAI):
     assert "london" in args["location"].lower()
 
 
-def test_chat_completion_function_call_weather_stream(openai_client: OpenAI):
-    tools = [{
-        "type": "function",
-        "function": {
-            "name": "get_weather",
-            "description": "Get current temperature for a given location.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "location": {
-                        "type": "string",
-                        "description": "City and country e.g. Bogotá, Colombia"
-                    }
-                },
-                "required": [
-                    "location"
-                ],
-                "additionalProperties": False
-            },
-            "strict": True
-        }
-    }]
-
+def test_chat_completion_function_call_weather_stream(openai_client: OpenAI, tools: list[ChatCompletionToolParam]):
     chunks = openai_client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
@@ -109,29 +91,7 @@ def test_chat_completion_function_call_weather_stream(openai_client: OpenAI):
     assert "london" in args["location"].lower()
 
 
-def test_chat_completion_function_call_not_called(openai_client: OpenAI):
-    tools = [{
-        "type": "function",
-        "function": {
-            "name": "get_weather",
-            "description": "Get current temperature for a given location.",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "location": {
-                        "type": "string",
-                        "description": "City and country e.g. Bogotá, Colombia"
-                    }
-                },
-                "required": [
-                    "location"
-                ],
-                "additionalProperties": False
-            },
-            "strict": True
-        }
-    }]
-
+def test_chat_completion_function_call_not_called(openai_client: OpenAI, tools: list[ChatCompletionToolParam]):
     chat_completion = openai_client.chat.completions.create(
         model="gpt-4o-mini",
         messages=[
