@@ -223,3 +223,4 @@ class TestToCompletionChunkObject:
 
         assert result.choices[0].delta.function_call is not None
         assert result.choices[0].delta.function_call.name == "my_func"
+        assert result.choices[0].delta.function_call.arguments == '{"x": 1}'
