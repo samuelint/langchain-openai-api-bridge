@@ -25,7 +25,7 @@ class LangchainStreamAdapter:
         if id == "":
             id = str(uuid.uuid4())
 
-        is_function_call = False
+        is_function_call_prev = is_function_call = False
         role = "assistant"
         async for event in astream_event:
             custom_event = event_adapter(event)
@@ -42,8 +42,10 @@ class LangchainStreamAdapter:
                 role = None
                 yield chat_completion_chunk
                 is_function_call = is_function_call or any(choice.delta.function_call for choice in chat_completion_chunk.choices)
+            elif kind == "on_chat_model_end":
+                is_function_call_prev, is_function_call = is_function_call, False
 
         stop_chunk = create_final_chat_completion_chunk_object(
-            id=id, model=self.llm_model, finish_reason="tool_calls" if is_function_call else "stop"
+            id=id, model=self.llm_model, finish_reason="tool_calls" if is_function_call_prev else "stop"
         )
         yield stop_chunk
