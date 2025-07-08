@@ -11,7 +11,7 @@ def to_openai_chat_message(
     event: StreamEvent,
     role: str = "assistant",
 ) -> ChoiceDelta:
-    if event["data"]["chunk"].tool_call_chunks:
+    if getattr(event["data"]["chunk"], "tool_call_chunks", None):
         function_call = ChoiceDeltaFunctionCall(
             name=event["data"]["chunk"].tool_call_chunks[0]["name"],
             arguments=event["data"]["chunk"].tool_call_chunks[0]["args"],
