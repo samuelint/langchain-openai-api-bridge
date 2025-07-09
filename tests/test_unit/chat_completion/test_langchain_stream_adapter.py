@@ -77,3 +77,30 @@ class TestToChatCompletionChunkStream:
         items = await assemble_stream(response_stream)
         assert items[0].dict() == ChatCompletionChunkStub({"key": "hello"}).dict()
         assert items[1].dict() == ChatCompletionChunkStub({"key": "moto"}).dict()
+
+    @pytest.mark.asyncio
+    @patch(
+        "langchain_openai_api_bridge.chat_completion.langchain_stream_adapter.to_openai_chat_completion_chunk_object",
+        side_effect=lambda event, id, model, system_fingerprint, role: (
+            ChatCompletionChunkStub({"key": event["data"]["chunk"].content, "role": role})
+        ),
+    )
+    async def test_stream_first_chunk_role(
+        self, to_openai_chat_completion_chunk_object
+    ):
+        on_chat_model_stream_event1 = create_on_chat_model_stream_event(content="first chunk")
+        on_chat_model_stream_event2 = create_on_chat_model_stream_event(content="remain")
+        input_stream = generate_stream(
+            [
+                on_chat_model_stream_event1,
+                on_chat_model_stream_event2,
+            ]
+        )
+
+        response_stream = self.instance.ato_chat_completion_chunk_stream(
+            input_stream
+        )
+
+        items = await assemble_stream(response_stream)
+        assert items[0].dict()["role"] == "assistant"
+        assert items[1].dict()["role"] is None
