@@ -4,33 +4,37 @@ from langchain_core.runnables.schema import StreamEvent
 from langchain_openai_api_bridge.chat_completion.chat_completion_chunk_object_factory import (
     create_chat_completion_chunk_object,
 )
-from langchain_openai_api_bridge.chat_completion.content_adapter import (
-    to_string_content,
-)
-from langchain_openai_api_bridge.core.types.openai import (
-    OpenAIChatCompletionChunkChoice,
-    OpenAIChatCompletionChunkObject,
-    OpenAIChatMessage,
-)
+from openai.types.chat.chat_completion_chunk import ChatCompletionChunk, Choice, ChoiceDelta, ChoiceDeltaFunctionCall
 
 
 def to_openai_chat_message(
     event: StreamEvent,
     role: str = "assistant",
-) -> OpenAIChatMessage:
-    content = event["data"]["chunk"].content
-    return OpenAIChatMessage(content=to_string_content(content), role=role)
+) -> ChoiceDelta:
+    if getattr(event["data"]["chunk"], "tool_call_chunks", None):
+        function_call = ChoiceDeltaFunctionCall(
+            name=event["data"]["chunk"].tool_call_chunks[0]["name"],
+            arguments=event["data"]["chunk"].tool_call_chunks[0]["args"],
+        )
+    else:
+        function_call = None
+
+    return ChoiceDelta(
+        content=event["data"]["chunk"].content,
+        role=role,
+        function_call=function_call,
+    )
 
 
 def to_openai_chat_completion_chunk_choice(
     event: StreamEvent,
     index: int = 0,
-    role: str = "assistant",
+    role: Optional[str] = None,
     finish_reason: Optional[str] = None,
-) -> OpenAIChatCompletionChunkChoice:
+) -> Choice:
     message = to_openai_chat_message(event, role)
 
-    return OpenAIChatCompletionChunkChoice(
+    return Choice(
         index=index,
         delta=message,
         finish_reason=finish_reason,
@@ -42,9 +46,9 @@ def to_openai_chat_completion_chunk_object(
     id: str = "",
     model: str = "",
     system_fingerprint: Optional[str] = None,
-    role: str = "assistant",
+    role: Optional[str] = None,
     finish_reason: Optional[str] = None,
-) -> OpenAIChatCompletionChunkObject:
+) -> ChatCompletionChunk:
 
     choice1 = to_openai_chat_completion_chunk_choice(
         event, index=0, role=role, finish_reason=finish_reason
