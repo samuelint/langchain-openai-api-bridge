@@ -35,3 +35,19 @@ class TestCreateFinalChatCompletionChunkObject:
         )
 
         assert result.system_fingerprint == "bbb"
+
+    def test_final_chunk_finish_reason_tool_calls(self):
+        chunk_obj = create_final_chat_completion_chunk_object(
+            id="a",
+            finish_reason="tool_calls",
+        )
+
+        assert chunk_obj.choices[0].finish_reason == "tool_calls"
+
+    def test_final_chunk_finish_reason_stop(self):
+        chunk_obj = create_final_chat_completion_chunk_object(
+            id="a",
+            finish_reason="stop",
+        )
+
+        assert chunk_obj.choices[0].finish_reason == "stop"

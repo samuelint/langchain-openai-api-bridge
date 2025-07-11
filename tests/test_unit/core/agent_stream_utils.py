@@ -2,8 +2,9 @@ from langchain_core.runnables.schema import StandardStreamEvent, EventData
 
 
 class ChunkStub:
-    def __init__(self, content: str):
+    def __init__(self, content: str, tool_call_chunks: list = []):
         self.content = content
+        self.tool_call_chunks = tool_call_chunks
 
 
 def create_stream_chunk_event(
